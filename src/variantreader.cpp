@@ -16,7 +16,7 @@ void parse_line(vector<string>& result, string line, char sep) {
 }
 
 VariantReader::VariantReader(string filename, string reference_filename, size_t kmer_size, string sample)
-	:fasta_reader(reference_filename),
+	:fasta_reader(reference_filename, kmer_size),
 	 kmer_size(kmer_size),
 	 nr_variants(0),
 	 sample(sample),
@@ -376,5 +376,5 @@ void VariantReader::close_phasing_outfile() {
 }
 
 size_t VariantReader::nr_of_genomic_kmers() const {
-	return this->fasta_reader.get_total_kmers(this->kmer_size);
+	return this->fasta_reader.get_total_kmers();
 }

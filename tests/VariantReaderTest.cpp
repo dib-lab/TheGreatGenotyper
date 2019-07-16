@@ -9,7 +9,7 @@ TEST_CASE("VariantReader get_allele_sequence", "[VariantReader get_allele_sequen
 	string vcf = "/MMCI/TM/scratch/jebler/pgg-typer/pggtyper/pggtyper/tests/data/small1.vcf";
 	string fasta = "/MMCI/TM/scratch/jebler/pgg-typer/pggtyper/pggtyper/tests/data/small1.fa";
 	VariantReader v(vcf, fasta, 10);
-	REQUIRE(v.nr_of_genomic_kmers() == 2440);
+	REQUIRE(v.nr_of_genomic_kmers() == 2194);
 	REQUIRE(v.get_kmer_size() == 10);
 	REQUIRE(v.size_of("chrA") == 7);
 	REQUIRE(v.size_of("chrB") == 2);
