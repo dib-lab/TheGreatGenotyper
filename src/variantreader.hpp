@@ -11,7 +11,7 @@
 
 class VariantReader {
 public:
-	VariantReader (std::string filename, std::string reference_filename, size_t kmer_size, std::string sample = "sample");
+	VariantReader (std::string filename, FastaReader* reference_file, size_t kmer_size, std::string sample = "sample");
 	/**  writes all path segments (allele sequences + reference sequences in between)
 	*    to the given file.
 	**/
@@ -29,7 +29,7 @@ public:
 	void close_phasing_outfile();
 	size_t nr_of_genomic_kmers() const;
 private:
-	FastaReader fasta_reader;
+	const FastaReader* fasta_reader;
 	size_t kmer_size;
 	size_t nr_paths;
 	size_t nr_variants;

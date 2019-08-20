@@ -6,9 +6,10 @@
 using namespace std;
 
 TEST_CASE("VariantReader get_allele_sequence", "[VariantReader get_allele_sequence]") {
-	string vcf = "/MMCI/TM/scratch/jebler/pgg-typer/pggtyper/pggtyper/tests/data/small1.vcf";
-	string fasta = "/MMCI/TM/scratch/jebler/pgg-typer/pggtyper/pggtyper/tests/data/small1.fa";
-	VariantReader v(vcf, fasta, 10);
+	string vcf = "../tests/data/small1.vcf";
+	string fasta = "../tests/data/small1.fa";
+	FastaReader fasta_reader(fasta);
+	VariantReader v(vcf, &fasta_reader, 10);
 	REQUIRE(v.nr_of_genomic_kmers() == 2440);
 	REQUIRE(v.get_kmer_size() == 10);
 	REQUIRE(v.size_of("chrA") == 7);
@@ -45,19 +46,20 @@ TEST_CASE("VariantReader get_allele_sequence", "[VariantReader get_allele_sequen
 }
 
 TEST_CASE("VariantReader write_path_segments", "[VariantReader write_path_segments]") {
-	string vcf = "/MMCI/TM/scratch/jebler/pgg-typer/pggtyper/pggtyper/tests/data/small1.vcf";
-	string fasta = "/MMCI/TM/scratch/jebler/pgg-typer/pggtyper/pggtyper/tests/data/small1.fa";
+	string vcf = "../tests/data/small1.vcf";
+	string fasta = "../tests/data/small1.fa";
+	FastaReader fasta_reader(fasta);
 
 	// read variants from VCF file
-	VariantReader v(vcf, fasta, 10);
-	v.write_path_segments("/MMCI/TM/scratch/jebler/pgg-typer/pggtyper/pggtyper/tests/data/small1-segments.fa");
+	VariantReader v(vcf, &fasta_reader, 10);
+	v.write_path_segments("../tests/data/small1-segments.fa");
 
 	// compare reference segments to expected sequences
 	vector<string> computed = {};
 	vector<string> expected = {};
 
 	// read expected reference segments from file
-	ifstream expected_sequences("/MMCI/TM/scratch/jebler/pgg-typer/pggtyper/pggtyper/tests/data/small1-expected-ref-segments.fa");
+	ifstream expected_sequences("../tests/data/small1-expected-ref-segments.fa");
 	string line;
 	while (getline(expected_sequences, line)) {
 		size_t start = line.find_first_not_of(" \t\r\n");
@@ -68,7 +70,7 @@ TEST_CASE("VariantReader write_path_segments", "[VariantReader write_path_segmen
 
 	// read computed reference segments from file
 	bool read_next = false;
-	ifstream computed_sequences("/MMCI/TM/scratch/jebler/pgg-typer/pggtyper/pggtyper/tests/data/small1-segments.fa");
+	ifstream computed_sequences("../tests/data/small1-segments.fa");
 	while (getline(computed_sequences, line)) {
 		if (line.size() == 0) continue;
 		if (line[0] == '>') {
@@ -93,11 +95,12 @@ TEST_CASE("VariantReader write_path_segments", "[VariantReader write_path_segmen
 }
 
 TEST_CASE("VariantReader write_genotypes_of", "[VariantReader write_genotypes_of]") {
-	string vcf = "/MMCI/TM/scratch/jebler/pgg-typer/pggtyper/pggtyper/tests/data/small1.vcf";
-	string fasta = "/MMCI/TM/scratch/jebler/pgg-typer/pggtyper/pggtyper/tests/data/small1.fa";
+	string vcf = "../tests/data/small1.vcf";
+	string fasta = "../tests/data/small1.fa";
+	FastaReader fasta_reader(fasta);
 
 	// read variants from VCF file
-	VariantReader v(vcf, fasta, 10, "HG0");
+	VariantReader v(vcf, &fasta_reader, 10, "HG0");
 
 	vector<string> chromosomes;
 	vector<string> expected_chromosomes = {"chrA", "chrB"};
@@ -139,12 +142,12 @@ TEST_CASE("VariantReader write_genotypes_of", "[VariantReader write_genotypes_of
 		r.add_to_likelihood(1,1,0.8);
 		genotypes_chrB[i] = r;
 	}
-	v.open_genotyping_outfile("/MMCI/TM/scratch/jebler/pgg-typer/pggtyper/pggtyper/tests/data/small1-genotypes.vcf");
+	v.open_genotyping_outfile("../tests/data/small1-genotypes.vcf");
 	v.write_genotypes_of("chrA", genotypes_chrA);
 	v.write_genotypes_of("chrB", genotypes_chrB);
 	v.close_genotyping_outfile();
 
-	v.open_phasing_outfile("/MMCI/TM/scratch/jebler/pgg-typer/pggtyper/pggtyper/tests/data/small1-phasing.vcf");
+	v.open_phasing_outfile("../tests/data/small1-phasing.vcf");
 	v.write_phasing_of("chrA", genotypes_chrA);
 	v.write_phasing_of("chrB", genotypes_chrB);
 	v.close_genotyping_outfile();
@@ -152,10 +155,11 @@ TEST_CASE("VariantReader write_genotypes_of", "[VariantReader write_genotypes_of
 }
 
 TEST_CASE("VariantReader broken_vcfs", "[VariantReader broken_vcfs]") {
-	string no_paths = "/MMCI/TM/scratch/jebler/pgg-typer/pggtyper/pggtyper/tests/data/no-paths.vcf";
-	string malformatted = "/MMCI/TM/scratch/jebler/pgg-typer/pggtyper/pggtyper/tests/data/malformatted-vcf1.vcf";
-	string fasta = "/MMCI/TM/scratch/jebler/pgg-typer/pggtyper/pggtyper/tests/data/small1.fa";
+	string no_paths = "../tests/data/no-paths.vcf";
+	string malformatted = "../tests/data/malformatted-vcf1.vcf";
+	string fasta = "../tests/data/small1.fa";
+	FastaReader fasta_reader(fasta);
 
-	CHECK_THROWS(VariantReader(no_paths, fasta, 10));
-	CHECK_THROWS(VariantReader(malformatted, fasta, 10));
+	CHECK_THROWS(VariantReader(no_paths, &fasta_reader, 10));
+	CHECK_THROWS(VariantReader(malformatted, &fasta_reader, 10));
 }

@@ -23,8 +23,8 @@ void parse_line(vector<string>& result, string line, char sep) {
 	}
 }
 
-VariantReader::VariantReader(string filename, string reference_filename, size_t kmer_size, string sample)
-	:fasta_reader(reference_filename),
+VariantReader::VariantReader(string filename, FastaReader* reference_file, size_t kmer_size, string sample)
+	:fasta_reader(reference_file),
 	 kmer_size(kmer_size),
 	 nr_variants(0),
 	 sample(sample),
@@ -84,7 +84,7 @@ VariantReader::VariantReader(string filename, string reference_filename, size_t 
 		// get REF allele
 		DnaSequence ref(tokens[3]);
 		DnaSequence observed_allele;
-		this->fasta_reader.get_subsequence(current_chrom, current_start_pos, current_start_pos + ref.size(), observed_allele);
+		this->fasta_reader->get_subsequence(current_chrom, current_start_pos, current_start_pos + ref.size(), observed_allele);
 		if (ref != observed_allele) {
 			throw runtime_error("VariantReader::VariantReader: reference allele given in VCF does not match allele in reference fasta file at that position.");
 		}
@@ -107,9 +107,9 @@ VariantReader::VariantReader(string filename, string reference_filename, size_t 
 		}
 		// determine left and right flanks
 		DnaSequence left_flank;
-		this->fasta_reader.get_subsequence(current_chrom, current_start_pos - kmer_size + 1, current_start_pos, left_flank);
+		this->fasta_reader->get_subsequence(current_chrom, current_start_pos - kmer_size + 1, current_start_pos, left_flank);
 		DnaSequence right_flank;
-		this->fasta_reader.get_subsequence(current_chrom, current_end_pos, current_end_pos + kmer_size - 1, right_flank);
+		this->fasta_reader->get_subsequence(current_chrom, current_end_pos, current_end_pos + kmer_size - 1, right_flank);
 		// add Variant to variant_cluster
 		Variant variant (left_flank, right_flank, current_chrom, current_start_pos, current_end_pos, alleles, paths);
 		variant_cluster.push_back(variant);
@@ -136,7 +136,7 @@ void VariantReader::write_path_segments(std::string filename) const {
 			size_t start_pos = variant.get_start_position();
 			outfile << ">" << element.first << "_reference_" << start_pos << endl;
 			string ref_segment;
-			this->fasta_reader.get_subsequence(element.first, prev_end, start_pos, ref_segment);
+			this->fasta_reader->get_subsequence(element.first, prev_end, start_pos, ref_segment);
 			outfile << ref_segment << endl;
 			for (size_t allele = 0; allele < variant.nr_of_alleles(); ++allele) {
 				// sequence name
@@ -147,9 +147,9 @@ void VariantReader::write_path_segments(std::string filename) const {
 		}
 		// output reference sequence after last position on chromosome
 		outfile << ">" << element.first << "_reference_end" << endl;
-		size_t chr_len = this->fasta_reader.get_size_of(element.first);
+		size_t chr_len = this->fasta_reader->get_size_of(element.first);
 		string ref_segment;
-		this->fasta_reader.get_subsequence(element.first, prev_end, chr_len, ref_segment);
+		this->fasta_reader->get_subsequence(element.first, prev_end, chr_len, ref_segment);
 		outfile << ref_segment << endl;
 	}
 	outfile.close();
@@ -383,5 +383,5 @@ void VariantReader::close_phasing_outfile() {
 }
 
 size_t VariantReader::nr_of_genomic_kmers() const {
-	return this->fasta_reader.get_total_kmers(this->kmer_size);
+	return this->fasta_reader->get_total_kmers(this->kmer_size);
 }

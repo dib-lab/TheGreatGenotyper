@@ -8,10 +8,11 @@ enable_testing()
 #find_package(Boost COMPONENTS program_options REQUIRED)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(JELLYFISH REQUIRED jellyfish-2.0)
+pkg_check_modules(gsl REQUIRED gsl)
 
 link_directories(${JELLYFISH_LIBRARY_DIRS})
 
-include_directories(${JELLYFISH_INCLUDE_DIRS} ${CMAKE_BINARY_DIR}/src)
+include_directories(${JELLYFISH_INCLUDE_DIRS} ${gsl_INCLUDE_DIRS} ${CMAKE_BINARY_DIR}/src)
 add_compile_options(${JELLYFISH_CFLAGS_OTHER})
 
 add_subdirectory(src)
