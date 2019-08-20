@@ -1,5 +1,5 @@
 ##fileformat=VCFv4.2
-##fileDate=20190703
+##fileDate=20190820
 ##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
 ##FORMAT=<ID=GQ,Number=1,Type=Integer,Description="Genotype quality: phred scaled probability that the genotype is wrong.">
 ##FORMAT=<ID=GL,Number=G,Type=Integer,Description="Comma-separated log10-scaled genotype likelihoods for absent, heterozygous, homozygous.">

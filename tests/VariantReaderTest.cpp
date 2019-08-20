@@ -5,42 +5,43 @@
 
 using namespace std;
 
-TEST_CASE("VariantReader get_allele_sequence", "[VariantReader get_allele_sequence]") {
+TEST_CASE("VariantReader get_allele_sequence", "[VariantReader get_allele_string]") {
 	string vcf = "../tests/data/small1.vcf";
 	string fasta = "../tests/data/small1.fa";
 	FastaReader fasta_reader(fasta);
 	VariantReader v(vcf, &fasta_reader, 10);
+
 	REQUIRE(v.nr_of_genomic_kmers() == 2440);
 	REQUIRE(v.get_kmer_size() == 10);
 	REQUIRE(v.size_of("chrA") == 7);
 	REQUIRE(v.size_of("chrB") == 2);
 	REQUIRE(v.get_variant("chrA", 2).nr_of_alleles() == 3);
 
-	REQUIRE(v.get_variant("chrA", 0).get_allele_sequence(0) == "GGAATTCCGACATAAGTTA");
-	REQUIRE(v.get_variant("chrA", 0).get_allele_sequence(1) == "GGAATTCCGTCATAAGTTA");
+	REQUIRE(v.get_variant("chrA", 0).get_allele_string(0) == "GGAATTCCGACATAAGTTA");
+	REQUIRE(v.get_variant("chrA", 0).get_allele_string(1) == "GGAATTCCGTCATAAGTTA");
 
-	REQUIRE(v.get_variant("chrA", 1).get_allele_sequence(0) == "CCTTAGCTACGAAGCCAGT");
-	REQUIRE(v.get_variant("chrA", 1).get_allele_sequence(1) == "CCTTAGCTAGGGGGAAGCCAGT");
+	REQUIRE(v.get_variant("chrA", 1).get_allele_string(0) == "CCTTAGCTACGAAGCCAGT");
+	REQUIRE(v.get_variant("chrA", 1).get_allele_string(1) == "CCTTAGCTAGGGGGAAGCCAGT");
 
-	REQUIRE(v.get_variant("chrA", 2).get_allele_sequence(0) == "GAAGCCAGTGCCCCGAGACGGCCAAA");
-	REQUIRE(v.get_variant("chrA", 2).get_allele_sequence(1) == "GAAGCCAGTTCCCCGAGACGGCCAAA");
-	REQUIRE(v.get_variant("chrA", 2).get_allele_sequence(2) == "GAAGCCAGTTCCCCTACGGCCAAA");
+	REQUIRE(v.get_variant("chrA", 2).get_allele_string(0) == "GAAGCCAGTGCCCCGAGACGGCCAAA");
+	REQUIRE(v.get_variant("chrA", 2).get_allele_string(1) == "GAAGCCAGTTCCCCGAGACGGCCAAA");
+	REQUIRE(v.get_variant("chrA", 2).get_allele_string(2) == "GAAGCCAGTTCCCCTACGGCCAAA");
 	REQUIRE(v.get_variant("chrA", 2).nr_of_paths() == 4);
 
-	REQUIRE(v.get_variant("chrA", 3).get_allele_sequence(0) == "ACGTCCGTTCAGCCTTAGC");
-	REQUIRE(v.get_variant("chrA", 3).get_allele_sequence(1) == "ACGTCCGTTTAGCCTTAGC");
+	REQUIRE(v.get_variant("chrA", 3).get_allele_string(0) == "ACGTCCGTTCAGCCTTAGC");
+	REQUIRE(v.get_variant("chrA", 3).get_allele_string(1) == "ACGTCCGTTTAGCCTTAGC");
 
-	REQUIRE(v.get_variant("chrA", 4).get_allele_sequence(0) == "CCGATTTTCTTGTGCTATA");
-	REQUIRE(v.get_variant("chrA", 4).get_allele_sequence(1) == "CCGATTTTCCTGTGCTATA");
+	REQUIRE(v.get_variant("chrA", 4).get_allele_string(0) == "CCGATTTTCTTGTGCTATA");
+	REQUIRE(v.get_variant("chrA", 4).get_allele_string(1) == "CCGATTTTCCTGTGCTATA");
 
-	REQUIRE(v.get_variant("chrA", 5).get_allele_sequence(0) == "GGAGGGTATGAAGCCATCAC");
-	REQUIRE(v.get_variant("chrA", 5).get_allele_sequence(1) == "GGAGGGTATTCAGCCATCAC");
+	REQUIRE(v.get_variant("chrA", 5).get_allele_string(0) == "GGAGGGTATGAAGCCATCAC");
+	REQUIRE(v.get_variant("chrA", 5).get_allele_string(1) == "GGAGGGTATTCAGCCATCAC");
 
-        REQUIRE(v.get_variant("chrA", 6).get_allele_sequence(0) == "TGTGGACTTATTTGGCTAA");
-        REQUIRE(v.get_variant("chrA", 6).get_allele_sequence(1) == "TGTGGACTTGTTTGGCTAA");
+        REQUIRE(v.get_variant("chrA", 6).get_allele_string(0) == "TGTGGACTTATTTGGCTAA");
+        REQUIRE(v.get_variant("chrA", 6).get_allele_string(1) == "TGTGGACTTGTTTGGCTAA");
 
-	REQUIRE(v.get_variant("chrB", 0).get_allele_sequence(0) == "CCACTTCATCAAGACACAA");
-	REQUIRE(v.get_variant("chrB", 1).get_allele_sequence(0) == "GAGTATTTTGATCATAAAT");
+	REQUIRE(v.get_variant("chrB", 0).get_allele_string(0) == "CCACTTCATCAAGACACAA");
+	REQUIRE(v.get_variant("chrB", 1).get_allele_string(0) == "GAGTATTTTGATCATAAAT");
 
 	v.write_path_segments("/MMCI/TM/scratch/jebler/pgg-typer/pggtyper/pggtyper/tests/data/small1-segments.fa");
 }
@@ -52,6 +53,7 @@ TEST_CASE("VariantReader write_path_segments", "[VariantReader write_path_segmen
 
 	// read variants from VCF file
 	VariantReader v(vcf, &fasta_reader, 10);
+
 	v.write_path_segments("../tests/data/small1-segments.fa");
 
 	// compare reference segments to expected sequences
