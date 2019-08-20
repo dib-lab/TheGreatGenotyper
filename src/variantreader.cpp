@@ -125,9 +125,13 @@ size_t VariantReader::get_kmer_size() const {
 	return this->kmer_size;
 }
 
-void VariantReader::write_path_segments(std::string filename) const {
+void VariantReader::write_path_segments(std::string filename, bool training) const {
 	ofstream outfile;
 	outfile.open(filename);
+
+	ofstream training_coord;
+	if (training) training_coord.open(filename + ".train");
+
 	for (auto element : this->variants_per_chromosome) {
 		assert(element.second.size() > 0);
 		size_t prev_end = 0;
@@ -138,6 +142,9 @@ void VariantReader::write_path_segments(std::string filename) const {
 			string ref_segment;
 			this->fasta_reader->get_subsequence(element.first, prev_end, start_pos, ref_segment);
 			outfile << ref_segment << endl;
+			if (training) {
+				training_coord << element.first << "\t" << prev_end << "\t" << start_pos << endl;
+			}
 			for (size_t allele = 0; allele < variant.nr_of_alleles(); ++allele) {
 				// sequence name
 				outfile << ">" << element.first << "_" << start_pos << "_" << allele << endl;
@@ -153,6 +160,7 @@ void VariantReader::write_path_segments(std::string filename) const {
 		outfile << ref_segment << endl;
 	}
 	outfile.close();
+	if (training) training_coord.close();
 }
 
 void VariantReader::get_chromosomes(vector<string>* result) const {

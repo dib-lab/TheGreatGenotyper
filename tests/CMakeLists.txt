@@ -6,3 +6,4 @@ add_executable(tests tests.cpp utils.cpp EmissionProbabilityComputerTest.cpp Cop
 
 target_link_libraries(tests ${JELLYFISH_LDFLAGS_OTHER})
 target_link_libraries(tests ${JELLYFISH_LIBRARIES})
+target_link_libraries(tests ${gsl_LIBRARIES})

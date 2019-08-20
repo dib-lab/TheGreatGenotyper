@@ -16,7 +16,7 @@ public:
 	*    to the given file.
 	**/
 	size_t get_kmer_size() const;
-	void write_path_segments(std::string filename) const;
+	void write_path_segments(std::string filename, bool training = false) const;
 	void get_chromosomes(std::vector<std::string>* result) const;
 	size_t size_of(std::string chromosome) const;
 	const Variant& get_variant(std::string chromosome, size_t index) const;

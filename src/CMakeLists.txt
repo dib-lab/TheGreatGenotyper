@@ -11,7 +11,6 @@ add_library(PGGTyperLib SHARED
 	hmm.cpp
 	kmercounter.cpp
 	kmerpath.cpp
-	matrix.cpp
 	probabilitycomputer.cpp
 	transitionprobabilitycomputer.cpp
 	uniquekmercomputer.cpp
@@ -22,6 +21,7 @@ add_library(PGGTyperLib SHARED
 add_executable(PGGTyper pggtyper.cpp)
 add_executable(PGGTyper-kmers pggtyper-kmers.cpp)
 add_executable(PGGTyper-paths pggtyper-paths.cpp)
+add_executable(CountCorrector countcorrector.cpp)
 
 target_link_libraries(PGGTyper PGGTyperLib ${JELLYFISH_LDFLAGS_OTHER} ${gsl_LIBRARIES})
 target_link_libraries(PGGTyper PGGTyperLib ${JELLYFISH_LIBRARIES} ${gsl_LIBRARIES})
@@ -31,3 +31,6 @@ target_link_libraries(PGGTyper-kmers PGGTyperLib ${JELLYFISH_LIBRARIES} ${gsl_LI
 
 target_link_libraries(PGGTyper-paths PGGTyperLib ${JELLYFISH_LDFLAGS_OTHER} ${gsl_LIBRARIES})
 target_link_libraries(PGGTyper-paths PGGTyperLib ${JELLYFISH_LIBRARIES} ${gsl_LIBRARIES})
+
+target_link_libraries(CountCorrector PGGTyperLib ${JELLYFISH_LDFLAGS_OTHER} ${gsl_LIBRARIES})
+target_link_libraries(CountCorrector PGGTyperLib ${JELLYFISH_LIBRARIES} ${gsl_LIBRARIES})

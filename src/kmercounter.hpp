@@ -11,6 +11,7 @@
 #include <jellyfish/stream_manager.hpp>
 #include <jellyfish/mer_overlap_sequence_parser.hpp>
 #include <jellyfish/mer_iterator.hpp>
+#include "fastareader.hpp"
 
 /**
 * Counts Kmers in DNA-sequences (given in FASTQ-format) using jellyfish.
@@ -71,7 +72,15 @@ public:
 	/** computes kmer abundance histogram and returns the three highest peaks **/
 	size_t computeHistogram(size_t max_count, std::string filename = "") const;
 
+	/** compute corrected read kmer counts **/
+	void correct_read_counts (KmerCounter* genomic_kmers, FastaReader* fasta_reader, std::string& training_sequences, size_t small_kmer_size);
+
 private:
 	mer_hash_type* jellyfish_hash;
+	std::vector<double> coefficients;
+	size_t kmer_size;
+	size_t small_kmer_size;
+	bool corrected;
+	size_t compute_corrected_count(jellyfish::mer_dna& kmer) const;
 };
 #endif // KMERCOUNTER_HPP
