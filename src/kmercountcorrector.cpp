@@ -28,7 +28,7 @@ KmerCountCorrector::KmerCountCorrector(KmerCounter* genomic_kmers, FastaReader* 
 		fasta_reader.get_subsequence(chromosome, start, end, result);
 		// enumerate all kmers
 		// TODO get kmer_size
-		size_t mask = (1 << (2*kmer_size)) - 1;
+/**		size_t mask = (1 << (2*kmer_size)) - 1;
 		size_t consecutive = 0;
 		size_t current_kmer = 0;
 		for (size_t i = 0; i < result.size(); ++i) {
@@ -50,7 +50,7 @@ KmerCountCorrector::KmerCountCorrector(KmerCounter* genomic_kmers, FastaReader* 
 			
 		}
 	}
-	
+**/	
 }
 
 size_t KmerCountCorrector::compute_corrected_count(string& kmer) {
