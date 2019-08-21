@@ -169,8 +169,9 @@ TEST_CASE("VariantReader broken_vcfs", "[VariantReader broken_vcfs]") {
 TEST_CASE("VariantReader no-alt-alleles", "[VariantReader no-alt-alleles]") {
 	string vcf = "../tests/data/no-alt-alleles.vcf";
 	string fasta = "../tests/data/small1.fa";
+	FastaReader fasta_reader (fasta);
 
-	VariantReader v (vcf, fasta, 10);
+	VariantReader v (vcf, &fasta_reader, 10);
 	// should have skipped variant for which no alt alleles are given
 	REQUIRE(v.get_variants_on_chromosome("chrA").size() == 1);
 

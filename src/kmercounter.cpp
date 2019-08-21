@@ -6,39 +6,9 @@
 #include <fstream>
 #include "histogram.hpp"
 #include <gsl/gsl_multifit.h>
+#include "sequenceutils.hpp"
 
 using namespace std;
-
-unsigned char code (char base) {
-	switch (base) {
-		case 'A': return 0;
-		case 'a': return 0;
-		case 'C': return 1;
-		case 'c': return 1;
-		case 'G': return 2;
-		case 'g': return 2;
-		case 'T': return 3;
-		case 't': return 3;
-		default: return 4;
-	}
-}
-
-
-void split_in_kmers (jellyfish::mer_dna& kmer, size_t kmer_size, size_t small_kmer_size, map<unsigned int,int>& kmer_to_count) {
-	jellyfish::mer_dna::k(kmer_size);
-	size_t current_kmer = 0;
-	size_t shifts = small_kmer_size;
-	size_t mask = (1 << 2*small_kmer_size) - 1;
-	for (size_t i = 0; i != kmer_size; ++i) {
-		if (shifts == 0) {
-			kmer_to_count[current_kmer] += 1;
-		}
-		char base = kmer.shift_left('A');
-		current_kmer = ((current_kmer << 2) | code(base)) & mask;
-		if (shifts > 0) shifts -= 1;
-	}
-	kmer_to_count[current_kmer] += 1;
-}
 
 size_t KmerCounter::compute_corrected_count(jellyfish::mer_dna& kmer) const {
 	double corrected_count = 0.0;
@@ -211,7 +181,6 @@ KmerCounter::~KmerCounter() {
 void KmerCounter::correct_read_counts (KmerCounter* genomic_kmers, FastaReader* fasta_reader, string& training_sequences, size_t small_kmer_size) {
 	this->small_kmer_size = small_kmer_size;
 	if (this->corrected) return;
-	cout << "correct_read_counts: read input .." << endl;
 	// read coordinates of training sequences from file
 	ifstream infile(training_sequences);
 	size_t start, end;
@@ -244,23 +213,22 @@ void KmerCounter::correct_read_counts (KmerCounter* genomic_kmers, FastaReader* 
 			unique_kmers.push_back(make_pair(current_kmer, this->getKmerAbundance(current_kmer)));
 		}
 		// TODO remove, only for debugging
-		if (unique_kmers.size() > 70) break;
+		if (unique_kmers.size() > 300) break;
 	}
 	infile.close();
-	cout << "found " << unique_kmers.size() << " unique kmers for training." << endl;
-	cout << "correct_read_counts: prepare regression" << endl;
-	// construct input for regression
+	cerr << "Identified " << unique_kmers.size() << " unique kmers for training." << endl;
+	// total number of possible kmers of size small_kmer_size
 	size_t nr_small_kmers = pow(4, small_kmer_size);
-	// initialize matrix and response
+	// initialize matrices and vectors needed for linear regression
 	gsl_matrix* X = gsl_matrix_calloc(unique_kmers.size(), nr_small_kmers);
 	gsl_vector* y = gsl_vector_alloc(unique_kmers.size());
 	gsl_vector* c = gsl_vector_alloc(nr_small_kmers);
 	gsl_matrix* cov = gsl_matrix_alloc(nr_small_kmers, nr_small_kmers);
 	// break each kmer into small kmers and fill matrix with counts
 	size_t row_number = 0;
-	cout << "before breaking" << endl;
 	for (auto it = unique_kmers.begin(); it != unique_kmers.end(); ++it) {
 		map<unsigned int,int> kmer_to_count;
+		// TODO: remove
 		cout << it->first << endl;
 		split_in_kmers (it->first, kmer_size, small_kmer_size, kmer_to_count);
 		for (auto count = kmer_to_count.begin(); count != kmer_to_count.end(); ++count) {
@@ -284,14 +252,11 @@ void KmerCounter::correct_read_counts (KmerCounter* genomic_kmers, FastaReader* 
 	double chisq;
 	gsl_multifit_linear (X, y, c, cov, &chisq, work);
 	gsl_multifit_linear_free (work);
-	cout << "store coefficients ... " << endl;
-
 	// store the coefficients
 	for (size_t i = 0; i < nr_small_kmers; ++i) {
 		cout << gsl_vector_get(c, (i)) << endl;
 		this->coefficients.push_back( gsl_vector_get(c, (i)));
 	}
-
 	// clean up
 	gsl_matrix_free (X);
 	gsl_vector_free (y);
@@ -305,6 +270,5 @@ void KmerCounter::correct_read_counts (KmerCounter* genomic_kmers, FastaReader* 
 		auto& key_val = *it;
 		cout << compute_corrected_count(key_val.first) << " original: " << key_val.second << endl;
 	}
-
 	this->corrected = true;
 }

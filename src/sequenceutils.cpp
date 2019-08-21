@@ -37,3 +37,19 @@ char decode (unsigned char number) {
 		default: return 'N';
 	}
 }
+
+void split_in_kmers (jellyfish::mer_dna& kmer, size_t kmer_size, size_t small_kmer_size, map<unsigned int,int>& kmer_to_count) {
+	jellyfish::mer_dna::k(kmer_size);
+	size_t current_kmer = 0;
+	size_t shifts = small_kmer_size;
+	size_t mask = (1 << 2*small_kmer_size) - 1;
+	for (size_t i = 0; i != kmer_size; ++i) {
+		if (shifts == 0) {
+			kmer_to_count[current_kmer] += 1;
+		}
+		char base = kmer.shift_left('A');
+		current_kmer = ((current_kmer << 2) | encode(base)) & mask;
+		if (shifts > 0) shifts -= 1;
+	}
+	kmer_to_count[current_kmer] += 1;
+}
