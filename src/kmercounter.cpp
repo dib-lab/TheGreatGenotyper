@@ -24,31 +24,37 @@ unsigned char code (char base) {
 }
 
 
-void split_in_kmers (jellyfish::mer_dna& kmer, size_t kmer_size, size_t small_kmer_size, map<unsigned int, unsigned int>& kmer_to_count) {
-	unsigned int current_kmer = 0;
-	unsigned int shifts = small_kmer_size;
-	unsigned int mask = (1 << (2*small_kmer_size)) - 1;
+void split_in_kmers (jellyfish::mer_dna& kmer, size_t kmer_size, size_t small_kmer_size, map<unsigned int,int>& kmer_to_count) {
+	jellyfish::mer_dna::k(kmer_size);
+	size_t current_kmer = 0;
+	size_t shifts = small_kmer_size;
+	size_t mask = (1 << 2*small_kmer_size) - 1;
 	for (size_t i = 0; i != kmer_size; ++i) {
 		if (shifts == 0) {
 			kmer_to_count[current_kmer] += 1;
 		}
-		current_kmer = ((current_kmer << 2) | code(kmer.shift_left('N'))) & mask;
+		char base = kmer.shift_left('A');
+		current_kmer = ((current_kmer << 2) | code(base)) & mask;
 		if (shifts > 0) shifts -= 1;
 	}
 	kmer_to_count[current_kmer] += 1;
 }
 
 size_t KmerCounter::compute_corrected_count(jellyfish::mer_dna& kmer) const {
-	size_t corrected_count = 0;
+	double corrected_count = 0.0;
 	// split given kmer into small kmers
-	map<unsigned int, unsigned int> kmer_to_count;
+	map<unsigned int, int> kmer_to_count;
 	split_in_kmers (kmer, this->kmer_size, this->small_kmer_size, kmer_to_count);
 
 	// compute corrected count
 	for (auto it = kmer_to_count.begin(); it != kmer_to_count.end(); ++it) {
 		corrected_count += it->second * this->coefficients.at(it->first);
 	}
-	return corrected_count;
+	if (corrected_count > 0) {
+		return round(corrected_count);
+	} else {
+		return 0;
+	}
 }
 
 KmerCounter::KmerCounter (string readfile, size_t kmer_size)
@@ -237,8 +243,10 @@ void KmerCounter::correct_read_counts (KmerCounter* genomic_kmers, FastaReader* 
 		if (genomic_kmers->getKmerAbundance(current_kmer) == 1) {
 			unique_kmers.push_back(make_pair(current_kmer, this->getKmerAbundance(current_kmer)));
 		}
-
+		// TODO remove, only for debugging
+		if (unique_kmers.size() > 70) break;
 	}
+	infile.close();
 	cout << "found " << unique_kmers.size() << " unique kmers for training." << endl;
 	cout << "correct_read_counts: prepare regression" << endl;
 	// construct input for regression
@@ -252,7 +260,8 @@ void KmerCounter::correct_read_counts (KmerCounter* genomic_kmers, FastaReader* 
 	size_t row_number = 0;
 	cout << "before breaking" << endl;
 	for (auto it = unique_kmers.begin(); it != unique_kmers.end(); ++it) {
-		map<unsigned int, unsigned int> kmer_to_count;
+		map<unsigned int,int> kmer_to_count;
+		cout << it->first << endl;
 		split_in_kmers (it->first, kmer_size, small_kmer_size, kmer_to_count);
 		for (auto count = kmer_to_count.begin(); count != kmer_to_count.end(); ++count) {
 			gsl_matrix_set (X, row_number, count->first, count->second);
@@ -260,6 +269,16 @@ void KmerCounter::correct_read_counts (KmerCounter* genomic_kmers, FastaReader* 
 		gsl_vector_set (y, row_number, it->second);
 		row_number += 1;
 	}
+
+	// TODO: remove
+	for (size_t i = 0; i < unique_kmers.size(); ++i) {
+		cout << unique_kmers[i].first << " ";
+		for (size_t j = 0; j < nr_small_kmers; ++j) {
+			cout << gsl_matrix_get(X, i, j) << " ";
+		}
+		cout << gsl_vector_get(y, i) << endl;
+	}
+
 	// linear regression
 	gsl_multifit_linear_workspace * work = gsl_multifit_linear_alloc(unique_kmers.size(), nr_small_kmers);
 	double chisq;
@@ -269,6 +288,7 @@ void KmerCounter::correct_read_counts (KmerCounter* genomic_kmers, FastaReader* 
 
 	// store the coefficients
 	for (size_t i = 0; i < nr_small_kmers; ++i) {
+		cout << gsl_vector_get(c, (i)) << endl;
 		this->coefficients.push_back( gsl_vector_get(c, (i)));
 	}
 
@@ -277,6 +297,14 @@ void KmerCounter::correct_read_counts (KmerCounter* genomic_kmers, FastaReader* 
 	gsl_vector_free (y);
 	gsl_vector_free (c);
 	gsl_matrix_free (cov);
+
+	// TODO: remove
+	const auto jf_ary = this->jellyfish_hash->ary();
+	const auto endle = jf_ary->end();
+	for (auto it = jf_ary->begin(); it != endle; ++it) {
+		auto& key_val = *it;
+		cout << compute_corrected_count(key_val.first) << " original: " << key_val.second << endl;
+	}
 
 	this->corrected = true;
 }
