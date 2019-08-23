@@ -34,7 +34,7 @@ KmerCounter::KmerCounter (string readfile, size_t kmer_size)
 	jellyfish::mer_dna::k(kmer_size); // Set length of mers
 	const uint64_t hash_size    = 10000000; // Initial size of hash.
 	const uint32_t num_reprobes = 126;
-	const uint32_t num_threads  = 1; // TODO Number of concurrent threads
+	const uint32_t num_threads  = 10; // TODO Number of concurrent threads
 	const uint32_t counter_len  = 7;  // Minimum length of counting field
 	const bool canonical = true; // Use canonical representation
 
@@ -220,6 +220,8 @@ void KmerCounter::correct_read_counts (KmerCounter* genomic_kmers, FastaReader* 
 		if ((genomic_kmers->getKmerAbundance(current_kmer) == 1) && (extra_shifts == 0)) {
 			unique_kmers.push_back(make_pair(current_kmer, this->getKmerAbundance(current_kmer)));
 		}
+		// TODO: size of training set?
+		if (unique_kmers.size() > 100*pow(4,small_kmer_size)) break;
 	}
 	infile.close();
 	cerr << "Identified " << unique_kmers.size() << " unique kmers for training." << endl;
