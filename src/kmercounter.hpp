@@ -73,7 +73,7 @@ public:
 	size_t computeHistogram(size_t max_count, std::string filename = "") const;
 
 	/** compute corrected read kmer counts **/
-	void correct_read_counts (KmerCounter* genomic_kmers, FastaReader* fasta_reader, std::string& training_sequences, size_t small_kmer_size);
+	void correct_read_counts (KmerCounter* genomic_kmers, FastaReader* fasta_reader, std::string& training_sequences, size_t small_kmer_size, double train_frac);
 
 private:
 	mer_hash_type* jellyfish_hash;

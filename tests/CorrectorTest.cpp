@@ -22,7 +22,7 @@ TEST_CASE("Corrector", "[Corrector]") {
 	// fasta reader
 	FastaReader fasta_reader (reference);
 	// correct counts
-	read_kmers.correct_read_counts (&genomic_kmers, &fasta_reader, train, 2);
+//	read_kmers.correct_read_counts (&genomic_kmers, &fasta_reader, train, 2);
 }
 
 TEST_CASE("Corrector2", "[Corrector2]") {
@@ -36,7 +36,7 @@ TEST_CASE("Corrector2", "[Corrector2]") {
 	jellyfish::mer_dna::k(16);
 	jellyfish::mer_dna current_kmer("AAAAAAAAAAAAAAAA");
 	for (size_t i = 0; i < 17; ++i) {
-		REQUIRE(read_kmers.getKmerAbundance(current_kmer) == 15);
+		REQUIRE(read_kmers.getKmerAbundance(current_kmer) == 4);
 		current_kmer.shift_left('C');
 	}
 	// genomic kmers
@@ -44,11 +44,11 @@ TEST_CASE("Corrector2", "[Corrector2]") {
 	// fasta reader
 	FastaReader fasta_reader (reference);
 	// correct counts
-	read_kmers.correct_read_counts (&genomic_kmers, &fasta_reader, train, 2);
+	read_kmers.correct_read_counts (&genomic_kmers, &fasta_reader, train, 2, 1.0);
 	// check corrected counts
 	current_kmer = jellyfish::mer_dna("AAAAAAAAAAAAAAAA");
 	for (size_t i = 0; i < 17; ++i) {
-		REQUIRE(read_kmers.getKmerAbundance(current_kmer) == 15);
+		REQUIRE(read_kmers.getKmerAbundance(current_kmer) == 4);
 		current_kmer.shift_left('C');
 	}
 }

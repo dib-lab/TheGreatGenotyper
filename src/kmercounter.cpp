@@ -178,7 +178,7 @@ KmerCounter::~KmerCounter() {
 	this->jellyfish_hash = nullptr;
 }
 
-void KmerCounter::correct_read_counts (KmerCounter* genomic_kmers, FastaReader* fasta_reader, string& training_sequences, size_t small_kmer_size) {
+void KmerCounter::correct_read_counts (KmerCounter* genomic_kmers, FastaReader* fasta_reader, string& training_sequences, size_t small_kmer_size, double train_frac) {
 	this->small_kmer_size = small_kmer_size;
 	if (this->corrected) return;
 	// read coordinates of training sequences from file
@@ -187,6 +187,9 @@ void KmerCounter::correct_read_counts (KmerCounter* genomic_kmers, FastaReader* 
 	string chromosome;
 	vector < pair<jellyfish::mer_dna, size_t> > unique_kmers;
 	while (infile >> chromosome >> start >> end) {
+		// decide whether to use interval
+		double r_number = (double)rand() / (double)RAND_MAX;
+		if (r_number >= train_frac) continue;
 		// get corresponding sequence
 		DnaSequence result;
 		fasta_reader->get_subsequence(chromosome, start, end, result);
@@ -194,11 +197,16 @@ void KmerCounter::correct_read_counts (KmerCounter* genomic_kmers, FastaReader* 
 		size_t extra_shifts = kmer_size;
 		jellyfish::mer_dna::k(kmer_size);
 		jellyfish::mer_dna current_kmer("");
+		size_t kmers_added = 0;
 		for (size_t i = 0; i < result.size(); ++i) {
+			if (kmers_added > 100) break;
 			char current_base = result[i];
 			if (extra_shifts == 0) {
 				if (genomic_kmers->getKmerAbundance(current_kmer) == 1) {
 					unique_kmers.push_back(make_pair(current_kmer, this->getKmerAbundance(current_kmer)));
+					// do not consider overlapping kmers for training
+					extra_shifts = kmer_size;
+					kmers_added += 1;
 				}
 			}
 			if (( current_base != 'A') && (current_base != 'C') && (current_base != 'G') && (current_base != 'T') ) {
@@ -209,11 +217,9 @@ void KmerCounter::correct_read_counts (KmerCounter* genomic_kmers, FastaReader* 
 		}
 
 		// add last one
-		if (genomic_kmers->getKmerAbundance(current_kmer) == 1) {
+		if ((genomic_kmers->getKmerAbundance(current_kmer) == 1) && (extra_shifts == 0)) {
 			unique_kmers.push_back(make_pair(current_kmer, this->getKmerAbundance(current_kmer)));
 		}
-		// TODO remove, only for debugging
-		if (unique_kmers.size() > 300) break;
 	}
 	infile.close();
 	cerr << "Identified " << unique_kmers.size() << " unique kmers for training." << endl;
@@ -229,7 +235,7 @@ void KmerCounter::correct_read_counts (KmerCounter* genomic_kmers, FastaReader* 
 	for (auto it = unique_kmers.begin(); it != unique_kmers.end(); ++it) {
 		map<unsigned int,int> kmer_to_count;
 		// TODO: remove
-		cout << it->first << endl;
+//		cout << it->first << endl;
 		split_in_kmers (it->first, kmer_size, small_kmer_size, kmer_to_count);
 		for (auto count = kmer_to_count.begin(); count != kmer_to_count.end(); ++count) {
 			gsl_matrix_set (X, row_number, count->first, count->second);
@@ -239,13 +245,13 @@ void KmerCounter::correct_read_counts (KmerCounter* genomic_kmers, FastaReader* 
 	}
 
 	// TODO: remove
-	for (size_t i = 0; i < unique_kmers.size(); ++i) {
-		cout << unique_kmers[i].first << " ";
-		for (size_t j = 0; j < nr_small_kmers; ++j) {
-			cout << gsl_matrix_get(X, i, j) << " ";
-		}
-		cout << gsl_vector_get(y, i) << endl;
-	}
+//	for (size_t i = 0; i < unique_kmers.size(); ++i) {
+//		cout << unique_kmers[i].first << " ";
+//		for (size_t j = 0; j < nr_small_kmers; ++j) {
+//			cout << gsl_matrix_get(X, i, j) << " ";
+//		}
+//		cout << gsl_vector_get(y, i) << endl;
+//	}
 
 	// linear regression
 	gsl_multifit_linear_workspace * work = gsl_multifit_linear_alloc(unique_kmers.size(), nr_small_kmers);
@@ -254,7 +260,7 @@ void KmerCounter::correct_read_counts (KmerCounter* genomic_kmers, FastaReader* 
 	gsl_multifit_linear_free (work);
 	// store the coefficients
 	for (size_t i = 0; i < nr_small_kmers; ++i) {
-		cout << gsl_vector_get(c, (i)) << endl;
+//		cout << gsl_vector_get(c, (i)) << endl;
 		this->coefficients.push_back( gsl_vector_get(c, (i)));
 	}
 	// clean up
@@ -264,11 +270,11 @@ void KmerCounter::correct_read_counts (KmerCounter* genomic_kmers, FastaReader* 
 	gsl_matrix_free (cov);
 
 	// TODO: remove
-	const auto jf_ary = this->jellyfish_hash->ary();
-	const auto endle = jf_ary->end();
-	for (auto it = jf_ary->begin(); it != endle; ++it) {
-		auto& key_val = *it;
-		cout << compute_corrected_count(key_val.first) << " original: " << key_val.second << endl;
-	}
+//	const auto jf_ary = this->jellyfish_hash->ary();
+//	const auto endle = jf_ary->end();
+//	for (auto it = jf_ary->begin(); it != endle; ++it) {
+//		auto& key_val = *it;
+//		cout << compute_corrected_count(key_val.first) << " original: " << key_val.second << endl;
+//	}
 	this->corrected = true;
 }
