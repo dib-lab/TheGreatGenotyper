@@ -179,8 +179,9 @@ TEST_CASE("VariantReader no-alt-alleles", "[VariantReader no-alt-alleles]") {
 TEST_CASE("VariantReader overlapping variants", "[VariantReader overlapping variants]") {
 	string vcf = "../tests/data/overlapping-variants.vcf";
 	string fasta = "../tests/data/small1.fa";
+	FastaReader fasta_reader (fasta);
 
-	VariantReader v (vcf, fasta, 10);
+	VariantReader v (vcf, &fasta_reader, 10);
 	// should have skipped variant that is contained in another
 	REQUIRE(v.get_variants_on_chromosome("chrA").size() == 1);
 }
