@@ -25,6 +25,7 @@ int main (int argc, char* argv[])
 	string sample_name = "sample";
 	bool only_genotyping = false;
 	bool only_phasing = false;
+	size_t small_kmersize = 5;
 
 	// parse the command line arguments
 	CommandLineParser argument_parser;
@@ -35,6 +36,7 @@ int main (int argc, char* argv[])
 	argument_parser.add_optional_argument('o', "result", "prefix of the output files");
 	argument_parser.add_optional_argument('k', "31", "kmer size");
 	argument_parser.add_optional_argument('s', "sample", "name of the sample (will be used in the output VCFs)");
+	argument_parser.add_optional_argument('m', "5", "small kmer size");
 	argument_parser.add_flag_argument('g', "only run genotyping (Forward backward algorithm).");
 	argument_parser.add_flag_argument('p', "only run phasing (Viterbi algorithm).");
 	try {
@@ -54,6 +56,7 @@ int main (int argc, char* argv[])
 	sample_name = argument_parser.get_argument('s');
 	only_genotyping = argument_parser.get_flag('g');
 	only_phasing = argument_parser.get_flag('p');
+	small_kmersize = stoi(argument_parser.get_argument('m'));
 
 	// print info
 	cerr << "Files and parameters used:" << endl;
@@ -91,6 +94,13 @@ int main (int argc, char* argv[])
 	// count kmers in allele + reference sequence
 	cerr << "Count kmers in genome ..." << endl;
 	KmerCounter genomic_kmer_counts (segment_file, kmersize);
+
+	// correct kmer counts
+	string training_file = segment_file + ".train";
+	read_kmer_counts.correct_read_counts(&genomic_kmer_counts, &reffile_reader, training_file, small_kmersize, 1/1000.0);
+
+	size_t corrected_kmer_abundance_peak = read_kmer_counts.computeHistogram(10000, outname + "_corrected-histogram.histo");
+	cerr << "Computed corrected kmer abundance peak: " << corrected_kmer_abundance_peak << endl;
 
 	// TODO: only for analysis
 	struct rusage r_usage1;

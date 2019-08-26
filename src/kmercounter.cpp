@@ -192,6 +192,10 @@ void KmerCounter::correct_read_counts (KmerCounter* genomic_kmers, FastaReader* 
 		if (r_number >= train_frac) continue;
 		// get corresponding sequence
 		DnaSequence result;
+		if (end < start) {
+			cerr << "Skipping region: " << chromosome << " " << start << " " << end << endl;
+			continue;
+		}
 		fasta_reader->get_subsequence(chromosome, start, end, result);
 		// enumerate all kmers and find unique ones
 		size_t extra_shifts = kmer_size;
