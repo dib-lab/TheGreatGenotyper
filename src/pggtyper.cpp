@@ -68,7 +68,7 @@ int main (int argc, char* argv[])
 	VariantReader variant_reader (vcffile, &reffile_reader, kmersize, sample_name);
 	string segment_file = outname + "_path_segments.fasta";
 	cerr << "Write path segments to file: " << segment_file << " ..." << endl;
-	variant_reader.write_path_segments(segment_file);
+	variant_reader.write_path_segments(segment_file, true);
 
 //	// determine total genome size
 //	size_t genome_kmers = variant_reader.nr_of_genomic_kmers();
@@ -97,7 +97,7 @@ int main (int argc, char* argv[])
 
 	// correct kmer counts
 	string training_file = segment_file + ".train";
-	read_kmer_counts.correct_read_counts(&genomic_kmer_counts, &reffile_reader, training_file, small_kmersize, 1/1000.0);
+	read_kmer_counts.correct_read_counts(&genomic_kmer_counts, &reffile_reader, training_file, small_kmersize, 1/100.0);
 
 	size_t corrected_kmer_abundance_peak = read_kmer_counts.computeHistogram(10000, outname + "_corrected-histogram.histo");
 	cerr << "Computed corrected kmer abundance peak: " << corrected_kmer_abundance_peak << endl;
