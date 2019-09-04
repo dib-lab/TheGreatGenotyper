@@ -7,6 +7,7 @@
 #include "uniquekmercomputer.hpp"
 #include "hmm.hpp"
 #include "commandlineparser.hpp"
+#include "timer.hpp"
 
 using namespace std;
 
@@ -15,7 +16,10 @@ using namespace std;
 
 int main (int argc, char* argv[])
 {
-	clock_t clock_start = clock();
+	Timer timer;
+	double time_preprocessing;
+	double time_total;
+
 	cerr << endl;
 	cerr << "program: PGGTyper-paths - genotyping and phasing based on known haplotype paths." << endl;
 	cerr << "author: Jana Ebler" << endl << endl;
@@ -77,7 +81,11 @@ int main (int argc, char* argv[])
 	if (! only_phasing) variant_reader.open_genotyping_outfile(outname + "_genotyping.vcf");
 	if (! only_genotyping) variant_reader.open_phasing_outfile(outname + "_phasing.vcf");
 
+	time_preprocessing = timer.get_interval_time();
+
+	map<string,double> time_hmm;
 	for (auto& chromosome : chromosomes) {
+		Timer timer_chrom;
 		cerr << "Processing chromosome " << chromosome << "." << endl;
 		UniqueKmerComputer kmer_computer(nullptr, nullptr, &variant_reader, chromosome, 28);
 		std::vector<UniqueKmers*> unique_kmers;
@@ -108,16 +116,22 @@ int main (int argc, char* argv[])
 			delete unique_kmers[i];
 			unique_kmers[i] = nullptr;
 		}
+		double time_chrom = timer_chrom.get_total_time();
+		time_hmm[chromosome] = time_chrom;
 	}
 
 	if (! only_phasing) variant_reader.close_genotyping_outfile();
 	if (! only_genotyping) variant_reader.close_phasing_outfile();
 
-	cerr << endl << "###### Summary ######" << endl;
-	// total time
-	double cpu_time = (double)(clock() - clock_start) / CLOCKS_PER_SEC;
-	cerr << "Total CPU time: " << cpu_time << " sec" << endl;
+	time_total = timer.get_total_time();
 
+	cerr << endl << "###### Summary ######" << endl;
+	// output times
+	cerr << "time spent reading input files:\t" << time_preprocessing << " sec" << endl;
+	for (auto chromosome : chromosomes) {
+		cerr << "time spent genotyping chromosome " << chromosome << ": " << time_hmm.at(chromosome) << endl; 
+	}
+	cerr << "total wallclock time: " << time_total  << " sec" << endl;
 	// memory usage
 	struct rusage r_usage;
 	getrusage(RUSAGE_SELF, &r_usage);
