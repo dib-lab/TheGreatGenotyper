@@ -10,6 +10,8 @@ add_library(PGGTyperLib SHARED
 	histogram.cpp
 	hmm.cpp
 	kmercounter.cpp
+	jellyfishcounter.cpp
+	jellyfishreader.cpp
 	kmerpath.cpp
 	probabilitycomputer.cpp
 	sequenceutils.cpp
@@ -25,14 +27,15 @@ add_executable(PGGTyper-kmers pggtyper-kmers.cpp)
 add_executable(PGGTyper-paths pggtyper-paths.cpp)
 add_executable(CountCorrector countcorrector.cpp)
 
-target_link_libraries(PGGTyper PGGTyperLib ${JELLYFISH_LDFLAGS_OTHER} ${gsl_LIBRARIES})
-target_link_libraries(PGGTyper PGGTyperLib ${JELLYFISH_LIBRARIES} ${gsl_LIBRARIES})
+target_link_libraries(PGGTyper PGGTyperLib ${JELLYFISH_LDFLAGS_OTHER} ${gsl_LIBRARIES} ${Boost_LDFLAGS_OTHER})
+target_link_libraries(PGGTyper PGGTyperLib ${JELLYFISH_LIBRARIES} ${gsl_LIBRARIES} ${Boost_LIBRARIES})
 
-target_link_libraries(PGGTyper-kmers PGGTyperLib ${JELLYFISH_LDFLAGS_OTHER} ${gsl_LIBRARIES})
-target_link_libraries(PGGTyper-kmers PGGTyperLib ${JELLYFISH_LIBRARIES} ${gsl_LIBRARIES})
+target_link_libraries(PGGTyper-kmers PGGTyperLib ${JELLYFISH_LDFLAGS_OTHER} ${gsl_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(PGGTyper-kmers PGGTyperLib ${JELLYFISH_LIBRARIES} ${gsl_LIBRARIES} ${Boost_LIBRARIES})
 
-target_link_libraries(PGGTyper-paths PGGTyperLib ${JELLYFISH_LDFLAGS_OTHER} ${gsl_LIBRARIES})
-target_link_libraries(PGGTyper-paths PGGTyperLib ${JELLYFISH_LIBRARIES} ${gsl_LIBRARIES})
+target_link_libraries(PGGTyper-paths PGGTyperLib ${JELLYFISH_LDFLAGS_OTHER} ${gsl_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(PGGTyper-paths PGGTyperLib ${JELLYFISH_LIBRARIES} ${gsl_LIBRARIES} ${Boost_LIBRARIES})
 
-target_link_libraries(CountCorrector PGGTyperLib ${JELLYFISH_LDFLAGS_OTHER} ${gsl_LIBRARIES})
-target_link_libraries(CountCorrector PGGTyperLib ${JELLYFISH_LIBRARIES} ${gsl_LIBRARIES})
+target_link_libraries(CountCorrector PGGTyperLib ${JELLYFISH_LDFLAGS_OTHER} ${gsl_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(CountCorrector PGGTyperLib ${JELLYFISH_LIBRARIES} ${gsl_LIBRARIES} ${Boost_LIBRARIES})
+

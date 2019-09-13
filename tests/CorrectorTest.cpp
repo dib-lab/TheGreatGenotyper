@@ -1,6 +1,6 @@
 #include "catch.hpp"
 #include "utils.hpp"
-#include "../src/kmercounter.hpp"
+#include "../src/jellyfishcounter.hpp"
 #include "../src/sequenceutils.hpp"
 #include <vector>
 #include <string>
@@ -16,9 +16,9 @@ TEST_CASE("Corrector", "[Corrector]") {
 	string train = "../tests/data/corrector.train";
 
 	// read kmers
-	KmerCounter read_kmers (reads, 7);
+	JellyfishCounter read_kmers (reads, 7);
 	// genomic kmers
-	KmerCounter genomic_kmers (reference, 7);
+	JellyfishCounter genomic_kmers (reference, 7);
 	// fasta reader
 	FastaReader fasta_reader (reference);
 	// correct counts
@@ -31,7 +31,7 @@ TEST_CASE("Corrector2", "[Corrector2]") {
 	string train = "../tests/data/corrector2.train";
 
 	// read kmers
-	KmerCounter read_kmers (reads, 16);
+	JellyfishCounter read_kmers (reads, 16);
 	// check uncorrected counts
 	jellyfish::mer_dna::k(16);
 	jellyfish::mer_dna current_kmer("AAAAAAAAAAAAAAAA");
@@ -40,7 +40,7 @@ TEST_CASE("Corrector2", "[Corrector2]") {
 		current_kmer.shift_left('C');
 	}
 	// genomic kmers
-	KmerCounter genomic_kmers (reference, 16);
+	JellyfishCounter genomic_kmers (reference, 16);
 	// fasta reader
 	FastaReader fasta_reader (reference);
 	// correct counts

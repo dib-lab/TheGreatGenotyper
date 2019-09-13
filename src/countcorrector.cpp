@@ -2,6 +2,8 @@
 #include <sstream>
 #include <sys/resource.h>
 #include "kmercounter.hpp"
+#include "jellyfishreader.hpp"
+#include "jellyfishcounter.hpp"
 #include "variantreader.hpp"
 #include "kmercountcorrector.hpp"
 #include "commandlineparser.hpp"
@@ -20,6 +22,7 @@ int main (int argc, char* argv[])
 	size_t kmersize = 31;
 	size_t small_kmersize = 5;
 	string outname = "result";
+	size_t nr_jellyfish_threads = 1;
 
 	// parse the command line arguments
 	CommandLineParser argument_parser;
@@ -30,6 +33,7 @@ int main (int argc, char* argv[])
 	argument_parser.add_optional_argument('o', "result", "prefix of the output files");
 	argument_parser.add_optional_argument('k', "31", "kmer size");
 	argument_parser.add_optional_argument('s', "5", "small kmer size");
+	argument_parser.add_optional_argument('j', "1", "number of threads to use for kmer-counting.");
 	try {
 		argument_parser.parse(argc, argv);
 	} catch (const runtime_error& e) {
@@ -45,6 +49,7 @@ int main (int argc, char* argv[])
 	kmersize = stoi(argument_parser.get_argument('k'));
 	small_kmersize = stoi(argument_parser.get_argument('s'));
 	outname = argument_parser.get_argument('o');
+	nr_jellyfish_threads = stoi(argument_parser.get_argument('j'));
 
 	// print info
 	cerr << "Files and parameters used:" << endl;
@@ -68,22 +73,29 @@ int main (int argc, char* argv[])
 	getrusage(RUSAGE_SELF, &r_usage0);
 	cerr << "#### Memory usage until now: " << (r_usage0.ru_maxrss / 1E6) << " GB ####" << endl;
 
+	KmerCounter* read_kmer_counts = nullptr;
 	// determine kmer copynumbers in reads
-	cerr << "Count kmers in reads ..." << endl;
-	KmerCounter read_kmer_counts (readfile, kmersize);
-	size_t kmer_abundance_peak = read_kmer_counts.computeHistogram(10000, outname + "_histogram.histo");
+	if (readfile.substr(std::max(3, (int) readfile.size())-3) == std::string(".jf")) {
+		cerr << "Read pre-computed read kmer counts ..." << endl;
+		jellyfish::mer_dna::k(kmersize);
+		read_kmer_counts = new JellyfishReader(readfile, kmersize);
+	} else {
+		cerr << "Count kmers in reads ..." << endl;
+		read_kmer_counts = new JellyfishCounter(readfile, kmersize, nr_jellyfish_threads);
+	}
+	size_t kmer_abundance_peak = read_kmer_counts->computeHistogram(10000, outname + "_histogram.histo");
 	cerr << "Computed kmer abundance peak: " << kmer_abundance_peak << endl;
 
 	// count kmers in allele + reference sequence
 	cerr << "Count kmers in genome ..." << endl;
-	KmerCounter genomic_kmer_counts (segment_file, kmersize);
+	JellyfishCounter genomic_kmer_counts (segment_file, kmersize, nr_jellyfish_threads);
 
 	cerr << "Compute corrected read kmer counts ..." << endl;
 	// count correction
 	string training_file = segment_file + ".train";
-	read_kmer_counts.correct_read_counts(&genomic_kmer_counts, &reffile_reader, training_file, small_kmersize, 1/1000.0);
+	read_kmer_counts->correct_read_counts(&genomic_kmer_counts, &reffile_reader, training_file, small_kmersize, 1/20.0);
 
-	size_t corrected_kmer_abundance_peak = read_kmer_counts.computeHistogram(10000, outname + "_corrected-histogram.histo");
+	size_t corrected_kmer_abundance_peak = read_kmer_counts->computeHistogram(10000, outname + "_corrected-histogram.histo");
 	cerr << "Computed corrected kmer abundance peak: " << corrected_kmer_abundance_peak << endl;
 
 	// TODO: only for analysis
