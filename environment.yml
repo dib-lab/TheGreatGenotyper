@@ -1,4 +1,4 @@
-name: pggtyper
+name: pggtyper-countcorrection
 channels:
   - anaconda
   - conda-forge
@@ -11,13 +11,14 @@ dependencies:
   - blas=1.0=mkl
   - boost=1.67.0=py37_4
   - bzip2=1.0.6=h14c3975_1002
-  - ca-certificates=2019.5.15=1
-  - certifi=2019.6.16=py37_1
+  - ca-certificates=2019.9.11=hecc5488_0
+  - certifi=2019.9.11=py37_0
   - cmake=3.14.0=h52cb24c_0
   - curl=7.64.1=hf8cf82a_0
   - expat=2.2.6=he6710b0_0
   - gcc_impl_linux-64=7.3.0=habb00fd_1
   - gcc_linux-64=7.3.0=h553295d_6
+  - gsl=2.6=h294904e_0
   - gxx_impl_linux-64=7.3.0=hdf63c60_1
   - gxx_linux-64=7.3.0=h553295d_6
   - icu=58.2=h211956c_0
@@ -25,7 +26,9 @@ dependencies:
   - jellyfish=2.2.10=h6bb024c_1
   - jemalloc=4.5.0=0
   - krb5=1.16.3=h05b26f9_1001
+  - libblas=3.8.0=12_mkl
   - libboost=1.67.0=h46d08c1_4
+  - libcblas=3.8.0=12_mkl
   - libcurl=7.64.1=hda55be3_0
   - libedit=3.1.20170329=hf8c457e_1001
   - libffi=3.2.1=h4deb6c0_3
@@ -42,7 +45,7 @@ dependencies:
   - ncurses=6.1=hf484d3e_1002
   - numpy=1.16.4=py37h7e9f1db_0
   - numpy-base=1.16.4=py37hde5b4d6_0
-  - openssl=1.1.1=h7b6447c_0
+  - openssl=1.1.1c=h516909a_0
   - pip=19.2.2=py37_0
   - py-boost=1.67.0=py37h04863e7_4
   - python=3.7.3=h33d41f4_1
@@ -55,5 +58,5 @@ dependencies:
   - wheel=0.33.4=py37_0
   - xz=5.2.4=h14c3975_1001
   - zlib=1.2.11=h7b6447c_3
-prefix: /MMCI/TM/scratch/jebler/miniconda3/envs/pggtyper
+prefix: /MMCI/TM/scratch/jebler/miniconda3/envs/pggtyper-countcorrection
 
