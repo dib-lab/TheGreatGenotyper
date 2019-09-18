@@ -3,9 +3,9 @@
 #include <sys/resource.h>
 #include <thread>
 #include <algorithm>
-#include <boost/asio/thread_pool.hpp>
-#include <boost/asio/post.hpp>
-#include <boost/bind.hpp>
+//#include <boost/asio/thread_pool.hpp>
+//#include <boost/asio/post.hpp>
+//#include <boost/bind.hpp>
 #include <mutex>
 #include "emissionprobabilitycomputer.hpp"
 #include "copynumber.hpp"
@@ -15,6 +15,7 @@
 #include "commandlineparser.hpp"
 #include "timer.hpp"
 #include "threadpool.hpp"
+#include <cassert>
 
 using namespace std;
 
@@ -95,7 +96,7 @@ int main (int argc, char* argv[])
 	nr_core_threads = stoi(argument_parser.get_argument('t'));
 	only_genotyping = argument_parser.get_flag('g');
 	only_phasing = argument_parser.get_flag('p');
-	effective_N = stod(argument_parser.get_argument('n'));
+	effective_N = stold(argument_parser.get_argument('n'));
 
 	// print info
 	cerr << "Files and parameters used:" << endl;
