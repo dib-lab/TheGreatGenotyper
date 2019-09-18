@@ -15,25 +15,30 @@ KmerCounter::KmerCounter(size_t kmersize)
 	corrected(false)
 {}
 
-size_t KmerCounter::compute_corrected_count(jellyfish::mer_dna& kmer) const {
-	double corrected_count = 0.0;
+double KmerCounter::compute_scaling_factor(jellyfish::mer_dna kmer) const {
+	double scaling_factor = 0.0;
 	// split given kmer into small kmers
 	map<unsigned int, int> kmer_to_count;
 	split_in_kmers (kmer, this->kmer_size, this->small_kmer_size, kmer_to_count);
 
-	// compute corrected count
+	// compute scaling factor
 	for (auto it = kmer_to_count.begin(); it != kmer_to_count.end(); ++it) {
-		corrected_count += it->second * this->coefficients.at(it->first);
+		scaling_factor += it->second * this->coefficients.at(it->first);
 	}
-	if (corrected_count > 0) {
-		return round(corrected_count);
+	return scaling_factor;
+}
+
+size_t KmerCounter::compute_corrected_count(jellyfish::mer_dna kmer, size_t raw_count) const {
+	double scaling_factor = compute_scaling_factor(kmer);
+	if (scaling_factor > 0) {
+		return round(raw_count / (double) scaling_factor);
 	} else {
-		return 0;
+		return raw_count;
 	}
 }
 
 
-void KmerCounter::correct_read_counts (KmerCounter* genomic_kmers, FastaReader* fasta_reader, string& training_sequences, size_t small_kmer_size, double train_frac) {
+void KmerCounter::correct_read_counts (KmerCounter* genomic_kmers, FastaReader* fasta_reader, string& training_sequences, size_t small_kmer_size, double train_frac, double coverage) {
 	this->small_kmer_size = small_kmer_size;
 	if (this->corrected) return;
 	// read coordinates of training sequences from file
@@ -101,7 +106,7 @@ void KmerCounter::correct_read_counts (KmerCounter* genomic_kmers, FastaReader* 
 		for (auto count = kmer_to_count.begin(); count != kmer_to_count.end(); ++count) {
 			gsl_matrix_set (X, row_number, count->first, count->second);
 		}
-		gsl_vector_set (y, row_number, it->second);
+		gsl_vector_set (y, row_number, it->second / coverage);
 		row_number += 1;
 	}
 

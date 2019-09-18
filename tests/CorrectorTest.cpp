@@ -7,49 +7,59 @@
 #include <iostream>
 #include <map>
 #include <jellyfish/mer_dna.hpp>
+#include <cstdio>
 
 using namespace std;
 
+/**
 TEST_CASE("Corrector", "[Corrector]") {
-	string reads = "../tests/data/corrector.reads";
-	string reference = "../tests/data/corrector.fasta";
-	string train = "../tests/data/corrector.train";
-
-	// read kmers
-	JellyfishCounter read_kmers (reads, 7);
-	// genomic kmers
-	JellyfishCounter genomic_kmers (reference, 7);
-	// fasta reader
-	FastaReader fasta_reader (reference);
-	// correct counts
-//	read_kmers.correct_read_counts (&genomic_kmers, &fasta_reader, train, 2);
-}
-
-TEST_CASE("Corrector2", "[Corrector2]") {
 	string reads = "../tests/data/corrector2.reads";
 	string reference = "../tests/data/corrector2.fasta";
 	string train = "../tests/data/corrector2.train";
 
 	// read kmers
 	JellyfishCounter read_kmers (reads, 16);
-	// check uncorrected counts
-	jellyfish::mer_dna::k(16);
-	jellyfish::mer_dna current_kmer("AAAAAAAAAAAAAAAA");
-	for (size_t i = 0; i < 17; ++i) {
-		REQUIRE(read_kmers.getKmerAbundance(current_kmer) == 4);
-		current_kmer.shift_left('C');
-	}
 	// genomic kmers
 	JellyfishCounter genomic_kmers (reference, 16);
 	// fasta reader
 	FastaReader fasta_reader (reference);
 	// correct counts
-	read_kmers.correct_read_counts (&genomic_kmers, &fasta_reader, train, 2, 1.0);
-	// check corrected counts
-	current_kmer = jellyfish::mer_dna("AAAAAAAAAAAAAAAA");
-	for (size_t i = 0; i < 17; ++i) {
-		REQUIRE(read_kmers.getKmerAbundance(current_kmer) == 4);
-		current_kmer.shift_left('C');
+	read_kmers.correct_read_counts (&genomic_kmers, &fasta_reader, train, 2, 1.0, 3.0);
+	// write to file
+	read_kmers.computeCorrectionStats("tescht.txt");
+}
+**/
+
+TEST_CASE("Corrector2", "[Corrector2]") {
+	string reads = "../tests/data/corrector2.reads";
+	string reference = "../tests/data/corrector2.fasta";
+	string train = "../tests/data/corrector2.train";
+
+	vector<size_t> coverages = {1,2,3,4};
+	for (auto c : coverages) {
+
+		// read kmers
+		JellyfishCounter read_kmers (reads, 16);
+		// check uncorrected counts
+		jellyfish::mer_dna::k(16);
+		jellyfish::mer_dna current_kmer("AAAAAAAAAAAAAAAA");
+		for (size_t i = 0; i < 17; ++i) {
+			REQUIRE(read_kmers.getKmerAbundance(current_kmer) == 4);
+			current_kmer.shift_left('C');
+		}
+		// genomic kmers
+		JellyfishCounter genomic_kmers (reference, 16);
+		// fasta reader
+		FastaReader fasta_reader (reference);
+		vector<size_t> coverages = {1,2,3,4};
+		// correct counts
+		read_kmers.correct_read_counts (&genomic_kmers, &fasta_reader, train, 2, 1.0, c);
+		// check corrected counts
+		current_kmer = jellyfish::mer_dna("AAAAAAAAAAAAAAAA");
+		for (size_t i = 0; i < 17; ++i) {
+			REQUIRE(read_kmers.getKmerAbundance(current_kmer) == c);
+			current_kmer.shift_left('C');
+		}
 	}
 }
 

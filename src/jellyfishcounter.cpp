@@ -51,13 +51,10 @@ size_t JellyfishCounter::getKmerAbundance(string kmer){
 	jelly_kmer.canonicalize();
 	uint64_t val = 0;
 	const auto jf_ary = this->jellyfish_hash->ary();
+	jf_ary->get_val_for_key(jelly_kmer, &val);
 	if (this->corrected) {
-		val = compute_corrected_count(jelly_kmer);
-	} else {
-		jf_ary->get_val_for_key(jelly_kmer, &val);
+		val = compute_corrected_count(jelly_kmer, val);
 	}
-
-	const auto end = jf_ary->end();
 	return val;
 }
 
@@ -65,13 +62,10 @@ size_t JellyfishCounter::getKmerAbundance(jellyfish::mer_dna jelly_kmer){
 	jelly_kmer.canonicalize();
 	uint64_t val = 0;
 	const auto jf_ary = this->jellyfish_hash->ary();
+	jf_ary->get_val_for_key(jelly_kmer, &val);
 	if (this->corrected) {
-		val = compute_corrected_count(jelly_kmer);
-	} else {
-		jf_ary->get_val_for_key(jelly_kmer, &val);
+		val = compute_corrected_count(jelly_kmer, val);
 	}
-
-	const auto end = jf_ary->end();
 	return val;
 }
 
@@ -81,11 +75,9 @@ size_t JellyfishCounter::computeKmerCoverage(size_t genome_kmers) {
 	long double result = 0.0L;
 	for (auto it = jf_ary->begin(); it != end; ++it) {
 		auto& key_val = *it;
-		long double count;
+		long double count = 1.0L * key_val.second;
 		if (this->corrected) {
-			count = compute_corrected_count(key_val.first);
-		} else {
-			count = 1.0L * key_val.second;
+			count = compute_corrected_count(key_val.first, key_val.second);
 		}
 		long double genome = 1.0L * genome_kmers;
 		result += (count/genome);
@@ -99,11 +91,9 @@ size_t JellyfishCounter::computeHistogram(size_t max_count, string filename) {
 	const auto end = jf_ary->end();
 	for (auto it = jf_ary->begin(); it != end; ++it) {
 		auto& key_val = *it;
-		size_t count;
+		size_t count = key_val.second;
 		if (this->corrected) {
-			count = compute_corrected_count(key_val.first);
-		} else {
-			count = key_val.second;
+			count = compute_corrected_count(key_val.first, key_val.second);
 		}
 		histogram.add_value(count);
 	}
@@ -152,6 +142,36 @@ size_t JellyfishCounter::computeHistogram(size_t max_count, string filename) {
 		histofile.close();
 	}
 	return second_id;
+}
+
+void JellyfishCounter::computeCorrectionStats(string filename) {
+	if (!this->corrected) return;
+	size_t total_kmers = 0;
+	size_t neg_factor = 0;
+	Histogram histogram(101);
+	const auto jf_ary = this->jellyfish_hash->ary();
+	const auto end = jf_ary->end();
+	for (auto it = jf_ary->begin(); it != end; ++it) {
+		auto& key_val = *it;
+		double scaling_factor = compute_scaling_factor(key_val.first);
+		total_kmers += 1;
+		// check if negative scaling factor
+		if (scaling_factor < 0) {
+			neg_factor += 1;
+		}
+		if ( (scaling_factor < -10) || (scaling_factor > 10) ) continue;
+		size_t hist_ixd = (size_t) floor((scaling_factor + 10.0) / 0.2);
+		histogram.add_value(hist_ixd);
+	}
+	// write histogram to file
+	histogram.write_to_file(filename);
+	// write scale to output file
+	ofstream histofile;
+	histofile.open(filename, ios::app);
+	histofile << "xvalues: " << -10 << " " << 0.2 << endl;
+	histofile << "total kmers: " << total_kmers << endl;
+	histofile << "kmers with negative scaling factors: " << neg_factor << endl;
+	histofile.close();
 }
 
 JellyfishCounter::~JellyfishCounter() {

@@ -128,6 +128,11 @@ size_t JellyfishReader::computeHistogram(size_t max_count, string filename) {
 	return second_id;
 }
 
+void JellyfishReader::computeCorrectionStats (string filename) {
+	// TODO implement this
+	assert (false);
+}
+
 JellyfishReader::~JellyfishReader() {
 	if (this->ifs.is_open()) {
 		this->ifs.close();

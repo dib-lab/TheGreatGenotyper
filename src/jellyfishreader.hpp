@@ -76,6 +76,8 @@ public:
 	/** computes kmer abundance histogram and returns the three highest peaks **/
 	size_t computeHistogram(size_t max_count, std::string filename = "");
 
+	void computeCorrectionStats(std::string kmer);
+
 	~JellyfishReader();
 
 private:
