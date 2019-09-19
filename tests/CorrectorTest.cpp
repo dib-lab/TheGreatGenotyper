@@ -24,7 +24,7 @@ TEST_CASE("Corrector", "[Corrector]") {
 	// fasta reader
 	FastaReader fasta_reader (reference);
 	// correct counts
-	read_kmers.correct_read_counts (&genomic_kmers, &fasta_reader, train, 2, 1.0, 3.0);
+	read_kmers.correct_read_counts (&genomic_kmers, &fasta_reader, train, 1, 1.0, 4.0);
 	// write to file
 	read_kmers.computeCorrectionStats("tescht.txt");
 }

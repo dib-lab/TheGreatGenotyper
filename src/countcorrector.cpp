@@ -93,7 +93,7 @@ int main (int argc, char* argv[])
 	cerr << "Compute corrected read kmer counts ..." << endl;
 	// count correction
 	string training_file = segment_file + ".train";
-	read_kmer_counts->correct_read_counts(&genomic_kmer_counts, &reffile_reader, training_file, small_kmersize, 1/20.0, kmer_abundance_peak);
+	read_kmer_counts->correct_read_counts(&genomic_kmer_counts, &reffile_reader, training_file, small_kmersize, 1/50.0, kmer_abundance_peak);
 
 	size_t corrected_kmer_abundance_peak = read_kmer_counts->computeHistogram(10000, outname + "_corrected-histogram.histo");
 	cerr << "Computed corrected kmer abundance peak: " << corrected_kmer_abundance_peak << endl;

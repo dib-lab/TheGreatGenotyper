@@ -124,9 +124,12 @@ void KmerCounter::correct_read_counts (KmerCounter* genomic_kmers, FastaReader* 
 	double chisq;
 	gsl_multifit_linear (X, y, c, cov, &chisq, work);
 	gsl_multifit_linear_free (work);
+
+	// TODO remove print
+	cerr << "regression coefficients:" << endl;
 	// store the coefficients
 	for (size_t i = 0; i < nr_small_kmers; ++i) {
-//		cout << gsl_vector_get(c, (i)) << endl;
+		cout << gsl_vector_get(c, (i)) << endl;
 		this->coefficients.push_back( gsl_vector_get(c, (i)));
 	}
 	// clean up
