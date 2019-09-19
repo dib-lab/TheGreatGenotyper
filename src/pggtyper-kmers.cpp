@@ -29,12 +29,12 @@ struct Results {
 	map<string, double> runtimes;
 };
 
-void run_genotyping_kmers(string chromosome, KmerCounter* genomic_kmer_counts, KmerCounter* read_kmer_counts, VariantReader* variant_reader, size_t kmer_abundance_peak, bool only_genotyping, bool only_phasing, Results* results) {
+void run_genotyping_kmers(string chromosome, KmerCounter* genomic_kmer_counts, KmerCounter* read_kmer_counts, VariantReader* variant_reader, size_t kmer_abundance_peak, bool only_genotyping, bool only_phasing, long double regularization, Results* results) {
 	Timer timer;
 	// determine sets of kmers unique to each variant region
 	UniqueKmerComputer kmer_computer(genomic_kmer_counts, read_kmer_counts, variant_reader, chromosome, kmer_abundance_peak);
 	std::vector<UniqueKmers*> unique_kmers;
-	kmer_computer.compute_unique_kmers(&unique_kmers);
+	kmer_computer.compute_unique_kmers(&unique_kmers, regularization);
 	// construct HMM and run genotyping/phasing
 	HMM hmm(&unique_kmers, !only_phasing, !only_genotyping, 1.26, true);
 	// store the results
@@ -73,6 +73,7 @@ int main (int argc, char* argv[])
 	bool only_genotyping = false;
 	bool only_phasing = false;
 	size_t small_kmersize = 5;
+	long double regularization = 0.0L;
 
 	// parse the command line arguments
 	CommandLineParser argument_parser;
@@ -88,6 +89,7 @@ int main (int argc, char* argv[])
 	argument_parser.add_optional_argument('t', "1", "number of threads to use for core algorithm. Largest number of threads possible is the number of chromosomes given in the VCF.");
 	argument_parser.add_flag_argument('g', "only run genotyping (Forward backward algorithm).");
 	argument_parser.add_flag_argument('p', "only run phasing (Viterbi algorithm).");
+	argument_parser.add_optional_argument('m', "0", "regularization constant for copynumber probabilities.");
 	try {
 		argument_parser.parse(argc, argv);
 	} catch (const runtime_error& e) {
@@ -108,6 +110,7 @@ int main (int argc, char* argv[])
 	only_genotyping = argument_parser.get_flag('g');
 	only_phasing = argument_parser.get_flag('p');
 	small_kmersize = stoi(argument_parser.get_argument('z'));
+	regularization = stold(argument_parser.get_argument('m'));
 
 	// print info
 	cerr << "Files and parameters used:" << endl;
@@ -187,7 +190,7 @@ int main (int argc, char* argv[])
 			KmerCounter* genomic = &genomic_kmer_counts;
 			VariantReader* variants = &variant_reader;
 			Results* r = &results;
-			function<void()> f_genotyping = bind(run_genotyping_kmers, chromosome, genomic, read_kmer_counts, variants, kmer_abundance_peak, only_genotyping, only_phasing, r);
+			function<void()> f_genotyping = bind(run_genotyping_kmers, chromosome, genomic, read_kmer_counts, variants, kmer_abundance_peak, only_genotyping, only_phasing, regularization, r);
 			threadPool.submit(f_genotyping);
 		}
 	}
