@@ -83,7 +83,7 @@ int main (int argc, char* argv[])
 	argument_parser.add_optional_argument('o', "result", "prefix of the output files");
 	argument_parser.add_optional_argument('k', "31", "kmer size");
 	argument_parser.add_optional_argument('s', "sample", "name of the sample (will be used in the output VCFs)");
-	argument_parser.add_optional_argument('m', "5", "small kmer size");
+	argument_parser.add_optional_argument('z', "5", "small kmer size");
 	argument_parser.add_optional_argument('j', "1", "number of threads to use for kmer-counting");
 	argument_parser.add_optional_argument('t', "1", "number of threads to use for core algorithm. Largest number of threads possible is the number of chromosomes given in the VCF.");
 	argument_parser.add_flag_argument('g', "only run genotyping (Forward backward algorithm).");
@@ -107,7 +107,7 @@ int main (int argc, char* argv[])
 	nr_core_threads = stoi(argument_parser.get_argument('t'));
 	only_genotyping = argument_parser.get_flag('g');
 	only_phasing = argument_parser.get_flag('p');
-	small_kmersize = stoi(argument_parser.get_argument('m'));
+	small_kmersize = stoi(argument_parser.get_argument('z'));
 
 	// print info
 	cerr << "Files and parameters used:" << endl;
