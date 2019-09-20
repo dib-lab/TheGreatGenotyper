@@ -15,6 +15,8 @@ abundances = []
 x_range = 0.0
 x_unit = 0.0
 
+print('Reading file ...')
+
 for line in open(args.histo, 'r'):
 	parsed_line = line.split();
 	if parsed_line[0] == "xvalues:":
@@ -25,12 +27,17 @@ for line in open(args.histo, 'r'):
 	y_value = int(parsed_line[1])
 	x_bins.append(x_bin);
 	abundances.append(y_value);
+print('Plotting ..')
 # plot distributions
 x_values = [x_range + x_unit*i for i in x_bins]
 plt.plot(x_values, abundances, marker='o', linestyle=':')
+print('1')
 plt.xlim(-int(args.max_value), int(args.max_value))
-plt.yticks(range(0, max(abundances)+1, 2))
+print(2)
+#plt.yticks(range(0, max(abundances)+1, 2))
+print(3)
 plt.xticks(numpy.arange(-int(args.max_value), int(args.max_value)+1, 5*x_unit))
+
 #plt.yscale('log')
 plt.title('histogram of kmer scaling factors')
 plt.xlabel('scaling factor')

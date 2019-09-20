@@ -163,6 +163,9 @@ int main (int argc, char* argv[])
 	size_t corrected_kmer_abundance_peak = read_kmer_counts->computeHistogram(10000, outname + "_corrected-histogram.histo");
 	cerr << "Computed corrected kmer abundance peak: " << corrected_kmer_abundance_peak << endl;
 
+	// compute histogram of scaling factors
+	read_kmer_counts->computeCorrectionStats(outname + "_scaling-factors.histo");
+
 	// TODO: only for analysis
 	struct rusage r_usage1;
 	getrusage(RUSAGE_SELF, &r_usage1);

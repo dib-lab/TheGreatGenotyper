@@ -85,7 +85,8 @@ void KmerCounter::correct_read_counts (KmerCounter* genomic_kmers, FastaReader* 
 			unique_kmers.push_back(make_pair(current_kmer, this->getKmerAbundance(current_kmer)));
 		}
 		// TODO: size of training set?
-		if (unique_kmers.size() > 100*pow(4,small_kmer_size)) break;
+//		if (unique_kmers.size() > 100*pow(4,small_kmer_size)) break;
+		if (unique_kmers.size() > 200000) break;
 	}
 	infile.close();
 	cerr << "Identified " << unique_kmers.size() << " unique kmers for training." << endl;

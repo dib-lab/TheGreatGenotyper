@@ -169,11 +169,15 @@ int main (int argc, char* argv[])
 	JellyfishCounter genomic_kmer_counts (segment_file, kmersize, nr_jellyfish_threads);
 
 	// correct kmer counts
+	cerr << "Compute corrected read kmer counts ..." << endl;
 	string training_file = segment_file + ".train";
 	read_kmer_counts->correct_read_counts(&genomic_kmer_counts, &reffile_reader, training_file, small_kmersize, 1/50.0, kmer_abundance_peak);
 
 	size_t corrected_kmer_abundance_peak = read_kmer_counts->computeHistogram(10000, outname + "_corrected-histogram.histo");
 	cerr << "Computed corrected kmer abundance peak: " << corrected_kmer_abundance_peak << endl;
+
+	// compute histogram of scaling factors
+	read_kmer_counts->computeCorrectionStats(outname + "_scaling-factors.histo");
 
 	// TODO: only for analysis
 	struct rusage r_usage1;
