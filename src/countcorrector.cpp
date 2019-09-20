@@ -32,7 +32,7 @@ int main (int argc, char* argv[])
 	argument_parser.add_mandatory_argument('v', "variants in VCF format");
 	argument_parser.add_optional_argument('o', "result", "prefix of the output files");
 	argument_parser.add_optional_argument('k', "31", "kmer size");
-	argument_parser.add_optional_argument('s', "5", "small kmer size");
+	argument_parser.add_optional_argument('z', "5", "small kmer size");
 	argument_parser.add_optional_argument('j', "1", "number of threads to use for kmer-counting.");
 	try {
 		argument_parser.parse(argc, argv);
@@ -47,7 +47,7 @@ int main (int argc, char* argv[])
 	reffile = argument_parser.get_argument('r');
 	vcffile = argument_parser.get_argument('v');
 	kmersize = stoi(argument_parser.get_argument('k'));
-	small_kmersize = stoi(argument_parser.get_argument('s'));
+	small_kmersize = stoi(argument_parser.get_argument('z'));
 	outname = argument_parser.get_argument('o');
 	nr_jellyfish_threads = stoi(argument_parser.get_argument('j'));
 
