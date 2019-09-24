@@ -10,11 +10,11 @@ UniqueKmers::UniqueKmers(size_t variant_id, size_t variant_position)
 	 current_index(0)
 {}
 
-size_t UniqueKmers::get_variant_index() {
+size_t UniqueKmers::get_variant_index() const {
 	return this->variant_id;
 }
 
-size_t UniqueKmers::get_variant_position() {
+size_t UniqueKmers::get_variant_position() const {
 	return this->variant_pos;
 }
 
@@ -69,14 +69,14 @@ size_t UniqueKmers::get_nr_paths() const {
 	return this->path_to_allele.size();
 }
 
-void UniqueKmers::get_path_ids(vector<size_t>& p, vector<unsigned char>& a) {
+void UniqueKmers::get_path_ids(vector<size_t>& p, vector<unsigned char>& a) const {
 	for (auto it = this->path_to_allele.begin(); it != this->path_to_allele.end(); ++it) {
 		p.push_back(it->first);
 		a.push_back(it->second);
 	}
 }
 
-void UniqueKmers::get_allele_ids(vector<unsigned char>& a) {
+void UniqueKmers::get_allele_ids(vector<unsigned char>& a) const {
 	for (auto it = this->alleles.begin(); it != this->alleles.end(); ++it) {
 		a.push_back(it->first);
 	}

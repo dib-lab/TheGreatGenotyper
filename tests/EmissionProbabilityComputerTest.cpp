@@ -22,18 +22,7 @@ TEST_CASE("EmissionProbabilityComputer get_emission_probability", "EmissionProba
 	}
 
 	// construct ColumnIndexer
-	ColumnIndexer column_indexer(0,9);
-
-	vector<size_t> path_ids;
-	vector<unsigned char> allele_ids;
-	unique_kmers.get_path_ids(path_ids, allele_ids);
-
-	// insert states
-	for (size_t i = 0; i < path_ids.size(); ++i) {
-		for (size_t j = 0; j < path_ids.size(); ++j) {
-			column_indexer.insert( make_pair(path_ids[i],path_ids[j]), make_pair(allele_ids[i], allele_ids[j]));
-		}
-	}
+	ColumnIndexer column_indexer(&unique_kmers);
 
 	// construct EmissionProbabilityComputer
 	EmissionProbabilityComputer emission_prob_comp (&unique_kmers, &column_indexer);

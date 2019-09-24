@@ -19,8 +19,8 @@ public:
 	* @param variant_position genomic variant position
 	**/
 	UniqueKmers(size_t variant_id, size_t variant_position);
-	size_t get_variant_index();
-	size_t get_variant_position();
+	size_t get_variant_index() const;
+	size_t get_variant_position() const;
 	/** insert empty allele (no kmers) **/
 	void insert_empty_allele(unsigned char allele_id);
 	/** insert a path covering the given allele **/
@@ -37,9 +37,9 @@ public:
 	/** return number of paths **/
 	size_t get_nr_paths() const;
 	/** get all paths and alleles covering this position **/
-	void get_path_ids(std::vector<size_t>& paths, std::vector<unsigned char>& alleles);
+	void get_path_ids(std::vector<size_t>& paths, std::vector<unsigned char>& alleles) const;
 	/** get all unique alleles covered at this position **/
-	void get_allele_ids(std::vector<unsigned char>& a);
+	void get_allele_ids(std::vector<unsigned char>& a) const;
 	friend std::ostream& operator<< (std::ostream& stream, const UniqueKmers& uk);
 
 private:

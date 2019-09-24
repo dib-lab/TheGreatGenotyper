@@ -35,8 +35,9 @@ EmissionProbabilityComputer::EmissionProbabilityComputer(UniqueKmers* uniquekmer
 
 long double EmissionProbabilityComputer::get_emission_probability(size_t state_id) const {
 	if (this->all_zeros) return 1.0L;
-	pair<unsigned char, unsigned char>  a = this->columnindexer->get_alleles(state_id);
-	return this->state_to_prob[a.first][a.second];
+	unsigned char allele1, allele2;
+	this->columnindexer->get_alleles(state_id, allele1, allele2);
+	return this->state_to_prob[allele1][allele2];
 }
 
 long double EmissionProbabilityComputer::compute_emission_probability(unsigned char allele_id1, unsigned char allele_id2){

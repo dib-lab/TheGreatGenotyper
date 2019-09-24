@@ -5,32 +5,56 @@
 
 using namespace std;
 
-TEST_CASE("ColumnIndexer insert", "[ColumnIndexer insert]"){
-	ColumnIndexer c(0, 3);
-	c.insert(make_pair(0,0), make_pair(0,0));
-	REQUIRE(c.get_size() == 1);
-	c.insert(make_pair(0,1), make_pair(0,2));
-	REQUIRE(c.get_size() == 2);
-	c.insert(make_pair(1,0), make_pair(2,0));
-	REQUIRE(c.get_size() == 3);
-	REQUIRE(c.get_paths(0) == pair<size_t,size_t>(0,0));
-	REQUIRE(c.get_paths(1) == pair<size_t,size_t>(0,1));
-	REQUIRE(c.get_paths(2) == pair<size_t,size_t>(1,0));
-	REQUIRE(c.get_alleles(0) == pair<unsigned char, unsigned char>(0,0));
-	REQUIRE(c.get_alleles(1) == pair<unsigned char, unsigned char>(0,2));
-	REQUIRE(c.get_alleles(2) == pair<unsigned char, unsigned char>(2,0));
+TEST_CASE("ColumnIndexer", "[ColumnIndexer]") {
+	UniqueKmers u (0,100);
+	u.insert_path(0,0);
+	u.insert_path(1,2);
+	ColumnIndexer c(&u);
+	REQUIRE(c.get_size() == 4);
+
+	size_t path1, path2;
+	c.get_paths(0, path1, path2);
+	REQUIRE( ((path1 == 0) && (path2 == 0)) );
+
+	c.get_paths(1, path1, path2);
+	REQUIRE(((path1 == 0) && (path2 == 1)));
+
+	c.get_paths(2, path1, path2);
+	REQUIRE(((path1 == 1) && (path2 == 0)));
+	
+	c.get_paths(3, path1, path2);
+	REQUIRE(((path1 == 1) && (path2 == 1)));
+
+	unsigned char allele1, allele2;
+	c.get_alleles(0, allele1, allele2);
+	REQUIRE(((allele1 == 0) && (allele2 == 0)));
+
+	c.get_alleles(1, allele1, allele2);
+	REQUIRE(((allele1 == 0) && (allele2 == 2)));
+
+	c.get_alleles(2, allele1, allele2);
+	REQUIRE(((allele1 == 2) && (allele2 == 0)));
+
+	c.get_alleles(3, allele1, allele2);
+	REQUIRE(((allele1 == 2) && (allele2 == 2)));
 }
 
 TEST_CASE("ColumnIndexer test_invalid", "[ColumnIndexer test_invalid]") {
-	ColumnIndexer c(0, 3);
-	REQUIRE(c.get_size() == 0);
-	REQUIRE_THROWS(c.get_paths(0));
-	REQUIRE_THROWS(c.get_paths(1));
-	REQUIRE_THROWS(c.get_alleles(0));
-	REQUIRE_THROWS(c.get_alleles(1));
+	UniqueKmers u (0,100);
+	REQUIRE_THROWS(ColumnIndexer(&u));
 
-	c.insert(make_pair(1,2), make_pair(0,0));
+	u.insert_path(3,0);
+	ColumnIndexer c(&u);
 	REQUIRE(c.get_size() == 1);
-	REQUIRE(c.get_paths(0) == pair<size_t,size_t>(1,2));
-	REQUIRE(c.get_alleles(0) == pair<unsigned char, unsigned char>(0,0));
+
+	size_t path1, path2;
+	c.get_paths(0, path1, path2);
+	REQUIRE(((path1 == 3) && (path2 == 3)));
+
+	unsigned char allele1, allele2;
+	c.get_alleles(0, allele1, allele2);
+	REQUIRE(((allele1 == 0) && (allele2 == 0)));
+
+	REQUIRE_THROWS(c.get_paths(1, path1, path2));
+	REQUIRE_THROWS(c.get_alleles(1, allele1, allele2));
 }
