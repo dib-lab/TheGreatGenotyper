@@ -148,7 +148,7 @@ void JellyfishCounter::computeCorrectionStats(string filename) {
 	if (!this->corrected) return;
 	size_t total_kmers = 0;
 	size_t neg_factor = 0;
-	Histogram histogram(200);
+	Histogram histogram(400);
 	const auto jf_ary = this->jellyfish_hash->ary();
 	const auto end = jf_ary->end();
 	for (auto it = jf_ary->begin(); it != end; ++it) {
@@ -159,8 +159,8 @@ void JellyfishCounter::computeCorrectionStats(string filename) {
 		if (scaling_factor < 0) {
 			neg_factor += 1;
 		}
-		if ( (scaling_factor < -10) || (scaling_factor > 10) ) continue;
-		size_t hist_ixd = (size_t) floor((scaling_factor + 10.0) / 0.1);
+		if ( (scaling_factor < -2) || (scaling_factor > 2) ) continue;
+		size_t hist_ixd = (size_t) floor((scaling_factor + 2.0) / 0.01);
 		histogram.add_value(hist_ixd);
 	}
 	// write histogram to file
@@ -168,7 +168,7 @@ void JellyfishCounter::computeCorrectionStats(string filename) {
 	// write scale to output file
 	ofstream histofile;
 	histofile.open(filename, ios::app);
-	histofile << "xvalues: " << -10 << " " << 0.1 << endl;
+	histofile << "xvalues: " << -2 << " " << 0.01 << endl;
 	histofile << "total kmers: " << total_kmers << endl;
 	histofile << "kmers with negative scaling factors: " << neg_factor << endl;
 	histofile.close();

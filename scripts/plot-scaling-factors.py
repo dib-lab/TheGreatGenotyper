@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 parser = argparse.ArgumentParser(prog='plot-scaling-factors.py', description=__doc__)
 parser.add_argument('histo', metavar='HISTO', help='.histo file output of PGGTyper with scaling factors.')
 parser.add_argument('--max-value', default='100', metavar='MAX_VALUE', help='max value to plot on x-axis (default: 100).')
+parser.add_argument('-c', default='', metavar='CAPTION', help='plot caption')
 args = parser.parse_args()
 
 # read the histogram from input file
@@ -30,16 +31,16 @@ for line in open(args.histo, 'r'):
 print('Plotting ..')
 # plot distributions
 x_values = [x_range + x_unit*i for i in x_bins]
-plt.plot(x_values, abundances, marker='o', linestyle=':')
+plt.plot(x_values, abundances)
 print('1')
-plt.xlim(-int(args.max_value), int(args.max_value))
+plt.xlim(1-float(args.max_value), float(args.max_value)+1)
 print(2)
 #plt.yticks(range(0, max(abundances)+1, 2))
 print(3)
-plt.xticks(numpy.arange(-int(args.max_value), int(args.max_value)+1, 5*x_unit))
+plt.xticks(numpy.arange(1-float(args.max_value), float(args.max_value)+1.1, 10*x_unit))
 
 #plt.yscale('log')
-plt.title('histogram of kmer scaling factors')
+plt.title('scaling factors ' + args.c)
 plt.xlabel('scaling factor')
 plt.ylabel('count')
 plt.savefig(args.histo + '.pdf')
