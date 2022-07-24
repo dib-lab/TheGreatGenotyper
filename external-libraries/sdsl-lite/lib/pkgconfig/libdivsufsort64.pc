@@ -1,0 +1,11 @@
+prefix=/home/mshokrof/metagraph/metagraph/external-libraries/sdsl-lite
+exec_prefix=${prefix}
+libdir=/home/mshokrof/metagraph/metagraph/external-libraries/sdsl-lite/lib
+includedir=/home/mshokrof/metagraph/metagraph/external-libraries/sdsl-lite/include
+
+Name: libdivsufsort64
+Description: A lightweight suffix sorting library
+Version: 2.0.1-13-g0f24acd
+URL: https://github.com/y-256/libdivsufsort
+Libs: -L${libdir} -ldivsufsort64
+Cflags: -I${includedir}

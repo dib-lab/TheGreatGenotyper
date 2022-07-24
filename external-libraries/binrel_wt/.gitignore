@@ -1,0 +1,26 @@
+## Build generated
+build/
+_*
+DerivedData
+
+compile_commands.json
+
+### Vim ###
+[._]*.s[a-w][a-z]
+[._]s[a-w][a-z]
+*.un~
+Session.vim
+.netrwhist
+*~
+.ycm_extra_conf.*
+
+### Linux ###
+*~
+
+# Linux trash folder which might appear on any partition or disk
+.Trash-*
+
+### OSX ###
+.DS_Store
+.AppleDouble
+.LSOverride

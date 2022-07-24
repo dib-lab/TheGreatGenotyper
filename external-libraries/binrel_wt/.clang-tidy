@@ -1,0 +1,57 @@
+---
+Checks: "-*,\
+bugprone-*,\
+cert-*,\
+-cert-dcl21-cpp,\
+clang-diagnostic-*,\
+clang-analyzer-*,\
+-clang-analyzer-alpha*,\
+cppcoreguidelines-*,\
+-cppcoreguidelines-pro-bounds-constant-array-index,\
+-cppcoreguidelines-pro-type-vararg,\
+-cppcoreguidelines-pro-bounds-array-to-pointer-decay,\
+google-*,\
+-google-readability-namespace-comments,\
+-google-runtime-int,\
+-google-runtime-references,\
+hicpp-*,\
+-hicpp-special-member-functions,\
+llvm-*,\
+-llvm-include-order,\
+-llvm-namespace-comment,\
+misc-*,\
+modernize-*,\
+performance-*,\
+readability-*"
+
+# Note: cppcoreguidelines-pro-bounds-array-to-pointer-decay is disabled because
+# using 'assert' triggers this warning.
+# llvm-namespace-comment and google-readability-namespace-comments don't support
+# C++17 foo::bar comments yet.
+# hicpp-special-member-functions checks are already handled by
+# cppcoreguidelines-special-member-functions
+
+HeaderFilterRegex: '.*'
+
+AnalyzeTemporaryDtors: true
+
+CheckOptions:
+  - key: cppcoreguidelines-special-member-functions.AllowMissingMoveFunctions
+    value: '1'
+  - key:             llvm-namespace-comment.ShortNamespaceLines
+    value:           '20'
+  - key:             readability-braces-around-statements.ShortStatementLines
+    value:           '2'
+  - key:             readability-identifier-naming.ClassCase
+    value:           lower_case
+  - key:             readability-identifier-naming.EnumCase
+    value:           lower_case
+  - key:             readability-identifier-naming.FunctionCase
+    value:           lower_case
+  - key:             readability-identifier-naming.TemplateParameterCase
+    value:           CamelCase
+  - key:             readability-identifier-naming.UnionCase
+    value:           lower_case
+  - key:             readability-identifier-naming.VariableCase
+    value:           lower_case
+...

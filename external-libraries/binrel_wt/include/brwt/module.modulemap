@@ -1,0 +1,7 @@
+module brwt {
+  requires cplusplus
+  umbrella "."
+  explicit module * {
+    export *
+  }
+}
