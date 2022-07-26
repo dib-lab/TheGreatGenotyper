@@ -21,6 +21,7 @@
 #include "load/load_graph.hpp"
 #include "load/load_annotated_graph.hpp"
 #include "cli/align.hpp"
+#include <json/json.h>
 
 
 namespace mtg {

@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.19)
 cmake_policy(SET CMP0015 NEW)
 
 # Read version from JSON
-file(READ ${CMAKE_SOURCE_DIR}/../package.json MY_JSON_STRING)
+file(READ ${CMAKE_SOURCE_DIR}/package.json MY_JSON_STRING)
 string(JSON VERSION GET ${MY_JSON_STRING} version)
 message(STATUS "Current MetaGraph version: ${VERSION}")
 

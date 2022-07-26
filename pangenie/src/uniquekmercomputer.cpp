@@ -31,7 +31,7 @@ void unique_kmers(DnaSequence& allele, unsigned char index, size_t kmer_size, ma
 	}
 }
 
-UniqueKmerComputer::UniqueKmerComputer (KmerCounter* genomic_kmers, KmerCounter* read_kmers, VariantReader* variants, string chromosome, size_t kmer_coverage)
+UniqueKmerComputer::UniqueKmerComputer (KmerCounter* genomic_kmers, KmerCounter* read_kmers, VariantReader* variants, string chromosome, map<string, size_t> kmer_coverage)
 	:genomic_kmers(genomic_kmers),
 	 read_kmers(read_kmers),
 	 variants(variants),
@@ -41,14 +41,14 @@ UniqueKmerComputer::UniqueKmerComputer (KmerCounter* genomic_kmers, KmerCounter*
 	jellyfish::mer_dna::k(this->variants->get_kmer_size());
 }
 
-
-void UniqueKmerComputer::compute_unique_kmers(vector<UniqueKmers*>* result, ProbabilityTable* probabilities) {
+void UniqueKmerComputer::compute_unique_kmers(std::map<std::string,std::vector<UniqueKmers*> >* result, std::map<std::string, ProbabilityTable>* probabilities) {
 	size_t nr_variants = this->variants->size_of(this->chromosome);
+        string sampleName="sample";
 	for (size_t v = 0; v < nr_variants; ++v) {
 
 		// set parameters of distributions
 		size_t kmer_size = this->variants->get_kmer_size();
-		double kmer_coverage = compute_local_coverage(this->chromosome, v, 2*kmer_size);
+		double kmer_coverage = compute_local_coverage(sampleName,this->chromosome, v, 2*kmer_size);
 		
 		map <jellyfish::mer_dna, vector<unsigned char>> occurences;
 		const Variant& variant = this->variants->get_variant(this->chromosome, v);
@@ -106,12 +106,12 @@ void UniqueKmerComputer::compute_unique_kmers(vector<UniqueKmers*>* result, Prob
 
 				// skip kmers with "too extreme" counts
 				// TODO: value ok?
-				if (read_kmercount > (2*this->kmer_coverage)) {
+				if (read_kmercount > (2*this->kmer_coverage[sampleName])) {
 					continue;
 				}
 
 				// determine probabilities
-				CopyNumber cn = probabilities->get_probability(kmer_coverage, read_kmercount);
+				CopyNumber cn = probabilities->find(sampleName)->second.get_probability(kmer_coverage, read_kmercount);
 				long double p_cn0 = cn.get_probability_of(0);
 				long double p_cn1 = cn.get_probability_of(1);
 				long double p_cn2 = cn.get_probability_of(2);
@@ -123,7 +123,14 @@ void UniqueKmerComputer::compute_unique_kmers(vector<UniqueKmers*>* result, Prob
 				}
 			}
 		}
-		result->push_back(u);
+
+                auto result_it=result->find(sampleName);
+                if(result_it==result->end())
+                {
+                  result->insert(make_pair(sampleName,std::vector<UniqueKmers*>()));
+                  result_it=result->find(sampleName);
+                }
+		result_it->second.push_back(u);
 	}
 }
 
@@ -145,11 +152,13 @@ void UniqueKmerComputer::compute_empty(vector<UniqueKmers*>* result) const {
 	}
 }
 
-unsigned short UniqueKmerComputer::compute_local_coverage(string chromosome, size_t var_index, size_t length) {
+unsigned short UniqueKmerComputer::compute_local_coverage(string sampleName, string chromosome, size_t var_index, size_t length) {
 	DnaSequence left_overhang;
 	DnaSequence right_overhang;
 	size_t total_coverage = 0;
 	size_t total_kmers = 0;
+
+        size_t sample_kmer_coverage=this->kmer_coverage[sampleName];
 
 	this->variants->get_left_overhang(chromosome, var_index, length, left_overhang);
 	this->variants->get_right_overhang(chromosome, var_index, length, right_overhang);
@@ -164,7 +173,7 @@ unsigned short UniqueKmerComputer::compute_local_coverage(string chromosome, siz
 		if (genomic_count == 1) {
 			size_t read_count = this->read_kmers->getKmerAbundance(kmer.first);
 			// ignore too extreme counts
-			if ( (read_count < (this->kmer_coverage/4)) || (read_count > (this->kmer_coverage*4)) ) continue;
+			if ( (read_count < (sample_kmer_coverage/4)) || (read_count > (sample_kmer_coverage*4)) ) continue;
 			total_coverage += read_count;
 			total_kmers += 1;
 		}
@@ -173,6 +182,6 @@ unsigned short UniqueKmerComputer::compute_local_coverage(string chromosome, siz
 	if ((total_kmers > 0) && (total_coverage > 0)){
 		return total_coverage / total_kmers;
 	} else {
-		return this->kmer_coverage;
+		return sample_kmer_coverage;
 	}
 }

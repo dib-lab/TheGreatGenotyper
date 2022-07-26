@@ -29,25 +29,25 @@ struct Results {
 };
 
 void run_genotyping_paths(string chromosome, KmerCounter* genomic_kmer_counts, KmerCounter* read_kmer_counts, VariantReader* variant_reader, ProbabilityTable* probs, size_t kmer_abundance_peak, bool only_genotyping, bool only_phasing, long double effective_N, Results* results) {
-	Timer timer;
-	// determine sets of kmers unique to each variant region
-	UniqueKmerComputer kmer_computer(genomic_kmer_counts, read_kmer_counts, variant_reader, chromosome, kmer_abundance_peak);
-	std::vector<UniqueKmers*> unique_kmers;
-	kmer_computer.compute_empty(&unique_kmers);
-	// construct HMM and run genotyping/phasing
-	HMM hmm(&unique_kmers, probs, !only_phasing, !only_genotyping, 1.26, false, effective_N);
-	// store the results
-	{
-		lock_guard<mutex> lock (results->result_mutex);
-		results->result.insert(pair<string, vector<GenotypingResult>> (chromosome, move(hmm.get_genotyping_result())));
-	}
-	// destroy unique kmers
-	for (size_t i = 0; i < unique_kmers.size(); ++i) {
-		delete unique_kmers[i];
-		unique_kmers[i] = nullptr;
-	}
-	lock_guard<mutex> lock (results->result_mutex);
-	results->runtimes.insert(pair<string,double>(chromosome, timer.get_total_time()));
+//	Timer timer;
+//	// determine sets of kmers unique to each variant region
+//	UniqueKmerComputer kmer_computer(genomic_kmer_counts, read_kmer_counts, variant_reader, chromosome, kmer_abundance_peak);
+//	std::vector<UniqueKmers*> unique_kmers;
+//	kmer_computer.compute_empty(&unique_kmers);
+//	// construct HMM and run genotyping/phasing
+//	HMM hmm(&unique_kmers, probs, !only_phasing, !only_genotyping, 1.26, false, effective_N);
+//	// store the results
+//	{
+//		lock_guard<mutex> lock (results->result_mutex);
+//		results->result.insert(pair<string, vector<GenotypingResult>> (chromosome, move(hmm.get_genotyping_result())));
+//	}
+//	// destroy unique kmers
+//	for (size_t i = 0; i < unique_kmers.size(); ++i) {
+//		delete unique_kmers[i];
+//		unique_kmers[i] = nullptr;
+//	}
+//	lock_guard<mutex> lock (results->result_mutex);
+//	results->runtimes.insert(pair<string,double>(chromosome, timer.get_total_time()));
 }
 
 int main (int argc, char* argv[])

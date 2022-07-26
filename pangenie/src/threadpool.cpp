@@ -1,7 +1,7 @@
 #include "threadpool.hpp"
 
 using namespace std;
-
+using namespace pangenie;
 ThreadPool::ThreadPool (size_t nr_threads) 
 	: nr_threads (nr_threads),
 	  finished (false),

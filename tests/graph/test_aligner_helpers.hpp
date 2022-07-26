@@ -9,7 +9,7 @@
 #include "graph/alignment/dbg_aligner.hpp"
 #include "graph/representation/base/sequence_graph.hpp"
 
-
+#include <json/json.h>
 namespace {
 
 using namespace mtg;

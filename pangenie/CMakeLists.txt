@@ -8,13 +8,13 @@ enable_testing()
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(JELLYFISH REQUIRED jellyfish-2.0)
 
-link_directories(${JELLYFISH_LIBRARY_DIRS})
+link_directories(${JELLYFISH_LIBRARY_DIRS} ${CMAKE_BINARY_DIR}/../)
 
 message(${CMAKE_BINARY_DIR})
 include_directories(${JELLYFISH_INCLUDE_DIRS} ${CMAKE_BINARY_DIR}/src )
 add_compile_options(${JELLYFISH_CFLAGS_OTHER})
 
-set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wno-long-long -Wno-unknown-pragmas -O3")
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wno-long-long -Wno-unknown-pragmas -O3 -fopenmp")
 
 add_subdirectory(src)
 #add_subdirectory(tests)

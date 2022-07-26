@@ -16,6 +16,7 @@ namespace cli {
 class Config {
   public:
     Config(int argc, char *argv[]);
+    Config();
 
     static constexpr auto UNINITIALIZED_STR = "\0";
 

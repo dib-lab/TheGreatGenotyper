@@ -27,7 +27,9 @@ void print_welcome_message() {
     fprintf(stderr, "### Welcome to MetaGraph! ###\n");
     fprintf(stderr, "#############################\n\n");
 }
+Config::Config() {
 
+}
 Config::Config(int argc, char *argv[]) {
     // provide help overview if no identity was given
     if (argc == 1) {

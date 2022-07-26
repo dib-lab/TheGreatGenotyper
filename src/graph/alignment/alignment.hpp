@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-#include <json/json.h>
+
 #include <spdlog/fmt/fmt.h>
 
 #include "aligner_cigar.hpp"
@@ -18,6 +18,9 @@
 #include "annotation/representation/base/annotation.hpp"
 #include "common/vector.hpp"
 
+namespace Json{
+class Value;
+}
 
 namespace mtg {
 namespace graph {

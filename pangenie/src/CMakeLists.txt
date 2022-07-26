@@ -31,6 +31,7 @@ add_executable(PanGenie-graph pggtyper-graph.cpp)
 
 target_link_libraries(PanGenie PanGenieLib ${JELLYFISH_LDFLAGS_OTHER})
 target_link_libraries(PanGenie PanGenieLib ${JELLYFISH_LIBRARIES})
+target_link_libraries(PanGenie metagraph-core metagraph-cli)
 
 #target_link_libraries(PanGenie-kmers PanGenieLib ${JELLYFISH_LDFLAGS_OTHER})
 #target_link_libraries(PanGenie-kmers PanGenieLib ${JELLYFISH_LIBRARIES})

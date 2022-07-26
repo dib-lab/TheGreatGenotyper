@@ -7,7 +7,7 @@
 #include "common/logger.hpp"
 #include "common/seq_tools/reverse_complement.hpp"
 #include "graph/representation/rc_dbg.hpp"
-
+#include <json/json.h>
 
 namespace mtg {
 namespace graph {

@@ -10,13 +10,16 @@
 #include <variant>
 #include <optional>
 
-#include <json/json.h>
+
 #include <sdsl/int_vector.hpp>
 
 #include "common/vector.hpp"
 #include "graph/alignment/alignment.hpp"
 
 class ThreadPool;
+namespace Json{
+class Value;
+}
 
 namespace mtg {
 
