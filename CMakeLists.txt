@@ -606,5 +606,5 @@ endif()
 #-------------------
 # The Great Genotyper
 #-------------------
-
+add_subdirectory(DatabaseBuilder/)
 add_subdirectory(pangenie/)
