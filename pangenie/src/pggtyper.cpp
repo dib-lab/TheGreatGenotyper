@@ -19,12 +19,7 @@
 #include "timer.hpp"
 #include "threadpool.hpp"
 #include "pathsampler.hpp"
-#include "cli/load/load_graph.cpp"
-#include "cli/stats.hpp"
-#include "cli/query.hpp"
-#include "cli/config/config.hpp"
-#include "cli/load/load_annotated_graph.hpp"
-#include "graph/annotated_dbg.hpp"
+#include "SamplesDatabase.h"
 
 using namespace std;
 
@@ -55,7 +50,7 @@ void check_input_file(string &filename) {
 
 struct UniqueKmersMap {
 	mutex kmers_mutex;
-	map<string,
+	vector<
             map<string, vector<UniqueKmers*> >
             > unique_kmers;
 	map<string, double> runtimes;
@@ -63,63 +58,56 @@ struct UniqueKmersMap {
 
 struct Results {
 	mutex result_mutex;
-	map<string,
+        vector<
             map<string, vector<GenotypingResult>>
             > result;
 	map<string, double> runtimes;
 };
 
-void prepare_unique_kmers(string chromosome, KmerCounter* genomic_kmer_counts, KmerCounter* read_kmer_counts, VariantReader* variant_reader, map<string,ProbabilityTable>* probs, UniqueKmersMap* unique_kmers_map, map<string,size_t> kmer_coverage) {
+
+
+void prepare_unique_kmers(string chromosome, KmerCounter* genomic_kmer_counts, SamplesDatabase* database, VariantReader* variant_reader,UniqueKmersMap* unique_kmers_map) {
 	Timer timer;
-	UniqueKmerComputer kmer_computer(genomic_kmer_counts, read_kmer_counts, variant_reader, chromosome, kmer_coverage);
-	map<string,std::vector<UniqueKmers*> > unique_kmers;
+	UniqueKmerComputer kmer_computer(genomic_kmer_counts, database,variant_reader, chromosome);
+	std::vector< std::vector<UniqueKmers*> > unique_kmers;
+        unsigned numSamples= database->getNumSamples();
         // this needs to be map or vector of vectors for each sample
-	kmer_computer.compute_unique_kmers(&unique_kmers, probs);
+	kmer_computer.compute_unique_kmers(&unique_kmers);
 	// store the results
 	{
 		lock_guard<mutex> lock_kmers (unique_kmers_map->kmers_mutex);
-                for(auto uniqPair:unique_kmers) {
-                  string sampleName=uniqPair.first;
-                  if (unique_kmers_map->unique_kmers.find(sampleName) ==
-                      unique_kmers_map->unique_kmers.end()) {
-                    unique_kmers_map->unique_kmers[sampleName] =
-                        map<string, vector<UniqueKmers *>>();
-                  }
-
+                for(unsigned sampleID=0; sampleID<numSamples ;sampleID++) {
                   auto tmp = pair<string, vector<UniqueKmers *>>(
-                      chromosome, move(unique_kmers[sampleName]));
-                  unique_kmers_map->unique_kmers[sampleName].insert(tmp);
+                      chromosome, move(unique_kmers[sampleID]));
+                  unique_kmers_map->unique_kmers[sampleID].insert(tmp);
                 }
                 unique_kmers_map->runtimes[chromosome]+=timer.get_total_time();
 	}
 }
 
-void run_genotyping(string chromosome, vector<UniqueKmers*>* unique_kmers, ProbabilityTable* probs, bool only_genotyping, bool only_phasing, long double effective_N, vector<unsigned short>* only_paths, Results* results) {
+void run_genotyping(string chromosome,unsigned  sampleID, vector<UniqueKmers*>* unique_kmers, ProbabilityTable* probs, bool only_genotyping, bool only_phasing, long double effective_N, vector<unsigned short>* only_paths, Results* results) {
 	Timer timer;
 	// construct HMM and run genotyping/phasing
 	HMM hmm(unique_kmers, probs, !only_phasing, !only_genotyping, 1.26, false, effective_N, only_paths, false);
 	// store the results
 	{
 		lock_guard<mutex> lock_result (results->result_mutex);
-                cout<<"Here"<<endl;
-                if (results->result.find("sample") == results->result.end()) {
-                  results->result["sample"] =  map<string, vector<GenotypingResult>>();
-                }
+
 		// combine the new results to the already existing ones (if present)
-		if (results->result["sample"].find(chromosome) == results->result["sample"].end()) {
-			results->result["sample"].insert(pair<string, vector<GenotypingResult>> (chromosome, hmm.move_genotyping_result()));
+		if (results->result[sampleID].find(chromosome) == results->result[sampleID].end()) {
+			results->result[sampleID].insert(pair<string, vector<GenotypingResult>> (chromosome, hmm.move_genotyping_result()));
 		} else {
 			// combine newly computed likelihoods with already exisiting ones
 			size_t index = 0;
 			vector<GenotypingResult> genotypes = hmm.move_genotyping_result();
 			for (auto likelihoods : genotypes) {
-				results->result["sample"].at(chromosome).at(index).combine(likelihoods);
+				results->result[sampleID].at(chromosome).at(index).combine(likelihoods);
 				index += 1;
 			}
 		}
 		// normalize the likelihoods after they have been combined
-		for (size_t i = 0; i < results->result["sample"].at(chromosome).size(); ++i) {
-			results->result["sample"].at(chromosome).at(i).normalize();
+		for (size_t i = 0; i < results->result[sampleID].at(chromosome).size(); ++i) {
+			results->result[sampleID].at(chromosome).at(i).normalize();
 		}
 
                 if (results->runtimes.find(chromosome) == results->runtimes.end()) {
@@ -127,7 +115,6 @@ void run_genotyping(string chromosome, vector<UniqueKmers*>* unique_kmers, Proba
                 } else {
                   results->runtimes[chromosome] += timer.get_total_time();
                 }
-                cout<<"Out"<<endl;
 	}
 
 }
@@ -142,55 +129,6 @@ bool ends_with (string const &full_string, string const ending) {
 
 int main (int argc, char* argv[])
 {
-//
-//  cout<<"Hello World"<<endl;
-//  string graph_path=argv[1];
-//  string annotation_path=argv[2];
-//
-//  std::shared_ptr<mtg::graph::DeBruijnGraph> graph=mtg::cli::load_critical_dbg(graph_path);
-//  mtg::cli::print_stats(*graph);
-//  auto config = std::make_unique<mtg::cli::Config>();
-//  config->query_counts=true;
-//  config->infbase=graph_path;
-//  config->infbase_annotators.push_back(annotation_path);
-//  std::unique_ptr<mtg::graph::AnnotatedDBG> anno_graph=mtg::cli::initialize_annotated_dbg(graph, *config);;
-//
-//  mtg::cli::QuerySequence query;
-//  query.id=0;
-//  query.name="ERCC-00165";
-//  query.sequence="GATATGCGTTACGTGAGTCTGATAGCAGTTCACTACCTGGATATCTGATCCACTAGCTCGATCATGCTCACCCATAGTTTATCTGCATCACTCGTACTGAAATGCTCACATCGCAGGTAGAGCAGCATCGTAGAGCGTCAAGCTGCATCCTAGCGTCATGAGTCATAGTACCTCATGCTCACGTGATCTACCCTAGCTGACCGCTAATGACGGCAGTGCAACCTGAGATACCGACGGCATACTGTCGTCAACGTCAGGCAATGTGTCCGAACGGCGAGCTACGTCGCCTCACGGAGTAATCGCGTCCCTCTAGGTATAGTGCCGTCGGTTCAGGTCATATGTCGCGGGTTCTGCACATATCACGGACGTATCGCTATCAGACGGACGCTCTCGGACCTAAACCGTAGCTCTCGGCAAGATCGTCCTCGTCTCGAATATAGCGCCCTAGTGCTGCAAATGTCACCGCTATCTCGTAAGGGGTCCGTCTGTTGAGTTAGGCCTCCTCTCGTTGGATGTGAGCTCGGTTGCTTGGATGGTGCAGCTTACTTCGCGTACCTGCTGTTTGCATCAGTCCTCTGCATCTATAATCGCGTATCTCTCTCTAGTAGACCATATAGCCATCTAAGCGCTCGATATTCCACCTAAGTGGCGCCTATTGAACTAAGTGGCAGCCGAATGGACTATCGCTCCTCGATATGTACGGATAGGCCACGGCATGTACGAGCATAAGCCGAACTGCACGAGCATACCCGACACTGATCTGAGAGTCGCTTAAATCATCTGCGTGTCTTAGAGCTTATCGCCATGTCTGTCAACTGTACTGTCATCCTGTAACTGTAGCGTATGTGAAAAAAAAAAAAAAAAAAAAAAAA";
-//
-//  cout<<"Query Size = "<<query.sequence.size()<<endl;
-//  float discovery_fraction=0.7;
-//  float  presence_fraction=0.0;
-//
-//  typedef std::vector<std::tuple<string, size_t, std::vector<size_t>>> LabelCountAbundancesVec;
-//
-//  LabelCountAbundancesVec result= anno_graph->get_kmer_counts(query.sequence,
-//                                                    100,
-//                                                    discovery_fraction,
-//                                                    presence_fraction);
-//  for(auto t: result)
-//  {
-//    cout<<"Label = "<<std::get<0>(t)<<endl;
-//    cout<<"size = "<<std::get<1>(t)<<endl;
-//    auto vec=std::get<2>(t);
-//    cout<<"Vec Size = "<<vec.size();
-//    unsigned nonZero=0;
-//    for(unsigned i=0;i<vec.size();i++)
-//    {
-//      if(i%60 == 0)
-//        cout<<endl;
-//      cout<<vec[i]<<" ";
-//      if(vec[i]!=0)
-//        nonZero++;
-//    }
-//    cout<<endl;
-//    cout<<"Non Zero = "<<nonZero<<endl;
-//    cout<<endl;
-//  }
-//
-//          return 0;
 	Timer timer;
 	double time_preprocessing;
 	double time_kmer_counting;
@@ -202,7 +140,9 @@ int main (int argc, char* argv[])
 	cerr << endl;
 	cerr << "program: PanGenie - genotyping and phasing based on kmer-counting and known haplotype sequences." << endl;
 	cerr << "author: Jana Ebler" << endl << endl;
-	string readfile = "";
+	string graphFile = "";
+        string annotFile = "";
+        string descriptionFile= "";
 	string reffile = "";
 	string vcffile = "";
 	size_t kmersize = 31;
@@ -223,12 +163,15 @@ int main (int argc, char* argv[])
 	// parse the command line arguments
 	CommandLineParser argument_parser;
 	argument_parser.add_command("PanGenie [options] -i <reads.fa/fq> -r <reference.fa> -v <variants.vcf>");
-	argument_parser.add_mandatory_argument('i', "sequencing reads in FASTA/FASTQ format or Jellyfish database in jf format. NOTE: INPUT FASTA/Q FILE MUST NOT BE COMPRESSED.");
+	argument_parser.add_mandatory_argument('i', "Metagraph graph path.dbg");
+        argument_parser.add_mandatory_argument('a', "Metagraph annotations containig kmer counts");
+        argument_parser.add_mandatory_argument('f', "Description file .tsv");
+
 	argument_parser.add_mandatory_argument('r', "reference genome in FASTA format. NOTE: INPUT FASTA FILE MUST NOT BE COMPRESSED.");
 	argument_parser.add_mandatory_argument('v', "variants in VCF format. NOTE: INPUT VCF FILE MUST NOT BE COMPRESSED.");
 	argument_parser.add_optional_argument('o', "result", "prefix of the output files. NOTE: the given path must not include non-existent folders.");
-	argument_parser.add_optional_argument('k', "31", "kmer size");
-	argument_parser.add_optional_argument('s', "sample", "name of the sample (will be used in the output VCFs)");
+	//argument_parser.add_optional_argument('k', "31", "kmer size");
+//	argument_parser.add_optional_argument('s', "sample", "name of the sample (will be used in the output VCFs)");
 	argument_parser.add_optional_argument('j', "1", "number of threads to use for kmer-counting");
 	argument_parser.add_optional_argument('t', "1", "number of threads to use for core algorithm. Largest number of threads possible is the number of chromosomes given in the VCF");
 //	argument_parser.add_optional_argument('n', "0.00001", "effective population size");
@@ -250,10 +193,12 @@ int main (int argc, char* argv[])
 	} catch (const exception& e) {
 		return 0;
 	}
-	readfile = argument_parser.get_argument('i');
+	graphFile = argument_parser.get_argument('i');
+        annotFile = argument_parser.get_argument('a');
+        descriptionFile= argument_parser.get_argument('f');
 	reffile = argument_parser.get_argument('r');
 	vcffile = argument_parser.get_argument('v');
-	kmersize = stoi(argument_parser.get_argument('k'));
+	//kmersize = stoi(argument_parser.get_argument('k'));
 	outname = argument_parser.get_argument('o');
 	sample_name = argument_parser.get_argument('s');
 	nr_jellyfish_threads = stoi(argument_parser.get_argument('j'));
@@ -287,7 +232,18 @@ int main (int argc, char* argv[])
 	// check if input files exist and are uncompressed
 	check_input_file(reffile);
 	check_input_file(vcffile);
-	check_input_file(readfile);
+        check_input_file(descriptionFile);
+        check_input_file(graphFile);
+        check_input_file(annotFile);
+
+        cerr << "Load Database ..."<< endl;
+        SamplesDatabase database(graphFile,annotFile,descriptionFile,regularization);
+        kmersize=database.getKSize();
+        unsigned numSamples= database.getNumSamples();
+
+        struct rusage r_usageD;
+        getrusage(RUSAGE_SELF, &r_usageD);
+        cerr << "#### Memory usage until now: " << (r_usageD.ru_maxrss / 1E6) << " GB ####" << endl;
 
 	// read allele sequences and unitigs inbetween, write them into file
 	cerr << "Determine allele sequences ..." << endl;
@@ -316,29 +272,9 @@ int main (int argc, char* argv[])
 
 	// UniqueKmers for each chromosome
 	UniqueKmersMap unique_kmers_list;
-        map<string,ProbabilityTable>  probabilities;
+        unique_kmers_list.unique_kmers.resize(numSamples);
 
 	{
-		KmerCounter* read_kmer_counts = nullptr;
-		// determine kmer copynumbers in reads
-		if (readfile.substr(std::max(3, (int) readfile.size())-3) == std::string(".jf")) {
-			cerr << "Read pre-computed read kmer counts ..." << endl;
-			jellyfish::mer_dna::k(kmersize);
-			read_kmer_counts = new JellyfishReader(readfile, kmersize);
-		} else {
-			cerr << "Count kmers in reads ..." << endl;
-			if (count_only_graph) {
-				read_kmer_counts = new JellyfishCounter(readfile, segment_file, kmersize, nr_jellyfish_threads, hash_size);
-			} else {
-				read_kmer_counts = new JellyfishCounter(readfile, kmersize, nr_jellyfish_threads, hash_size);
-			}
-		}
-
-		size_t kmer_abundance_peak = read_kmer_counts->computeHistogram(10000, count_only_graph, outname + "_histogram.histo");
-                cerr << "Computed kmer abundance peak: " << kmer_abundance_peak << endl;
-
-                map<string,size_t> kmer_abundance_peaks_per_sample;
-                kmer_abundance_peaks_per_sample["sample"]=kmer_abundance_peak;
 		// count kmers in allele + reference sequence
 		cerr << "Count kmers in genome ..." << endl;
 		JellyfishCounter genomic_kmer_counts (segment_file, kmersize, nr_jellyfish_threads, hash_size);
@@ -359,8 +295,6 @@ int main (int argc, char* argv[])
 			cerr << "Warning: using " << nr_cores_uk << " for determining unique kmers." << endl;
 		}
 
-		// precompute probabilities
-		probabilities["sample"] = ProbabilityTable(kmer_abundance_peak / 4, kmer_abundance_peak*4, 2*kmer_abundance_peak, regularization);
 
 		{
 			// create thread pool with at most nr_chromosomes threads
@@ -369,8 +303,7 @@ int main (int argc, char* argv[])
 				VariantReader* variants = &variant_reader;
 				UniqueKmersMap* result = &unique_kmers_list;
 				KmerCounter* genomic_counts = &genomic_kmer_counts;
-                                map<string,ProbabilityTable>* probs = &probabilities;
-				function<void()> f_unique_kmers = bind(prepare_unique_kmers, chromosome, genomic_counts, read_kmer_counts, variants, probs, result, kmer_abundance_peaks_per_sample);
+				function<void()> f_unique_kmers = bind(prepare_unique_kmers, chromosome, genomic_counts, &database, variants, result);
 				threadPool.submit(f_unique_kmers);
 			}
 		}
@@ -380,9 +313,7 @@ int main (int argc, char* argv[])
 		getrusage(RUSAGE_SELF, &r_usage2);
 		cerr << "#### Memory usage until now: " << (r_usage2.ru_maxrss / 1E6) << " GB ####" << endl;
 
-		delete read_kmer_counts;
-		read_kmer_counts = nullptr;
-		time_unique_kmers = timer.get_interval_time();
+                time_unique_kmers = timer.get_interval_time();
 	}
 
 	// TODO: only for analysis
@@ -440,21 +371,21 @@ int main (int argc, char* argv[])
 
 	// run genotyping
 	Results results;
+        results.result.resize(numSamples);
 	{
 		// create thread pool
                 pangenie::ThreadPool threadPool (nr_core_threads);
-                for(auto uniqPair: unique_kmers_list.unique_kmers) {
-                  string sampleName= uniqPair.first;
+                for(unsigned sampleID=0; sampleID<numSamples ;sampleID++)  {
                   for (auto chromosome : chromosomes) {
                     vector<UniqueKmers *> *unique_kmers =
-                        &unique_kmers_list.unique_kmers[sampleName][chromosome];
-                    ProbabilityTable *probs = &(probabilities.find(sampleName)->second);
+                        &unique_kmers_list.unique_kmers[sampleID][chromosome];
+                    ProbabilityTable *probs = database.getSampleProbability(sampleID);
                     Results *r = &results;
                     // if requested, run phasing first
                     if (!only_genotyping) {
                       vector<unsigned short> *only_paths = &phasing_paths;
                       function<void()> f_genotyping =
-                          bind(run_genotyping, chromosome, unique_kmers, probs,
+                          bind(run_genotyping, chromosome, sampleID,unique_kmers, probs,
                                false, true, effective_N, only_paths, r);
                       threadPool.submit(f_genotyping);
                     }
@@ -464,7 +395,7 @@ int main (int argc, char* argv[])
                       for (size_t s = 0; s < subsets.size(); ++s) {
                         vector<unsigned short> *only_paths = &subsets[s];
                         function<void()> f_genotyping = bind(
-                            run_genotyping, chromosome, unique_kmers, probs,
+                            run_genotyping, chromosome, sampleID,unique_kmers, probs,
                             true, false, effective_N, only_paths, r);
                         threadPool.submit(f_genotyping);
                       }
@@ -476,11 +407,11 @@ int main (int argc, char* argv[])
 	timer.get_interval_time();
 
 	// output VCF
-        for(auto result_pair:results.result) {
+        for(unsigned sampleID=0; sampleID<numSamples ;sampleID++) {
 
-          string sampleName=result_pair.first;
-          auto result= result_pair.second;
-
+          string sampleName= database.getSampleName(sampleID);
+          auto result= results.result[sampleID];
+          variant_reader.set_sampleName(sampleName);
           // prepare output files
           if (! only_phasing)
             variant_reader.open_genotyping_outfile(outname+ "_" +sampleName + "_genotyping.vcf");
@@ -499,14 +430,14 @@ int main (int argc, char* argv[])
 
               variant_reader.write_genotypes_of(
                   it->first, it->second,
-                  &unique_kmers_list.unique_kmers[sampleName][it->first],
+                  &unique_kmers_list.unique_kmers[sampleID][it->first],
                   ignore_imputed);
             }
             if (!only_genotyping) {
               // output phasing results
               variant_reader.write_phasing_of(
                   it->first, it->second,
-                  &unique_kmers_list.unique_kmers[sampleName][it->first],
+                  &unique_kmers_list.unique_kmers[sampleID][it->first],
                   ignore_imputed);
             }
           }
@@ -542,8 +473,8 @@ int main (int argc, char* argv[])
 
 	// destroy UniqueKmers
         for(auto uniq: unique_kmers_list.unique_kmers) {
-          for (auto it = uniq.second.begin();
-               it != uniq.second.end(); ++it) {
+          for (auto it = uniq.begin();
+               it != uniq.end(); ++it) {
             for (size_t i = 0; i < it->second.size(); ++i) {
               delete it->second[i];
               it->second[i] = nullptr;

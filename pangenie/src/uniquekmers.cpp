@@ -10,6 +10,16 @@ UniqueKmers::UniqueKmers(size_t variant_position)
 	 local_coverage(0)
 {}
 
+UniqueKmers::UniqueKmers(const UniqueKmers& p1)
+{
+  variant_pos=p1.variant_pos;
+  current_index=p1.current_index;
+  kmer_to_count=p1.kmer_to_count;
+  alleles=p1.alleles;
+  path_to_allele=p1.path_to_allele;
+  local_coverage=p1.local_coverage;
+}
+
 size_t UniqueKmers::get_variant_position() {
 	return this->variant_pos;
 }

@@ -53,7 +53,7 @@ public:
 	size_t nr_of_paths() const;
 	void get_left_overhang(std::string chromosome, size_t index, size_t length, DnaSequence& result) const;
 	void get_right_overhang(std::string chromosome, size_t index, size_t length, DnaSequence& result) const;
-
+        void set_sampleName(std::string name);
 private:
 	FastaReader fasta_reader;
 	size_t kmer_size;

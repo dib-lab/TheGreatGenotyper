@@ -20,7 +20,8 @@ public:
 	* @param variant_position genomic variant position
 	**/
 	UniqueKmers(size_t variant_position);
-	size_t get_variant_position();
+        UniqueKmers(const UniqueKmers& p1);
+        size_t get_variant_position();
 	/** insert empty allele (no kmers) **/
 	void insert_empty_allele(unsigned char allele_id, bool is_undefined = false);
 	/** insert a path covering the given allele **/

@@ -663,3 +663,8 @@ void VariantReader::get_right_overhang(std::string chromosome, size_t index, siz
 	size_t overhang_start = cur_end;
 	this->fasta_reader.get_subsequence(chromosome, overhang_start, overhang_end, result);
 }
+
+void VariantReader::set_sampleName(std::string name)
+{
+  sample=name;
+}
