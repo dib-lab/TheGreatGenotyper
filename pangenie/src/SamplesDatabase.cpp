@@ -57,15 +57,19 @@ ProbabilityTable* SamplesDatabase::getSampleProbability(unsigned sampleIndex)
 void SamplesDatabase::getKmerCounts(vector<string>& seqs,vector<unordered_map<string,uint32_t>> &kmerCounts)
 {
   kmerCounts.resize(samples.size());
-  float discovery_fraction=0.7;
+  float discovery_fraction=0.1;
   float  presence_fraction=0.0;
   for(auto sequence: seqs)
   {
+    if(sequence.size()<kSize)
+      continue;
+    
     LabelCountAbundancesVec result= anno_graph->get_kmer_counts(sequence,
                                                                 samples.size(),
                                                                 discovery_fraction,
                                                                  presence_fraction);
-    size_t numKmers=sequence.size()-kSize+1;
+    size_t numKmers=sequence.size()+1-kSize;
+
     vector<string> kmers(numKmers);
     for(unsigned i=0; i < numKmers;i++)
     {
