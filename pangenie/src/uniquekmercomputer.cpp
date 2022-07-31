@@ -121,12 +121,12 @@ void UniqueKmerComputer::compute_unique_kmers(std::vector<std::vector<UniqueKmer
 
                 for(unsigned sampleID=0; sampleID< numSamples ; sampleID++) {
 		  string sampleName=database->getSampleName(sampleID);
-		  bool debug= (sampleName=="SRR16937309");
+		  //bool debug= (sampleName=="SRR17029944");
                   UniqueKmers* sampleU=new UniqueKmers(*u);
                   unsigned sampleKmerCoverage=database->getKmerCoverage(sampleID);
                   sampleU->set_coverage(localCoverage[sampleID]);
-		  if(debug) cerr<<"Local Coverage "<<localCoverage[sampleID]<<endl;
-		  debug=false;
+		  // if(debug) cerr<<"Local Coverage "<<localCoverage[sampleID]<<"\n";
+		  //		  debug=false;
                   ProbabilityTable* probabilities=database->getSampleProbability(sampleID);
                   size_t nr_kmers_used = 0;
                   for (auto &kmer : occurences) {
@@ -153,8 +153,8 @@ void UniqueKmerComputer::compute_unique_kmers(std::vector<std::vector<UniqueKmer
                     if ((p_cn0 > 0) || (p_cn1 > 0) || (p_cn2 > 0)) {
                       nr_kmers_used += 1;
                       sampleU->insert_kmer(read_kmercount, kmer.second);
-		      if(debug)
-			cerr<<"KMER"<<"\t"<<kmer.first<<"\t"<<read_kmercount<<endl;
+		      //  if(debug)
+		      //	cerr<<"KMERFN"<<"\t"<<kmer.first<<"\t"<<read_kmercount<<"\n";
                     }
                   }
 
@@ -212,7 +212,7 @@ void UniqueKmerComputer::compute_local_coverage(string chromosome, size_t var_in
 	  size_t total_coverage = 0;
 	  size_t total_kmers = 0;
 	  string sampleName=database->getSampleName(sampleID);
-	  bool debug= (sampleName=="SRR16937309");
+	  //bool debug= (sampleName=="SRR17029944");
 	  
 
           for (auto &kmer : occurences) {
@@ -222,8 +222,8 @@ void UniqueKmerComputer::compute_local_coverage(string chromosome, size_t var_in
             if (genomic_count == 1) {
               size_t read_count =
                   kmerCounts[sampleID][kmer.first.to_str()];
-	      if(debug)
-		cerr<<"KMER"<<"\t"<<kmer.first.to_str()<<"\t"<<read_count<<endl;
+	      //	      if(debug)
+	      //cerr<<"KMER"<<"\t"<<kmer.first.to_str()<<"\t"<<read_count<<"\n";
               // ignore too extreme counts
               if ((read_count < (sample_kmer_coverage / 4)) ||
                   (read_count > (sample_kmer_coverage * 4)))

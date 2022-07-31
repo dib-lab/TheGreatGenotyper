@@ -63,7 +63,7 @@ void SamplesDatabase::getKmerCounts(vector<string>& seqs,vector<unordered_map<st
   {
     if(sequence.size()<kSize)
       continue;
-    
+
     LabelCountAbundancesVec result= anno_graph->get_kmer_counts(sequence,
                                                                 samples.size(),
                                                                 discovery_fraction,
@@ -83,7 +83,12 @@ void SamplesDatabase::getKmerCounts(vector<string>& seqs,vector<unordered_map<st
         {
           throw std::logic_error("number of kmers doesnt match query result");
         }
-        uint32_t sampleIndex= metaLabel_to_Index[label];
+	auto it=metaLabel_to_Index.find(label);
+	if(it == metaLabel_to_Index.end())
+	{
+	  throw std::logic_error("Sample "+label+" doesnt exist in graph description");
+	}
+        uint32_t sampleIndex= it->second;
         for(unsigned i = 0; i< numKmers; i++)
         {
           kmerCounts[sampleIndex][kmers[i]] = counts[i];
