@@ -1,4 +1,4 @@
 outputFolder:  result/
 tempFolder: /scratch/mshokrof/
-kSize: 21
-
+kSize: 31
+downloadUrls: downloadUrls.csv  

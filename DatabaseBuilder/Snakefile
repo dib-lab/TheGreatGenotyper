@@ -4,14 +4,23 @@ configfile: "config.yaml"
 tmpFolder=config["tempFolder"]
 outputFolder=config["outputFolder"]
 kSize=config["kSize"]
+urlsFile=config["downloadUrls"]
 
+
+urls={}
+for l in open(urlsFile):
+    sample,url=l.strip().split(",")
+    if sample not in urls:
+       urls[sample]=[]
+    urls[sample].append(url)
 
 
 
 tmp=list(filter(lambda x:x.library=="short",pep.samples))
 illuminaSamples=[s.sample_name for s in tmp]
-samples=[(x.sample_name,x.file) for x in tmp]
-samples=dict(samples)
+
+#samples=[(x.sample_name,x.file) for x in tmp]
+#samples=dict(samples)
 
 kmcs=expand("{out}kmc/{experiment}.kmc_pre",out=outputFolder,experiment=illuminaSamples)
 metagraphUnitigs=expand(outputFolder+"unitigs/{sample}.fasta.gz",sample=illuminaSamples)
@@ -20,7 +29,10 @@ annodbgCounts=expand(outputFolder+"columns/{sample}.fasta.gz.column.annodbg.coun
 histograms=expand(outputFolder+"histograms/{sample}.histo",sample=illuminaSamples)
 
 def getFile(name):
-    return samples[name]
+    return list(filter(lambda x:x.sample_name==name,pep.samples))[0].file
+
+def getUrls(name):
+    return urls[name]
 
 
 
@@ -29,17 +41,19 @@ rule all:
         outputFolder+"graph.dbg",
 	outputFolder+"annotation.row_diff_int_brwt.annodbg",
 	outputFolder+"annotation.relaxed.row_diff_int_brwt.annodbg",
-	outputFolder+"graph.desc.tsv"
+	outputFolder+"graph.desc.tsv",
+	outputFolder+"histograms/SRR20551029.histo",
+	outputFolder+"unitigs/SRR20551029.fasta.gz"
 
-
+ruleorder: kmc > kmcDownload
 
 rule kmc:
     input: lambda wildcards: getFile(f"{wildcards.experiment}")         
     params:
         outPrefix=outputFolder +"kmc/{experiment}"
     output:
-         pre=outputFolder +"kmc/{experiment}.kmc_pre",
-	 suf=outputFolder +"kmc/{experiment}.kmc_suf",
+         pre=temp(outputFolder +"kmc/{experiment}.kmc_pre"),
+	 suf=temp(outputFolder +"kmc/{experiment}.kmc_suf"),
 	 lst=outputFolder +"kmc/{experiment}.lst",
     conda:
          "env.yaml"
@@ -53,6 +67,33 @@ rule kmc:
 	echo {input} |tr -s ' ' $'\n' > {output.lst}
 	kmc -ci5 -t{threads} -k{kSize} -m16  @{output.lst} {params.outPrefix} {tmpFolder}$$/ &> {log}
 	rm -rf {tmpFolder}$$/
+        """
+
+rule kmcDownload:
+    params:
+        urls=lambda wildcards: getUrls(f"{wildcards.experiment}"),
+        outPrefix=outputFolder +"kmc/{experiment}"
+    output:
+         pre=temp(outputFolder +"kmc/{experiment}.kmc_pre"),
+	 suf=temp(outputFolder +"kmc/{experiment}.kmc_suf")
+    conda:
+         "env.yaml"
+    threads: 16
+    resources:
+        mem_mb=17000,cores=16
+    log: outputFolder +"kmc/{experiment}.log"
+    shell:
+       	"""
+      	mkdir -p {tmpFolder}$$/
+
+
+	parallel -j1  --gnu "axel --output={tmpFolder}$$/{wildcards.experiment}_{{#}}.fastq.gz {{}}" ::: {params.urls}
+
+	ls {tmpFolder}$$/*.fastq.gz  > {tmpFolder}$$/input.lst
+
+	kmc -ci5 -t{threads} -k{kSize} -m16  @{tmpFolder}$$/input.lst {params.outPrefix} {tmpFolder}$$/ &> {log}
+
+	#rm -rf {tmpFolder}$$/
         """
 
 
