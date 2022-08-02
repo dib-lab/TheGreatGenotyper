@@ -5,6 +5,7 @@ tmpFolder=config["tempFolder"]
 outputFolder=config["outputFolder"]
 kSize=config["kSize"]
 urlsFile=config["downloadUrls"]
+batchSize=config["batchSize"]
 
 
 urls={}
@@ -27,6 +28,21 @@ metagraphUnitigs=expand(outputFolder+"unitigs/{sample}.fasta.gz",sample=illumina
 annodbg=expand(outputFolder+"columns/{sample}.fasta.gz.column.annodbg",sample=illuminaSamples)
 annodbgCounts=expand(outputFolder+"columns/{sample}.fasta.gz.column.annodbg.counts",sample=illuminaSamples)
 histograms=expand(outputFolder+"histograms/{sample}.histo",sample=illuminaSamples)
+
+
+batches=[]
+for i in range(0,len(illuminaSamples),batchSize):
+    start=i
+    end=i+batchSize
+    end=min(end,len(illuminaSamples))
+    batches.append({
+    "unitigs" : metagraphUnitigs[start:end],
+    "columns" : annodbg[start:end],
+    "counts"  : annodbgCounts[start:end]
+    })
+
+batchFlags= expand(outputFolder+"columns/{batchID}/done",batchID= [str(i) for i in range(len(batches))] )
+
 
 def getFile(name):
     return list(filter(lambda x:x.sample_name==name,pep.samples))[0].file
@@ -257,18 +273,20 @@ rule compressGraph:
 
 rule createAnnotationColumns:
     input:
-         unitigs=metagraphUnitigs,
+         unitigs=lambda wildcards: batches[int(f"{wildcards.batchID}")]["unitigs"],
          graph=outputFolder+"graph.dbg"
     output:
-         annodbg,annodbgCounts
+         batchFlag = outputFolder+"columns/{batchID}/done",
+	 #columns = lambda wildcards: batches[int(f"{wildcards.batchID}")]["columns"],
+	 #counts = lambda wildcards: batches[int(f"{wildcards.batchID}")]["counts"]
     params:
-         outputPrefix=outputFolder+"columns/"
+         outputPrefix=outputFolder+"columns/{batchID}/"
     conda:
          "env.yaml"
-    threads: 32
+    threads: 16
     resources:
-        mem_mb=12000,cores=32,mem_gb=10
-    log: outputFolder+"createAnnotationColumns.log"
+        mem_mb=11240,cores=16,mem_gb=10
+    log: outputFolder+"columns/{batchID}.done.log"
     shell:
        	"""
 	metagraph annotate -v \
@@ -279,7 +297,33 @@ rule createAnnotationColumns:
                 -o {params.outputPrefix} \
                 -p {threads} \
                 {input.unitigs} &> {log}
+
+	touch {output.batchFlag}
 	"""
+
+
+
+rule prepareAnnnotationColumns:
+    input:
+         flags=batchFlags
+    output:
+         columns=temp(annodbg)
+    params:
+         outputPrefix=outputFolder+"columns/"
+    conda:
+         "env.yaml"
+    threads: 1
+    resources:
+        mem_mb=2048,cores=1,mem_gb=2
+    log: outputFolder+"prepareoptimizeAnnotationColumns.log"
+    shell:
+       	"""
+	ls {input.flags} | parallel --gnu -j1 "mv {{//}}/*  {params.outputPrefix}"
+	
+	"""
+
+
+
 
 
 rule optimizeAnnotationColumns:
@@ -296,7 +340,7 @@ rule optimizeAnnotationColumns:
          "env.yaml"
     threads: 32
     resources:
-        mem_mb=120000,cores=32,mem_gb=100
+        mem_mb=300000,cores=32,mem_gb=200
     log: outputFolder+"optimizeAnnotationColumns.log"
     shell:
        	"""

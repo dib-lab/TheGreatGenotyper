@@ -2,3 +2,4 @@ outputFolder:  result/
 tempFolder: /scratch/mshokrof/
 kSize: 31
 downloadUrls: downloadUrls.csv  
+batchSize: 3
