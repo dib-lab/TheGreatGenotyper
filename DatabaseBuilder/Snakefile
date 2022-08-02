@@ -148,7 +148,7 @@ rule createGraphDescriptor:
     shell:
        	"""
         echo {params.labels} | tr -s ' ' $'\n' > tmp1
-        ls {input.histograms} | parallel --gnu -j1 -k "grep  'parameters' {{}} | cut -f3" > tmp2
+        parallel --gnu -j1 -k "grep  'parameters' {{}} | cut -f3" ::: {input.histograms} > tmp2
 	echo {input.unitigs}| tr -s ' ' $'\n' > tmp3
         paste -d'\t' tmp1 tmp2 tmp3 > {output.description}
 	"""
