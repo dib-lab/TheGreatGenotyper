@@ -7,13 +7,22 @@ kSize=config["kSize"]
 urlsFile=config["downloadUrls"]
 batchSize=config["batchSize"]
 
+kmcMinCount=5
+if "kmcMinCount" in config:
+   kmcMinCount= config["kmcMinCount"]
+
+
 
 urls={}
+urlsByFileName={}
 for l in open(urlsFile):
     sample,url=l.strip().split(",")
     if sample not in urls:
        urls[sample]=[]
-    urls[sample].append(url)
+    file=url.split("/")[-1]
+    fileName=outputFolder+"fastq/"+file
+    urls[sample].append(fileName)
+    urlsByFileName[file]=url
 
 
 
@@ -45,12 +54,16 @@ batchFlags= expand(outputFolder+"columns/{batchID}/done",batchID= [str(i) for i 
 
 
 def getFile(name):
-    return list(filter(lambda x:x.sample_name==name,pep.samples))[0].file
+    sample=list(filter(lambda x:x.sample_name==name,pep.samples))
+    if len(sample) >0 and hasattr(sample[0], 'file'):
+       return sample[0].file
+    elif name in urls:
+       return urls[name]
+    else:
+       raise Exception("No file description form sample %s in sub_samble.csv or "%(name,urlsFile))
 
-def getUrls(name):
-    return urls[name]
-
-
+	
+localrules: all, createGraphDescriptor, prepareAnnnotationColumns, Download
 
 rule all:
     input:
@@ -58,10 +71,7 @@ rule all:
 	outputFolder+"annotation.row_diff_int_brwt.annodbg",
 	outputFolder+"annotation.relaxed.row_diff_int_brwt.annodbg",
 	outputFolder+"graph.desc.tsv",
-	outputFolder+"histograms/SRR20551029.histo",
-	outputFolder+"unitigs/SRR20551029.fasta.gz"
 
-ruleorder: kmc > kmcDownload
 
 rule kmc:
     input: lambda wildcards: getFile(f"{wildcards.experiment}")         
@@ -74,6 +84,7 @@ rule kmc:
     conda:
          "env.yaml"
     threads: 16
+    priority: 20
     resources:
         mem_mb=17000,cores=16
     log: outputFolder +"kmc/{experiment}.log"
@@ -81,36 +92,56 @@ rule kmc:
        	"""
       	mkdir -p {tmpFolder}$$/
 	echo {input} |tr -s ' ' $'\n' > {output.lst}
-	kmc -ci5 -t{threads} -k{kSize} -m16  @{output.lst} {params.outPrefix} {tmpFolder}$$/ &> {log}
+	kmc -ci{kmcMinCount} -t{threads} -k{kSize} -m16  @{output.lst} {params.outPrefix} {tmpFolder}$$/ &> {log}
 	rm -rf {tmpFolder}$$/
         """
 
-rule kmcDownload:
+
+rule Download:
     params:
-        urls=lambda wildcards: getUrls(f"{wildcards.experiment}"),
-        outPrefix=outputFolder +"kmc/{experiment}"
+        urls=lambda wildcards: urlsByFileName[f"{wildcards.file}"]
     output:
-         pre=temp(outputFolder +"kmc/{experiment}.kmc_pre"),
-	 suf=temp(outputFolder +"kmc/{experiment}.kmc_suf")
+         outputFolder+"fastq/{file}"
     conda:
          "env.yaml"
-    threads: 16
+    threads: 1
+    priority: 10
     resources:
         mem_mb=17000,cores=16
-    log: outputFolder +"kmc/{experiment}.log"
+    log: outputFolder+"fastq/{file}.log"
     shell:
        	"""
-      	mkdir -p {tmpFolder}$$/
-
-
-	parallel -j1  --gnu "axel --output={tmpFolder}$$/{wildcards.experiment}_{{#}}.fastq.gz {{}}" ::: {params.urls}
-
-	ls {tmpFolder}$$/*.fastq.gz  > {tmpFolder}$$/input.lst
-
-	kmc -ci5 -t{threads} -k{kSize} -m16  @{tmpFolder}$$/input.lst {params.outPrefix} {tmpFolder}$$/ &> {log}
-
-	#rm -rf {tmpFolder}$$/
+	ascp -QT -l 300m -P33001 -i $CONDA_PREFIX/etc/asperaweb_id_dsa.openssh {params.urls} . && mv SRR1448774.fastq.gz {output}
         """
+
+
+
+# rule kmcDownload:
+#     params:
+#         urls=lambda wildcards: getUrls(f"{wildcards.experiment}"),
+#         outPrefix=outputFolder +"kmc/{experiment}"
+#     output:
+#          pre=temp(outputFolder +"kmc/{experiment}.kmc_pre"),
+# 	 suf=temp(outputFolder +"kmc/{experiment}.kmc_suf")
+#     conda:
+#          "env.yaml"
+#     threads: 16
+#     resources:
+#         mem_mb=17000,cores=16
+#     log: outputFolder +"kmc/{experiment}.log"
+#     shell:
+#        	"""
+#       	mkdir -p {tmpFolder}$$/
+
+
+# 	parallel -j1  --gnu "axel --output={tmpFolder}$$/{wildcards.experiment}_{{#}}.fastq.gz {{}}" ::: {params.urls}
+
+# 	ls {tmpFolder}$$/*.fastq.gz  > {tmpFolder}$$/input.lst
+
+# 	kmc -ci{kmcMinCount} -t{threads} -k{kSize} -m16  @{tmpFolder}$$/input.lst {params.outPrefix} {tmpFolder}$$/ &> {log}
+
+# 	rm -rf {tmpFolder}$$/
+#         """
 
 
 
@@ -128,7 +159,7 @@ rule calculateHistogram:
     log: outputFolder+"histograms/{sample}.log"
     shell:
        	"""
-	./computeHistogram -i {params.kmcPrefix} -m 1000 -o {output} &> {log}
+	../computeHistogram -i {params.kmcPrefix} -m 1000 -o {output} &> {log}
         """
 
 rule createGraphDescriptor:
@@ -155,6 +186,7 @@ rule createGraphDescriptor:
 
 
 
+pruneTips= int(kSize)*2
 
 rule kmc_to_clean_fasta:
     input: prefix=outputFolder+"kmc/{sample}.kmc_pre", suffix=outputFolder+"kmc/{sample}.kmc_suf"
@@ -166,6 +198,7 @@ rule kmc_to_clean_fasta:
     conda:
          "env.yaml"
     threads: 8
+    priority: 30
     resources:
         mem_mb=20000,cores=8,mem_gb=18
     log: outputFolder+"unitigs/{sample}.log"
@@ -176,7 +209,7 @@ rule kmc_to_clean_fasta:
 	    metagraph build -v \
             -k {kSize} \
             --mode canonical \
-            --count-kmers --count-width 32 \
+            --count-kmers --count-width 16 \
             --mem-cap-gb {resources.mem_gb} \
             --disk-swap  {tmpFolder}$$/\
             -p {threads} \
@@ -186,6 +219,8 @@ rule kmc_to_clean_fasta:
             metagraph clean -v \
             --to-fasta --primary-kmers \
             --smoothing-window 1 \
+	    --prune-tips {pruneTips} \
+	    --prune-unitigs 0 \
             -p {threads} \
             -o {params.outputPrefix} \
             {tmpFolder}$$/{wildcards.sample}.dbg  &>> {log} \
@@ -293,9 +328,10 @@ rule createAnnotationColumns:
                 -i {input.graph} \
                 --anno-filename \
                 --separately \
-                --count-kmers --count-width 32 \
+                --count-kmers --count-width 16 \
                 -o {params.outputPrefix} \
-                -p {threads} \
+		--threads-each 8 \
+                -p 2 \
                 {input.unitigs} &> {log}
 
 	touch {output.batchFlag}
@@ -340,7 +376,7 @@ rule optimizeAnnotationColumns:
          "env.yaml"
     threads: 32
     resources:
-        mem_mb=300000,cores=32,mem_gb=200
+        mem_mb=300000,cores=32,mem_gb=20
     log: outputFolder+"optimizeAnnotationColumns.log"
     shell:
        	"""
@@ -351,7 +387,7 @@ rule optimizeAnnotationColumns:
             --anno-type row_diff --count-kmers \
             --row-diff-stage 0 \
             --mem-cap-gb {resources.mem_gb} \
-            --disk-swap {tmpFolder}$$/ \
+            --disk-swap {tmpFolder}$$ \
             -i {input.graph} \
             -o {params.rowDiffPrefix}out \
             -p {threads} \
@@ -361,7 +397,7 @@ rule optimizeAnnotationColumns:
             --anno-type row_diff --count-kmers \
             --row-diff-stage 1 \
             --mem-cap-gb {resources.mem_gb} \
-            --disk-swap {tmpFolder}$$/ \
+            --disk-swap {tmpFolder}$$ \
             -i {input.graph} \
             -o {params.rowDiffPrefix}out \
             -p {threads} \
@@ -372,7 +408,7 @@ rule optimizeAnnotationColumns:
             --anno-type row_diff --count-kmers \
             --row-diff-stage 2 \
             --mem-cap-gb {resources.mem_gb} \
-            --disk-swap {tmpFolder}$$/ \
+            --disk-swap {tmpFolder}$$ \
             -i {input.graph} \
             -o {params.rowDiffPrefix}out \
             -p {threads} \
