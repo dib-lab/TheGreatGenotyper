@@ -13,29 +13,61 @@ if "kmcMinCount" in config:
 
 
 
-urls={}
-urlsByFileName={}
-for l in open(urlsFile):
-    sample,url=l.strip().split(",")
-    if sample not in urls:
-       urls[sample]=[]
-    file=url.split("/")[-1]
-    fileName=outputFolder+"fastq/"+file
-    urls[sample].append(fileName)
-    urlsByFileName[file]=url
+globus_ebi_id= ""
+globus_client_id= ""
 
+if "globus_client_id" in config:
+   globus_ebi_id= config["globus_ebi_id"]
+   globus_client_id= config["globus_client_id"]
+   
 
 
 tmp=list(filter(lambda x:x.library=="short",pep.samples))
 illuminaSamples=[s.sample_name for s in tmp]
 
-#samples=[(x.sample_name,x.file) for x in tmp]
-#samples=dict(samples)
+
+urls={}
+urlsByFileName={}
+
+for l in open(urlsFile):
+    sample,url=l.strip().split(",")
+    if sample not in urls:
+       urls[sample]=[]
+       
+    file=url.split("/")[-1]
+    fileName=outputFolder+"fastq/"+file
+    urls[sample].append(fileName)
+    urlsByFileName[file]=url
+
+downloadDependency={}
+numberParallelSamples=1
+
+for i in range(0,numberParallelSamples):
+    sample = illuminaSamples[i]
+    fileNames = urls[sample]
+    for f in fileNames:
+    	fileName= f.split("/")[-1]
+	# urlsFile is just file that I am sure it exists so it will make snakemake starts download immediately 
+	downloadDependency[fileName] = urlsFile
+
+    
+for i in range(numberParallelSamples, len(illuminaSamples)):
+    sample = illuminaSamples[i]
+    parent = illuminaSamples[ i- numberParallelSamples ]
+    dependency =  "%skmc/%s.kmc_pre" % (outputFolder, parent)
+
+    fileNames = urls[sample]
+    for f in fileNames:
+    	fileName= f.split("/")[-1]
+	downloadDependency[fileName] = dependency
+
+
 
 kmcs=expand("{out}kmc/{experiment}.kmc_pre",out=outputFolder,experiment=illuminaSamples)
-metagraphUnitigs=expand(outputFolder+"unitigs/{sample}.fasta.gz",sample=illuminaSamples)
-annodbg=expand(outputFolder+"columns/{sample}.fasta.gz.column.annodbg",sample=illuminaSamples)
-annodbgCounts=expand(outputFolder+"columns/{sample}.fasta.gz.column.annodbg.counts",sample=illuminaSamples)
+metagraphUnitigs=expand(outputFolder+"unitigs/smooth_{smooth_value}/{sample}.fasta.gz",sample=illuminaSamples,smooth_value="{smooth_value}")
+annodbg=expand(outputFolder+"smooth_{smooth_value}/columns/{sample}.fasta.gz.column.annodbg",sample=illuminaSamples,smooth_value="{smooth_value}")
+annodbgCounts=expand(outputFolder+"smooth_{smooth_value}/columns/{sample}.fasta.gz.column.annodbg.counts",sample=illuminaSamples,smooth_value="{smooth_value}")
+
 histograms=expand(outputFolder+"histograms/{sample}.histo",sample=illuminaSamples)
 
 
@@ -50,7 +82,7 @@ for i in range(0,len(illuminaSamples),batchSize):
     "counts"  : annodbgCounts[start:end]
     })
 
-batchFlags= expand(outputFolder+"columns/{batchID}/done",batchID= [str(i) for i in range(len(batches))] )
+batchFlags= expand(outputFolder+"smooth_{smooth_value}/columns/{batchID}/done",batchID= [str(i) for i in range(len(batches))] ,smooth_value="{smooth_value}")
 
 
 def getFile(name):
@@ -63,15 +95,15 @@ def getFile(name):
        raise Exception("No file description form sample %s in sub_samble.csv or "%(name,urlsFile))
 
 	
-localrules: all, createGraphDescriptor, prepareAnnnotationColumns, Download
+localrules: all, createGraphDescriptor, prepareAnnnotationColumns, DownloadGlobus
 
 rule all:
     input:
-        outputFolder+"graph.dbg",
-	outputFolder+"annotation.row_diff_int_brwt.annodbg",
-	outputFolder+"annotation.relaxed.row_diff_int_brwt.annodbg",
-	outputFolder+"graph.desc.tsv",
-
+#        outputFolder+"graph.dbg",
+        outputFolder+"smooth_10000000/annotation.row_diff_int_brwt.annodbg",
+	outputFolder+"smooth_10000000/annotation.relaxed.row_diff_int_brwt.annodbg",
+	outputFolder+"smooth_10000000/graph.desc.tsv",
+	outputFolder+"smooth_10000000/graph.dbg"
 
 rule kmc:
     input: lambda wildcards: getFile(f"{wildcards.experiment}")         
@@ -81,6 +113,7 @@ rule kmc:
          pre=temp(outputFolder +"kmc/{experiment}.kmc_pre"),
 	 suf=temp(outputFolder +"kmc/{experiment}.kmc_suf"),
 	 lst=outputFolder +"kmc/{experiment}.lst",
+	 histogram=outputFolder+"histograms/{experiment}.histo"
     conda:
          "env.yaml"
     threads: 16
@@ -93,28 +126,52 @@ rule kmc:
       	mkdir -p {tmpFolder}$$/
 	echo {input} |tr -s ' ' $'\n' > {output.lst}
 	kmc -ci{kmcMinCount} -t{threads} -k{kSize} -m16  @{output.lst} {params.outPrefix} {tmpFolder}$$/ &> {log}
+        ../computeHistogram -i {params.outPrefix} -m 1000 -o {output.histogram} &>> {log}
 	rm -rf {tmpFolder}$$/
         """
 
 
-rule Download:
+# dependency here is to guide snakemake download files for the same sample together, and dont overload the disk space. Also, I instructing snakemake not start downloading a new sample until metagraph finish  
+rule DownloadGlobus:
+    input:
+        dependency = lambda wildcards: downloadDependency[f"{wildcards.file}"] 
     params:
         urls=lambda wildcards: urlsByFileName[f"{wildcards.file}"]
     output:
-         outputFolder+"fastq/{file}"
-    conda:
-         "env.yaml"
+          outputFolder+"fastq/{file}"
+#         temp(outputFolder+"fastq/{file}")
     threads: 1
-    priority: 10
+    priority: 30
+    retries: 5
     resources:
-        mem_mb=17000,cores=16
+        mem_mb=1024,cores=1,parallel_download=1
     log: outputFolder+"fastq/{file}.log"
     shell:
        	"""
-	ascp -QT -l 300m -P33001 -i $CONDA_PREFIX/etc/asperaweb_id_dsa.openssh {params.urls} . && mv SRR1448774.fastq.gz {output}
+		id=$(globus transfer --notify off {globus_ebi_id}:{params.urls} {globus_client_id}:{output}  |grep "Task ID" | sed -e 's/Task ID: //' )
+		globus task wait $id
         """
 
 
+# rule DownloadAspera:
+#     params:
+#         urls=lambda wildcards: urlsByFileName[f"{wildcards.file}"]
+#     output:
+#          outputFolder+"fastq/{file}"
+#     conda:
+#          "env.yaml"
+#     threads: 1
+#     priority: 10
+#     retries: 5
+#     resources:
+#         mem_mb=1024,cores=1
+#     log: outputFolder+"fastq/{file}.log"
+#     shell:
+#        	"""
+# 	ascp -QT -l 300m -P33001 -i $CONDA_PREFIX/etc/asperaweb_id_dsa.openssh {params.urls} {output} &> {log} 
+#         """
+
+ 
 
 # rule kmcDownload:
 #     params:
@@ -145,37 +202,38 @@ rule Download:
 
 
 
-rule calculateHistogram:
-    input: prefix=outputFolder+"kmc/{sample}.kmc_pre", suffix=outputFolder+"kmc/{sample}.kmc_suf"
-    output:
-         histogram=outputFolder+"histograms/{sample}.histo"
-    params:
-         kmcPrefix=outputFolder+"kmc/{sample}"
-    conda:
-         "env.yaml"
-    threads: 1
-    resources:
-        mem_mb=3000,cores=1,mem_gb=2
-    log: outputFolder+"histograms/{sample}.log"
-    shell:
-       	"""
-	../computeHistogram -i {params.kmcPrefix} -m 1000 -o {output} &> {log}
-        """
+# rule calculateHistogram:
+#     input: prefix=outputFolder+"kmc/{sample}.kmc_pre", suffix=outputFolder+"kmc/{sample}.kmc_suf"
+#     output:
+#          histogram=outputFolder+"histograms/{sample}.histo"
+#     params:
+#          kmcPrefix=outputFolder+"kmc/{sample}"
+#     conda:
+#          "env.yaml"
+#     threads: 1
+#     resources:
+#         mem_mb=3000,cores=1,mem_gb=2
+#     log: outputFolder+"histograms/{sample}.log"
+#     shell:
+#        	"""
+# 	../computeHistogram -i {params.kmcPrefix} -m 1000 -o {output} &> {log}
+#         """
 
 rule createGraphDescriptor:
     input:
          histograms = histograms,
-	 unitigs= metagraphUnitigs
+	 unitigs= metagraphUnitigs,
+         graph=outputFolder+"smooth_{smooth_value}/graph.dbg"
     params:
          labels =  illuminaSamples
     output:
-         description=outputFolder+"graph.desc.tsv"
+         description=outputFolder+"smooth_{smooth_value}/graph.desc.tsv"
     conda:
          "env.yaml"
     threads: 1
     resources:
         mem_mb=3000,cores=1,mem_gb=2
-    log: outputFolder+"graph.desc.tsv.log"
+    log: outputFolder+"smooth_{smooth_value}/graph.desc.tsv.log"
     shell:
        	"""
         echo {params.labels} | tr -s ' ' $'\n' > tmp1
@@ -188,25 +246,29 @@ rule createGraphDescriptor:
 
 pruneTips= int(kSize)*2
 
+
+ruleorder: smooth_count >  kmc_to_clean_fasta
+
+
 rule kmc_to_clean_fasta:
-    input: prefix=outputFolder+"kmc/{sample}.kmc_pre", suffix=outputFolder+"kmc/{sample}.kmc_suf"
+    input: prefix=ancient(outputFolder+"kmc/{sample}.kmc_pre"), suffix=ancient(outputFolder+"kmc/{sample}.kmc_suf")
     output:
-         unitgs=outputFolder+"unitigs/{sample}.fasta.gz",
-         counts=outputFolder+"unitigs/{sample}.kmer_counts.gz",
+         unitgs= outputFolder+"unitigs/{sample}.fasta.gz",
+         counts= outputFolder+"unitigs/{sample}.kmer_counts.gz",
     params:
          outputPrefix=outputFolder+"unitigs/{sample}"
     conda:
          "env.yaml"
-    threads: 8
-    priority: 30
+    threads: 16
+    priority: 10
     resources:
-        mem_mb=20000,cores=8,mem_gb=18
+        mem_mb=20000,cores=16,mem_gb=18
     log: outputFolder+"unitigs/{sample}.log"
     shell:
        	"""
 	    mkdir  -p {tmpFolder}$$/
 
-	    metagraph build -v \
+	    metagraph build  \
             -k {kSize} \
             --mode canonical \
             --count-kmers --count-width 16 \
@@ -216,7 +278,7 @@ rule kmc_to_clean_fasta:
             -o  {tmpFolder}$$/{wildcards.sample}\
             {input.suffix}  &> {log}
 
-            metagraph clean -v \
+            metagraph clean  \
             --to-fasta --primary-kmers \
             --smoothing-window 1 \
 	    --prune-tips {pruneTips} \
@@ -231,26 +293,117 @@ rule kmc_to_clean_fasta:
 
 
  
-
-
-
-rule metagraph_buildMainGraph:
-    input: metagraphUnitigs
+rule smooth_count:
+    input:
+         unitigs= outputFolder+"unitigs/{sample}.fasta.gz",
+         counts= outputFolder+"unitigs/{sample}.kmer_counts.gz",
     output:
-         graph=outputFolder+"graph.dbg"
+         unitigs= outputFolder+"unitigs/smooth_{smooth_value}/{sample}.fasta.gz",
+         counts= outputFolder+"unitigs/smooth_{smooth_value}/{sample}.kmer_counts.gz",
     params:
-         outputPrefix=outputFolder+"graph"
+         outputPrefix=outputFolder+"unitigs/smooth_{smooth_value}/{sample}"
+    conda:
+         "env.yaml"
+    threads: 16
+    priority: 10
+    resources:
+        mem_mb=20000,cores=16,mem_gb=18
+    log: outputFolder+"unitigs/smooth_{smooth_value}/{sample}.log"
+    shell:
+       	"""
+	    mkdir  -p {tmpFolder}$$/
+
+	    metagraph build  \
+            -k {kSize} \
+            --mode canonical \
+            --count-kmers --count-width 16 \
+            --mem-cap-gb {resources.mem_gb} \
+            --disk-swap  {tmpFolder}$$/\
+            -p {threads} \
+            -o  {tmpFolder}$$/{wildcards.sample}\
+            {input.unitigs}  &> {log}
+
+            metagraph clean  \
+            --to-fasta --primary-kmers \
+            --smoothing-window 1 \
+	    --prune-tips {pruneTips} \
+	    --prune-unitigs 0 \
+            --smoothing-window {wildcards.smooth_value} \
+            -p {threads} \
+            -o {params.outputPrefix} \
+            {tmpFolder}$$/{wildcards.sample}.dbg  &>> {log} \
+         
+            rm -rf {tmpFolder}$$/
+        """
+
+
+
+
+
+
+# rule metagraph_buildMainGraph:
+#     input: ancient(metagraphUnitigs)
+#     output:
+#          graph=outputFolder+"graph.dbg"
+#     params:
+#          outputPrefix=outputFolder+"graph"
+#     conda:
+#          "env.yaml"
+#     threads: 32
+#     resources:
+#         mem_mb=12000,cores=32,mem_gb=10
+#     log: outputFolder+"buildMainGraphlog"
+#     shell:
+#        	"""
+# 	    mkdir  -p {tmpFolder}$$/
+
+#             metagraph build  \
+#             -k {kSize} \
+#             --mode canonical  \
+#             --mem-cap-gb {resources.mem_gb} \
+#             --disk-swap {tmpFolder}$$/  \
+#             -p {threads} \
+#             -o {tmpFolder}$$/graph_canonical \
+#             {input} &> {log}
+
+#             metagraph transform  \
+#             --to-fasta --primary-kmers \
+# 	    -p {threads} \
+#             -o  {tmpFolder}$$/graph_primary \
+#             {tmpFolder}$$/graph_canonical.dbg &>> {log}
+
+#             rm {tmpFolder}$$/graph_canonical.dbg
+
+
+#             metagraph build  \
+#             -k {kSize} \
+#             --mode primary \
+#             --mem-cap-gb {resources.mem_gb} \
+#             --disk-swap {tmpFolder}$$/ \
+#             -p {threads} \
+#             -o {params.outputPrefix} \
+#             {tmpFolder}$$/graph_primary.fasta.gz  &>> {log}
+	    
+# 	    rm -rf {tmpFolder}$$/
+#         """
+
+rule metagraph_buildSmoothMainGraph:
+    input: ancient(expand(outputFolder+"unitigs/smooth_{smooth_value}/{sample}.fasta.gz",smooth_value="{smooth_value}",sample=illuminaSamples))
+    output:
+         graph=outputFolder+"smooth_{smooth_value}/graph.dbg"
+    params:
+         outputPrefix=outputFolder+"smooth_{smooth_value}/graph.dbg"
     conda:
          "env.yaml"
     threads: 32
     resources:
         mem_mb=12000,cores=32,mem_gb=10
-    log: outputFolder+"buildMainGraphlog"
+    log: outputFolder+"smooth_{smooth_value}/buildMainGraphlog"
     shell:
        	"""
 	    mkdir  -p {tmpFolder}$$/
 
-            metagraph build -v \
+            metagraph build  \
             -k {kSize} \
             --mode canonical  \
             --mem-cap-gb {resources.mem_gb} \
@@ -259,7 +412,7 @@ rule metagraph_buildMainGraph:
             -o {tmpFolder}$$/graph_canonical \
             {input} &> {log}
 
-            metagraph transform -v \
+            metagraph transform  \
             --to-fasta --primary-kmers \
 	    -p {threads} \
             -o  {tmpFolder}$$/graph_primary \
@@ -268,7 +421,7 @@ rule metagraph_buildMainGraph:
             rm {tmpFolder}$$/graph_canonical.dbg
 
 
-            metagraph build -v \
+            metagraph build  \
             -k {kSize} \
             --mode primary \
             --mem-cap-gb {resources.mem_gb} \
@@ -297,7 +450,7 @@ rule compressGraph:
     log: "{prefix}graph.small.log"
     shell:
        	"""
-	metagraph transform -v \
+	metagraph transform  \
             --state small \
             -o {params.outputPrefix} \
             -p {threads} \
@@ -309,22 +462,20 @@ rule compressGraph:
 rule createAnnotationColumns:
     input:
          unitigs=lambda wildcards: batches[int(f"{wildcards.batchID}")]["unitigs"],
-         graph=outputFolder+"graph.dbg"
+         graph=outputFolder+"smooth_{smooth_value}/graph.dbg"
     output:
-         batchFlag = outputFolder+"columns/{batchID}/done",
-	 #columns = lambda wildcards: batches[int(f"{wildcards.batchID}")]["columns"],
-	 #counts = lambda wildcards: batches[int(f"{wildcards.batchID}")]["counts"]
+         batchFlag = outputFolder+"smooth_{smooth_value}/columns/{batchID}/done",
     params:
-         outputPrefix=outputFolder+"columns/{batchID}/"
+         outputPrefix=outputFolder+"smooth_{smooth_value}/columns/{batchID}/"
     conda:
          "env.yaml"
     threads: 16
     resources:
         mem_mb=11240,cores=16,mem_gb=10
-    log: outputFolder+"columns/{batchID}.done.log"
+    log: outputFolder+"smooth_{smooth_value}/columns/{batchID}.done.log"
     shell:
        	"""
-	metagraph annotate -v \
+	metagraph annotate  \
                 -i {input.graph} \
                 --anno-filename \
                 --separately \
@@ -343,15 +494,15 @@ rule prepareAnnnotationColumns:
     input:
          flags=batchFlags
     output:
-         columns=temp(annodbg)
+         columns=temp(expand(outputFolder+"smooth_{smooth_value}/columns/{sample}.fasta.gz.column.annodbg",smooth_value="{smooth_value}",sample=illuminaSamples))
     params:
-         outputPrefix=outputFolder+"columns/"
+         outputPrefix=outputFolder+"smooth_{smooth_value}/columns/"
     conda:
          "env.yaml"
     threads: 1
     resources:
         mem_mb=2048,cores=1,mem_gb=2
-    log: outputFolder+"prepareoptimizeAnnotationColumns.log"
+    log: outputFolder+"smooth_{smooth_value}/prepareoptimizeAnnotationColumns.log"
     shell:
        	"""
 	ls {input.flags} | parallel --gnu -j1 "mv {{//}}/*  {params.outputPrefix}"
@@ -364,26 +515,27 @@ rule prepareAnnnotationColumns:
 
 rule optimizeAnnotationColumns:
     input:
-         columns=annodbg,
-         graph=outputFolder+"graph.dbg"
+         columns=expand(outputFolder+"smooth_{smooth_value}/columns/{sample}.fasta.gz.column.annodbg",smooth_value="{smooth_value}",sample=illuminaSamples),
+         graph=outputFolder+"smooth_{smooth_value}/graph.dbg"
     output:
-         outputFolder+"annotation.row_diff_int_brwt.annodbg",
-	 outputFolder+"annotation.relaxed.row_diff_int_brwt.annodbg"
+         outputFolder+"smooth_{smooth_value}/annotation.row_diff_int_brwt.annodbg",
+	 outputFolder+"smooth_{smooth_value}/annotation.relaxed.row_diff_int_brwt.annodbg"
     params:
-         rowDiffPrefix=outputFolder + "rowDiff/",
-	 outputPrefix=outputFolder + "annotation"
+         rowDiffPrefix=outputFolder + "smooth_{smooth_value}/rowDiff/",
+	 outputPrefix=outputFolder + "smooth_{smooth_value}/annotation",
+	 outputFolder=outputFolder + "smooth_{smooth_value}/"
     conda:
          "env.yaml"
     threads: 32
     resources:
         mem_mb=300000,cores=32,mem_gb=20
-    log: outputFolder+"optimizeAnnotationColumns.log"
+    log: outputFolder+"smooth_{smooth_value}/optimizeAnnotationColumns.log"
     shell:
        	"""
 	mkdir  -p {tmpFolder}$$/
 	mkdir -p {params.rowDiffPrefix}
 
-	metagraph transform_anno -v \
+	metagraph transform_anno  \
             --anno-type row_diff --count-kmers \
             --row-diff-stage 0 \
             --mem-cap-gb {resources.mem_gb} \
@@ -393,7 +545,7 @@ rule optimizeAnnotationColumns:
             -p {threads} \
 	    {input.columns} &> {log}
     
-	metagraph transform_anno -v \
+	metagraph transform_anno  \
             --anno-type row_diff --count-kmers \
             --row-diff-stage 1 \
             --mem-cap-gb {resources.mem_gb} \
@@ -404,7 +556,7 @@ rule optimizeAnnotationColumns:
 	    {input.columns} &>> {log}
 
 
-        metagraph transform_anno -v \
+        metagraph transform_anno  \
             --anno-type row_diff --count-kmers \
             --row-diff-stage 2 \
             --mem-cap-gb {resources.mem_gb} \
@@ -416,7 +568,7 @@ rule optimizeAnnotationColumns:
 
 
         find {params.rowDiffPrefix} -name \"*.column.annodbg\" \
-         | metagraph transform_anno -v \
+         | metagraph transform_anno  \
             --anno-type row_diff_int_brwt \
             --greedy --fast --subsample 1000000 \
             -i {input.graph} \
@@ -424,13 +576,16 @@ rule optimizeAnnotationColumns:
             -p {threads} --parallel-nodes 10  &>> {log}
 
 
-        metagraph relax_brwt -v \
+        metagraph relax_brwt  \
             -p {threads} \
             --relax-arity 32 \
             -o {params.outputPrefix}.relaxed \
             {params.outputPrefix}.row_diff_int_brwt.annodbg  &>> {log}
 
 	    rm -rf {tmpFolder}$$/
+	    rm {params.outputFolder}annotation.row_diff_int_brwt.annodbg
+	    rm  -rf {params.rowDiffPrefix}
+	    rm {input.graph}.*
 	"""
 
 
