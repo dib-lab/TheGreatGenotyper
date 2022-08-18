@@ -33,10 +33,13 @@ std::vector<unsigned char> construct_index(std::vector<T>& alleles, bool referen
 
 class VariantReader {
 public:
-	VariantReader (std::string filename, std::string reference_filename, size_t kmer_size, bool add_reference, std::string sample = "sample");
+	VariantReader (std::string filename, std::string reference_filename, size_t kmer_size, bool add_reference, std::vector<std::string> sample );
 	/**  writes all path segments (allele sequences + reference sequences in between)
 	*    to the given file.
 	**/
+    VariantReader (const VariantReader &old_obj);
+    VariantReader (){}
+    VariantReader& operator=(const VariantReader& other);
 	size_t get_kmer_size() const;
 	void write_path_segments(std::string filename) const;
 	void get_chromosomes(std::vector<std::string>* result) const;
@@ -53,20 +56,20 @@ public:
 	size_t nr_of_paths() const;
 	void get_left_overhang(std::string chromosome, size_t index, size_t length, DnaSequence& result) const;
 	void get_right_overhang(std::string chromosome, size_t index, size_t length, DnaSequence& result) const;
-        void set_sampleName(std::string name);
+        void setSampleName(std::string sampleName);
 private:
 	FastaReader fasta_reader;
 	size_t kmer_size;
 	size_t nr_paths;
 	size_t nr_variants;
 	bool add_reference;
-	std::string sample;
+	std::vector<std::string> samples;
 	std::ofstream genotyping_outfile;
 	std::ofstream phasing_outfile;
 	bool genotyping_outfile_open;
 	bool phasing_outfile_open;
-	std::map< std::string, std::vector<Variant> > variants_per_chromosome;
-	std::map< std::string, std::vector<std::vector<std::string>>> variant_ids;
+	static std::map< std::string, std::vector<Variant> > variants_per_chromosome;
+	static std::map< std::string, std::vector<std::vector<std::string>>> variant_ids;
 	void add_variant_cluster(std::string& chromosome, std::vector<Variant>* cluster);
 	void insert_ids(std::string& chromosome, std::vector<DnaSequence>& alleles, std::vector<std::string>& variant_ids, bool reference_added);
 	std::string get_ids(std::string chromosome, std::vector<std::string>& alleles, size_t variant_index, bool reference_added);

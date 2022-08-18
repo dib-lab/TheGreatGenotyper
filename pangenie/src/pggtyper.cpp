@@ -240,20 +240,19 @@ int main (int argc, char* argv[])
         SamplesDatabase database(graphFile,annotFile,descriptionFile,regularization);
         kmersize=database.getKSize();
         unsigned numSamples= database.getNumSamples();
-
+        vector<string> sampleNames=database.getSamplesName();
         struct rusage r_usageD;
         getrusage(RUSAGE_SELF, &r_usageD);
         cerr << "#### Memory usage until now: " << (r_usageD.ru_maxrss / 1E6) << " GB ####" << endl;
 
 	// read allele sequences and unitigs inbetween, write them into file
 	cerr << "Determine allele sequences ..." << endl;
-	VariantReader variant_reader (vcffile, reffile, kmersize, add_reference, sample_name);
-	
+	VariantReader variant_reader (vcffile, reffile, kmersize, add_reference, sampleNames);
 	// TODO: only for analysis
 	struct rusage r_usage00;
 	getrusage(RUSAGE_SELF, &r_usage00);
 	cerr << "#### Memory usage until now: " << (r_usage00.ru_maxrss / 1E6) << " GB ####" << endl;
-	
+
 	string segment_file = outname + "_path_segments.fasta";
 	cerr << "Write path segments to file: " << segment_file << " ..." << endl;
 	variant_reader.write_path_segments(segment_file);
@@ -263,7 +262,43 @@ int main (int argc, char* argv[])
 	variant_reader.get_chromosomes(&chromosomes);
 	cerr << "Found " << chromosomes.size() << " chromosome(s) in the VCF." << endl;
 
-	// TODO: only for analysis
+
+        // prepare subsets of paths to run on
+        unsigned short nr_paths = variant_reader.nr_of_paths();
+        // TODO: for too large panels, print waring
+        if (nr_paths > 200) cerr << "Warning: panel is large and PanGenie might take a long time genotyping. Try reducing the panel size prior to genotyping." << endl;
+        // handle case when sampling_size is not set
+        if (sampling_size == 0) {
+          if (nr_paths > 25) {
+            sampling_size = 14;
+          } else {
+            sampling_size = nr_paths;
+          }
+        }
+
+        PathSampler path_sampler(nr_paths);
+        vector<vector<unsigned short>> subsets;
+        path_sampler.partition_samples(subsets, sampling_size);
+
+        for (auto s : subsets) {
+          for (auto b : s) {
+            cout << b << endl;
+          }
+          cout << "-----" << endl;
+        }
+
+        if (!only_phasing) cerr << "Sampled " << subsets.size() << " subset(s) of paths each of size " << sampling_size << " for genotyping." << endl;
+
+        // for now, run phasing only once on largest set of paths that can still be handled.
+        // in order to use all paths, an iterative stradegie should be considered
+        vector<unsigned short> phasing_paths;
+        unsigned short nr_phasing_paths = min((unsigned short) nr_paths, (unsigned short) 30);
+        path_sampler.select_single_subset(phasing_paths, nr_phasing_paths);
+        if (!only_genotyping) cerr << "Sampled " << phasing_paths.size() << " paths to be used for phasing." << endl;
+        time_path_sampling = timer.get_interval_time();
+
+
+        // TODO: only for analysis
 	struct rusage r_usage0;
 	getrusage(RUSAGE_SELF, &r_usage0);
 	cerr << "#### Memory usage until now: " << (r_usage0.ru_maxrss / 1E6) << " GB ####" << endl;
@@ -321,40 +356,7 @@ int main (int argc, char* argv[])
 	getrusage(RUSAGE_SELF, &r_usage3);
 	cerr << "#### Memory usage until now: " << (r_usage3.ru_maxrss / 1E6) << " GB ####" << endl;
 
-	// prepare subsets of paths to run on
-	unsigned short nr_paths = variant_reader.nr_of_paths();
-	// TODO: for too large panels, print waring
-	if (nr_paths > 200) cerr << "Warning: panel is large and PanGenie might take a long time genotyping. Try reducing the panel size prior to genotyping." << endl;
-	// handle case when sampling_size is not set
-	if (sampling_size == 0) {
-		if (nr_paths > 25) {
-			sampling_size = 14;
-		} else {
-			sampling_size = nr_paths;		
-		}
-	}
 
-	PathSampler path_sampler(nr_paths);
-	vector<vector<unsigned short>> subsets;
-	path_sampler.partition_samples(subsets, sampling_size);
-
-	for (auto s : subsets) {
-		for (auto b : s) {
-			cout << b << endl;
-		}
-		cout << "-----" << endl;
-	}
-
-	if (!only_phasing) cerr << "Sampled " << subsets.size() << " subset(s) of paths each of size " << sampling_size << " for genotyping." << endl;
-
-	// for now, run phasing only once on largest set of paths that can still be handled.
-	// in order to use all paths, an iterative stradegie should be considered
-	vector<unsigned short> phasing_paths;
-	unsigned short nr_phasing_paths = min((unsigned short) nr_paths, (unsigned short) 30);
-	path_sampler.select_single_subset(phasing_paths, nr_phasing_paths);
-	if (!only_genotyping) cerr << "Sampled " << phasing_paths.size() << " paths to be used for phasing." << endl;
-	time_path_sampling = timer.get_interval_time();
-	
 	// TODO: only for analysis
 	struct rusage r_usage30;
 	getrusage(RUSAGE_SELF, &r_usage30);
@@ -403,50 +405,52 @@ int main (int argc, char* argv[])
                   }
                 }
 	}
-
 	timer.get_interval_time();
+        vector<VariantReader> outputVCFs(numSamples);
+        if (!(only_genotyping && only_phasing))
+          assert(result.size() == chromosomes.size());
 
-	// output VCF
         for(unsigned sampleID=0; sampleID<numSamples ;sampleID++) {
-
-          string sampleName= database.getSampleName(sampleID);
-          auto result= results.result[sampleID];
-          variant_reader.set_sampleName(sampleName);
+          outputVCFs[sampleID] = variant_reader;
+          string sampleName = database.getSampleName(sampleID);
+          outputVCFs[sampleID].setSampleName(sampleName);
           // prepare output files
-          if (! only_phasing)
-            variant_reader.open_genotyping_outfile(outname+ "_" +sampleName + "_genotyping.vcf");
-          if (! only_genotyping)
-            variant_reader.open_phasing_outfile(outname+ "_" +sampleName  + "_phasing.vcf");
+          if (!only_phasing)
+            outputVCFs[sampleID].open_genotyping_outfile(outname + "_" + sampleName +
+                                                   "_genotyping.vcf");
+          if (!only_genotyping)
+            outputVCFs[sampleID].open_phasing_outfile(outname + "_" + sampleName +
+                                                "_phasing.vcf");
+        }
 
+    for(auto chrom: chromosomes) {
+        for (unsigned sampleID = 0; sampleID < numSamples; sampleID++) {
+            // write VCF
+            auto result = results.result[sampleID][chrom];
 
-          cerr << "Write results to VCF ..."<<sampleName << endl;
-          if (!(only_genotyping && only_phasing))
-            assert(result.size() == chromosomes.size());
-          // write VCF
-          for (auto it = result.begin(); it != result.end();
-               ++it) {
             if (!only_phasing) {
-              // output genotyping results
-
-              variant_reader.write_genotypes_of(
-                  it->first, it->second,
-                  &unique_kmers_list.unique_kmers[sampleID][it->first],
-                  ignore_imputed);
+                    // output genotyping results
+                    outputVCFs[sampleID].write_genotypes_of(
+                            chrom, result,
+                            &unique_kmers_list.unique_kmers[sampleID][chrom],
+                            ignore_imputed);
             }
             if (!only_genotyping) {
-              // output phasing results
-              variant_reader.write_phasing_of(
-                  it->first, it->second,
-                  &unique_kmers_list.unique_kmers[sampleID][it->first],
-                  ignore_imputed);
+                    // output phasing results
+                    outputVCFs[sampleID].write_phasing_of(
+                            chrom, result,
+                            &unique_kmers_list.unique_kmers[sampleID][chrom],
+                            ignore_imputed);
             }
-          }
-
-          if (!only_phasing)
-            variant_reader.close_genotyping_outfile();
-          if (!only_genotyping)
-            variant_reader.close_phasing_outfile();
         }
+    }
+        for(unsigned sampleID=0; sampleID<numSamples ;sampleID++) {
+          if (!only_phasing)
+            outputVCFs[sampleID].close_genotyping_outfile();
+          if (!only_genotyping)
+            outputVCFs[sampleID].close_phasing_outfile();
+        }
+
 	time_writing = timer.get_interval_time();
 	time_total = timer.get_total_time();
 
@@ -455,7 +459,7 @@ int main (int argc, char* argv[])
 	cerr << "time spent reading input files:\t" << time_preprocessing << " sec" << endl;
 	cerr << "time spent counting kmers: \t" << time_kmer_counting << " sec" << endl;
 	cerr << "time spent selecting paths: \t" << time_path_sampling << " sec" << endl;
-	cerr << "time spent determining unique kmers: \t" << time_unique_kmers << " sec" << endl; 
+	cerr << "time spent determining unique kmers: \t" << time_unique_kmers << " sec" << endl;
 	// output per chromosome time
 	double time_hmm = time_writing;
 	for (auto chromosome : chromosomes) {

@@ -4,7 +4,7 @@
 #include <string>
 #include <map>
 #include "dnasequence.hpp"
-
+#include <memory>
 /**
 * Represents FASTA-sequence.
 **/
@@ -14,8 +14,11 @@ public:
 	/** 
 	* @param filename name of the FASTA-file.
 	**/
-	FastaReader(std::string filename);
-	~FastaReader();
+        FastaReader(){};
+	    FastaReader(std::string filename);
+        FastaReader(const FastaReader &old_obj);
+        FastaReader& operator=(const FastaReader& other);
+        ~FastaReader();
 	/** check if sequence with given name exists in file. **/
 	bool contains_name(std::string name) const;
 	/** get length of sequence with name **/

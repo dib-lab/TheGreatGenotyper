@@ -8,6 +8,10 @@
 
 using namespace std;
 
+std::map< std::string, std::vector<Variant> > VariantReader::variants_per_chromosome;
+std::map< std::string, std::vector<std::vector<std::string>>> VariantReader::variant_ids;
+//FastaReader VariantReader::fasta_reader;
+
 void parse_line(vector<DnaSequence>& result, string line, char sep) {
 	string token;
 	istringstream iss (line);
@@ -79,13 +83,39 @@ void parse_info_fields(vector<string>& result, string line) {
 		}
 	}
 }
+VariantReader::VariantReader (const VariantReader &old_obj)
+{
+  kmer_size               =old_obj.kmer_size;
+  nr_paths                =old_obj.nr_paths;
+  nr_variants             =old_obj.nr_variants;
+  add_reference           =old_obj.add_reference;
+  samples                  =old_obj.samples;
+  genotyping_outfile_open =false;
+  phasing_outfile_open    =false;
+}
 
-VariantReader::VariantReader(string filename, string reference_filename, size_t kmer_size, bool add_reference, string sample)
-	:fasta_reader(reference_filename),
-	 kmer_size(kmer_size),
+VariantReader& VariantReader::operator=(const VariantReader& other)
+{
+    //cout<<"begin copy"<<endl;
+    fasta_reader            =other.fasta_reader;
+    //cout<<"Here"<<endl;
+    kmer_size               =other.kmer_size;
+    nr_paths                =other.nr_paths;
+    nr_variants             =other.nr_variants;
+    add_reference           =other.add_reference;
+    samples                 =other.samples;
+    genotyping_outfile_open =false;
+    phasing_outfile_open    =false;
+    return *this;
+}
+
+VariantReader::VariantReader(string filename, string reference_filename, size_t kmer_size, bool add_reference, vector<string> sample)
+	:
+     fasta_reader(reference_filename),
+     kmer_size(kmer_size),
 	 nr_variants(0),
 	 add_reference(add_reference),
-	 sample(sample),
+	 samples(sample),
 	 genotyping_outfile_open(false),
 	 phasing_outfile_open(false)
 {
@@ -375,7 +405,10 @@ void VariantReader::open_genotyping_outfile(string filename) {
 	this->genotyping_outfile << "##FORMAT=<ID=GQ,Number=1,Type=Integer,Description=\"Genotype quality: phred scaled probability that the genotype is wrong.\">" << endl;
 	this->genotyping_outfile << "##FORMAT=<ID=GL,Number=G,Type=Float,Description=\"Comma-separated log10-scaled genotype likelihoods for absent, heterozygous, homozygous.\">" << endl;
 	this->genotyping_outfile << "##FORMAT=<ID=KC,Number=1,Type=Float,Description=\"Local kmer coverage.\">" << endl;
-	this->genotyping_outfile << "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\t" << this->sample << endl; 
+	this->genotyping_outfile << "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT";
+        for(auto s:samples)
+          this->genotyping_outfile <<"\t"<<s;
+        this->genotyping_outfile << endl;
 }
 
 void VariantReader::open_phasing_outfile(string filename) { 
@@ -397,7 +430,11 @@ void VariantReader::open_phasing_outfile(string filename) {
 	this->phasing_outfile << "##INFO=<ID=ID,Number=A,Type=String,Description=\"Variant IDs.\">" << endl;
 	this->phasing_outfile << "##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">" << endl;
 	this->phasing_outfile << "##FORMAT=<ID=KC,Number=1,Type=Float,Description=\"Local kmer coverage.\">" << endl;
-	this->phasing_outfile << "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\t" << this->sample << endl;
+	this->phasing_outfile << "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT";
+        for(auto s :samples)
+          this->phasing_outfile <<"\t"<<s;
+        this->phasing_outfile << endl;
+
 }
 
 void VariantReader::write_genotypes_of(string chromosome, const vector<GenotypingResult>& genotyping_result, vector<UniqueKmers*>* unique_kmers, bool ignore_imputed) {
@@ -664,7 +701,8 @@ void VariantReader::get_right_overhang(std::string chromosome, size_t index, siz
 	this->fasta_reader.get_subsequence(chromosome, overhang_start, overhang_end, result);
 }
 
-void VariantReader::set_sampleName(std::string name)
+void VariantReader::setSampleName(std::string sampleName)
 {
-  sample=name;
+  samples.clear();
+  samples.push_back(sampleName);
 }

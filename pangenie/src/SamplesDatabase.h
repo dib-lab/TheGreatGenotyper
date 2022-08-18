@@ -31,6 +31,7 @@ public:
   size_t getKSize();
   size_t getNumSamples();
   string getSampleName(unsigned sampleIndex);
+  vector<string> getSamplesName();
   ProbabilityTable* getSampleProbability(unsigned sampleIndex);
   void getKmerCounts(vector<string>& seqs,vector<unordered_map<string,uint32_t>> & kmerCounts);
 private:

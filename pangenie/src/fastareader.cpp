@@ -9,6 +9,14 @@ FastaReader::FastaReader(string filename) {
 	cerr << "Found " << this->name_to_sequence.size() << " chromosome(s) from the reference file." << endl;
 }
 
+FastaReader::FastaReader(const FastaReader &old_obj){
+  name_to_sequence=old_obj.name_to_sequence;
+}
+
+FastaReader& FastaReader::operator=(const FastaReader& other){
+  name_to_sequence=other.name_to_sequence;
+    return *this;
+}
 
 // std::map<std::string, DnaSequence*> name_to_sequence;
 void FastaReader::parse_file(string filename) {
@@ -48,9 +56,9 @@ void FastaReader::parse_file(string filename) {
 }
 
 FastaReader::~FastaReader() {
-	for (auto it = this->name_to_sequence.begin(); it != this->name_to_sequence.end(); ++it) {
-		delete it->second;
-	}
+//	for (auto it = this->name_to_sequence.begin(); it != this->name_to_sequence.end(); ++it) {
+//		delete it->second;
+//	}
 	this->name_to_sequence.clear();
 }
 

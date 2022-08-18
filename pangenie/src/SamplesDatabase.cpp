@@ -50,6 +50,13 @@ string SamplesDatabase::getSampleName(unsigned sampleIndex)
 {
   return samples[sampleIndex].SampleName;
 }
+vector<string> SamplesDatabase::getSamplesName()
+{
+  vector<string> result(samples.size());
+  for(unsigned i = 0 ; i<samples.size(); i++)
+    result[i]=samples[i].SampleName;
+  return result;
+}
 ProbabilityTable* SamplesDatabase::getSampleProbability(unsigned sampleIndex)
 {
   return &(samples[sampleIndex].probs);
