@@ -42,126 +42,130 @@ UniqueKmerComputer::UniqueKmerComputer (KmerCounter* genomic_kmers, SamplesDatab
 
 void UniqueKmerComputer::compute_unique_kmers(std::vector<std::vector<UniqueKmers*> >* result) {
 	size_t nr_variants = this->variants->size_of(this->chromosome);
-        uint32_t numSamples=database->getNumSamples();
-        vector<double> localCoverage(numSamples);
-        result->resize(numSamples);
+    uint32_t numSamples=database->getNumSamples();
+    vector<double> localCoverage(numSamples);
+    result->resize(numSamples);
+    for(unsigned i=0; i< numSamples; i++)
+    {
+        result->at(i).resize(nr_variants);
+    }
+    vector<string> seqs;
+#pragma omp parallel for shared(result) firstprivate(localCoverage,numSamples,seqs)
+    for (size_t v = 0; v < nr_variants; ++v) {
+        // set parameters of distributions
+        size_t kmer_size = this->variants->get_kmer_size();
 
-	for (size_t v = 0; v < nr_variants; ++v) {
-		// set parameters of distributions
-		size_t kmer_size = this->variants->get_kmer_size();
-                // thsi will return a map
-		compute_local_coverage(this->chromosome, v, 2*kmer_size,localCoverage);
-		
-		map <jellyfish::mer_dna, vector<unsigned char>> occurences;
-		const Variant& variant = this->variants->get_variant(this->chromosome, v);
+        compute_local_coverage(this->chromosome, v, 2*kmer_size,localCoverage);
+        map <jellyfish::mer_dna, vector<unsigned char>> occurences;
+        const Variant& variant = this->variants->get_variant(this->chromosome, v);
 
-		UniqueKmers* u = new UniqueKmers(variant.get_start_position());
-                size_t nr_alleles = variant.nr_of_alleles();
-                // insert empty alleles (to also capture paths for which no unique kmers exist)
-                assert(variant.nr_of_paths() < 65535);
-                for (unsigned short p = 0; p < variant.nr_of_paths(); ++p) {
-                  unsigned char a = variant.get_allele_on_path(p);
-                  u->insert_empty_allele(a);
-                  u->insert_path(p,a);
+
+        UniqueKmers* u = new UniqueKmers(variant.get_start_position());
+        size_t nr_alleles = variant.nr_of_alleles();
+        // insert empty alleles (to also capture paths for which no unique kmers exist)
+        assert(variant.nr_of_paths() < 65535);
+        for (unsigned short p = 0; p < variant.nr_of_paths(); ++p) {
+            unsigned char a = variant.get_allele_on_path(p);
+            u->insert_empty_allele(a);
+            u->insert_path(p,a);
+        }
+
+        seqs.resize(nr_alleles);
+        for (unsigned char a = 0; a < nr_alleles; ++a) {
+            // consider all alleles not undefined
+            if (variant.is_undefined_allele(a)) {
+                // skip kmers of alleles that are undefined
+                u->set_undefined_allele(a);
+                continue;
+            }
+            DnaSequence allele = variant.get_allele_sequence(a);
+            unique_kmers(allele, a, kmer_size, occurences);
+            seqs[a]=allele.to_string();
+        }
+
+        for (auto kmer = occurences.cbegin(), next_it = kmer; kmer != occurences.cend(); kmer = next_it)
+        {
+            bool ignoreKmer=false;
+            size_t genomic_count = this->genomic_kmers->getKmerAbundance(kmer->first);
+            size_t local_count = kmer->second.size();
+
+            if ( (genomic_count - local_count) == 0 ) {
+                // kmer unique to this region
+                // determine read kmercount for this kmer
+
+                // determine on which paths kmer occurs
+                vector<size_t> paths;
+                for (auto &allele : kmer->second) {
+                    variant.get_paths_of_allele(allele, paths);
                 }
 
-                vector<string> seqs(nr_alleles);
-                for (unsigned char a = 0; a < nr_alleles; ++a) {
-                  // consider all alleles not undefined
-                  if (variant.is_undefined_allele(a)) {
-                    // skip kmers of alleles that are undefined
-                    u->set_undefined_allele(a);
-                    continue;
-                  }
-                  DnaSequence allele = variant.get_allele_sequence(a);
-                  unique_kmers(allele, a, kmer_size, occurences);
-                  seqs[a]=allele.to_string();
-                }
-
-                for (auto kmer = occurences.cbegin(), next_it = kmer; kmer != occurences.cend(); kmer = next_it)
-                {
-                  bool ignoreKmer=false;
-                  size_t genomic_count = this->genomic_kmers->getKmerAbundance(kmer->first);
-                  size_t local_count = kmer->second.size();
-
-                  if ( (genomic_count - local_count) == 0 ) {
-                    // kmer unique to this region
-                    // determine read kmercount for this kmer
-
-                    // determine on which paths kmer occurs
-                    vector<size_t> paths;
-                    for (auto &allele : kmer->second) {
-                      variant.get_paths_of_allele(allele, paths);
-                    }
-
-                    // skip kmer that does not occur on any path (uncovered allele)
-                    if (paths.size() == 0) {
-                      ignoreKmer=true;
-                    }
-
-                    // skip kmer that occurs on all paths (they do not give any information about a genotype)
-                    if (paths.size() == variant.nr_of_paths()) {
-                      ignoreKmer=true;
-                    }
-                  }
-                  else{
+                // skip kmer that does not occur on any path (uncovered allele)
+                if (paths.size() == 0) {
                     ignoreKmer=true;
-                  }
-
-
-                  ++next_it;
-                  if (ignoreKmer)
-                  {
-                    occurences.erase(kmer);
-                  }
                 }
 
-                vector<unordered_map<string,uint32_t>> kmerCounts;
-                database->getKmerCounts(seqs,kmerCounts);
+                // skip kmer that occurs on all paths (they do not give any information about a genotype)
+                if (paths.size() == variant.nr_of_paths()) {
+                    ignoreKmer=true;
+                }
+            }
+            else{
+                ignoreKmer=true;
+            }
 
-                for(unsigned sampleID=0; sampleID< numSamples ; sampleID++) {
-		  string sampleName=database->getSampleName(sampleID);
-		  //bool debug= (sampleName=="SRR17029944");
-                  UniqueKmers* sampleU=new UniqueKmers(*u);
-                  unsigned sampleKmerCoverage=database->getKmerCoverage(sampleID);
-                  sampleU->set_coverage(localCoverage[sampleID]);
-		  // if(debug) cerr<<"Local Coverage "<<localCoverage[sampleID]<<"\n";
-		  //		  debug=false;
-                  ProbabilityTable* probabilities=database->getSampleProbability(sampleID);
-                  size_t nr_kmers_used = 0;
-                  for (auto &kmer : occurences) {
-                    if (nr_kmers_used > 300)
-                      break;
 
-                    size_t read_kmercount =
+            ++next_it;
+            if (ignoreKmer)
+            {
+                occurences.erase(kmer);
+            }
+        }
+
+        vector<unordered_map<string,uint32_t>> kmerCounts;
+        database->getKmerCounts(seqs,kmerCounts);
+
+        for(unsigned sampleID=0; sampleID< numSamples ; sampleID++) {
+            string sampleName=database->getSampleName(sampleID);
+            //bool debug= (sampleName=="SRR17029944");
+            UniqueKmers* sampleU=new UniqueKmers(*u);
+            unsigned sampleKmerCoverage=database->getKmerCoverage(sampleID);
+            sampleU->set_coverage(localCoverage[sampleID]);
+            // if(debug) cerr<<"Local Coverage "<<localCoverage[sampleID]<<"\n";
+            //		  debug=false;
+            ProbabilityTable* probabilities=database->getSampleProbability(sampleID);
+            size_t nr_kmers_used = 0;
+            for (auto &kmer : occurences) {
+                if (nr_kmers_used > 300)
+                    break;
+
+                size_t read_kmercount =
                         kmerCounts[sampleID][kmer.first.to_str()];
 
-                    if (read_kmercount >
-                        (2 * sampleKmerCoverage)) {
-                      continue;
-                    }
-
-                    // determine probabilities
-                    CopyNumber cn = probabilities->get_probability(
-                                            localCoverage[sampleID], read_kmercount);
-
-                    long double p_cn0 = cn.get_probability_of(0);
-                    long double p_cn1 = cn.get_probability_of(1);
-                    long double p_cn2 = cn.get_probability_of(2);
-
-                    // skip kmers with only 0 probabilities
-                    if ((p_cn0 > 0) || (p_cn1 > 0) || (p_cn2 > 0)) {
-                      nr_kmers_used += 1;
-                      sampleU->insert_kmer(read_kmercount, kmer.second);
-		      //  if(debug)
-		      //	cerr<<"KMERFN"<<"\t"<<kmer.first<<"\t"<<read_kmercount<<"\n";
-                    }
-                  }
-
-                  result->at(sampleID).push_back(sampleU);
+                if (read_kmercount >
+                    (2 * sampleKmerCoverage)) {
+                    continue;
                 }
-                delete u;
+
+                // determine probabilities
+                CopyNumber cn = probabilities->get_probability(
+                        localCoverage[sampleID], read_kmercount);
+
+                long double p_cn0 = cn.get_probability_of(0);
+                long double p_cn1 = cn.get_probability_of(1);
+                long double p_cn2 = cn.get_probability_of(2);
+
+                // skip kmers with only 0 probabilities
+                if ((p_cn0 > 0) || (p_cn1 > 0) || (p_cn2 > 0)) {
+                    nr_kmers_used += 1;
+                    sampleU->insert_kmer(read_kmercount, kmer.second);
+                    //  if(debug)
+                    //	cerr<<"KMERFN"<<"\t"<<kmer.first<<"\t"<<read_kmercount<<"\n";
+                }
+            }
+            (result->at(sampleID))[v]=sampleU;
         }
+        delete u;
+    }
 
 }
 

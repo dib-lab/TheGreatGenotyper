@@ -20,7 +20,7 @@
 #include "threadpool.hpp"
 #include "pathsampler.hpp"
 #include "SamplesDatabase.h"
-
+#include "omp.h"
 using namespace std;
 
 
@@ -204,6 +204,7 @@ int main (int argc, char* argv[])
     nr_jellyfish_threads = stoi(argument_parser.get_argument('j'));
     nr_core_threads = stoi(argument_parser.get_argument('t'));
 
+    omp_set_num_threads(nr_core_threads);
     bool genotyping_flag = argument_parser.get_flag('g');
     bool phasing_flag = argument_parser.get_flag('p');
 
