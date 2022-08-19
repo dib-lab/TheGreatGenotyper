@@ -43,6 +43,7 @@ public:
 	size_t get_kmer_size() const;
 	void write_path_segments(std::string filename) const;
 	void get_chromosomes(std::vector<std::string>* result) const;
+    std::vector<std::string> get_chromosomes_vcfSorted() const;
 	size_t size_of(std::string chromosome) const;
 	const Variant& get_variant(std::string chromosome, size_t index) const;
 	const std::vector<Variant>& get_variants_on_chromosome(std::string chromosome) const;
@@ -62,6 +63,7 @@ private:
 	size_t kmer_size;
 	size_t nr_paths;
 	size_t nr_variants;
+    std::vector<std::string> chromsomes;
 	bool add_reference;
 	std::vector<std::string> samples;
 	std::ofstream genotyping_outfile;

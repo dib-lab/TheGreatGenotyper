@@ -259,8 +259,7 @@ int main (int argc, char* argv[])
     variant_reader.write_path_segments(segment_file);
 
     // determine chromosomes present in VCF
-    vector<string> chromosomes;
-    variant_reader.get_chromosomes(&chromosomes);
+    vector<string> chromosomes= variant_reader.get_chromosomes_vcfSorted();
     cerr << "Found " << chromosomes.size() << " chromosome(s) in the VCF." << endl;
 
 

@@ -162,6 +162,8 @@ VariantReader::VariantReader(string filename, string reference_filename, size_t 
 		}
 		// get chromosome
 		string current_chrom = tokens[0];
+        if(chromsomes.empty() || chromsomes.back()!= current_chrom)
+            chromsomes.push_back(current_chrom);
 		// get position
 		size_t current_start_pos;
 		stringstream sstream(tokens[1]);
@@ -337,6 +339,10 @@ void VariantReader::get_chromosomes(vector<string>* result) const {
 	for (auto const& element : chromosome_sizes) {
 		result->push_back(element.second);
 	}
+}
+std::vector<std::string> VariantReader::get_chromosomes_vcfSorted() const
+{
+    return chromsomes;
 }
 
 size_t VariantReader::size_of(string chromosome) const {
