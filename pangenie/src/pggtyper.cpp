@@ -398,30 +398,30 @@ int main (int argc, char* argv[])
         timer.get_interval_time();
         for (unsigned sampleID = 0; sampleID < numSamples; sampleID++) {
             // write VCF
-            auto result = results.result[sampleID][chrom];
 
             if (!only_phasing) {
                 // output genotyping results
                 outputVCFs[sampleID].write_genotypes_of(
-                        chrom, result,
+                        chrom, results.result[sampleID][chrom],
                         &unique_kmers_list.unique_kmers[sampleID][chrom],
                         ignore_imputed);
             }
             if (!only_genotyping) {
                 // output phasing results
                 outputVCFs[sampleID].write_phasing_of(
-                        chrom, result,
+                        chrom, results.result[sampleID][chrom],
                         &unique_kmers_list.unique_kmers[sampleID][chrom],
                         ignore_imputed);
             }
-            result.clear();
         }
         for(auto uniq: unique_kmers_list.unique_kmers) {
             for (size_t i = 0; i < uniq[chrom].size(); ++i) {
                 delete uniq[chrom][i];
                 uniq[chrom][i] = nullptr;
             }
+            uniq[chrom].clear();
         }
+        results.result.clear();
 
         time_writing += timer.get_interval_time();
         cerr<< "Finished chromosome: "<< chrom << endl;
