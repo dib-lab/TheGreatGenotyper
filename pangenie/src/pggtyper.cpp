@@ -413,6 +413,7 @@ int main (int argc, char* argv[])
                         &unique_kmers_list.unique_kmers[sampleID][chrom],
                         ignore_imputed);
             }
+            results.result[sampleID][chrom].clear();
         }
         for(auto uniq: unique_kmers_list.unique_kmers) {
             for (size_t i = 0; i < uniq[chrom].size(); ++i) {
@@ -421,7 +422,7 @@ int main (int argc, char* argv[])
             }
             uniq[chrom].clear();
         }
-        results.result.clear();
+
 
         time_writing += timer.get_interval_time();
         cerr<< "Finished chromosome: "<< chrom << endl;
