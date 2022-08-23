@@ -11,7 +11,7 @@ kmcMinCount=5
 if "kmcMinCount" in config:
    kmcMinCount= config["kmcMinCount"]
 
-
+metagraph_smooth_value=10000000
 
 globus_ebi_id= ""
 globus_client_id= ""
@@ -39,32 +39,117 @@ for l in open(urlsFile):
     urls[sample].append(fileName)
     urlsByFileName[file]=url
 
-downloadDependency={}
-numberParallelSamples=1
+
+from os.path import exists
+from pathlib import Path
+from os import makedirs
+
+if not exists(outputFolder+"globus"):
+   os.makedirs(outputFolder+"globus")
+
+
+#samples_to_be_processed=[]
+# for sample in illuminaSamples:
+#     unitigFile="%sunitigs/smooth_%d/%s.fasta.gz"%(outputFolder,metagraph_smooth_value,sample)
+#     unitigFile2="%sunitigs/smooth_%d/%s.fasta.gz"%(outputFolder,1,sample)
+#     if not exists(unitigFile) or not exists(unitigFile2):
+#        samples_to_be_processed.append(sample)
+
+
+def touchIfNotThere(path):
+    if not exists(path):
+       Path(flag).touch()
+
+
+downloadDependency={ "1":{}, "2":{} }
+greenLights= {}
+numberParallelSamples=min(8,len(illuminaSamples))
+
 
 for i in range(0,numberParallelSamples):
     sample = illuminaSamples[i]
+    if sample not in urls:
+       continue
     fileNames = urls[sample]
     for f in fileNames:
     	fileName= f.split("/")[-1]
-	# urlsFile is just file that I am sure it exists so it will make snakemake starts download immediately 
-	downloadDependency[fileName] = urlsFile
+	#give green flag to download those files
+	touchIfNotThere(outputFolder+"globus/%s.greenFlag.1"%(fileName))
+	if i==1:
+       	   touchIfNotThere(outputFolder+"globus/%s.greenFlag.2"%(fileName))
 
+
+def isProcessed(sample):
+    check_pathes=[
+	"%skmc/%s.kmc_pre" % (outputFolder, sample),
+	"%sgraphs/%s.dbg" % (outputFolder, sample),
+	"%sunitigs/smooth_1/%s.fasta.gz" % (outputFolder, sample)]
+    for path in check_pathes:
+    	if exists(path):
+       	   return True
+    return False
     
+
+
 for i in range(numberParallelSamples, len(illuminaSamples)):
     sample = illuminaSamples[i]
-    parent = illuminaSamples[ i- numberParallelSamples ]
-    dependency =  "%skmc/%s.kmc_pre" % (outputFolder, parent)
-
+    if sample not in urls:
+       continue
     fileNames = urls[sample]
+    parent = illuminaSamples[ i- numberParallelSamples ]
+    flag =  "%skmc/%s.kmc_pre" % (outputFolder, parent)
+    processed= isProcessed(parent)
     for f in fileNames:
     	fileName= f.split("/")[-1]
-	downloadDependency[fileName] = dependency
+	downloadDependency["1"][fileName]=flag
+	if processed:
+       	   flag =  "%sglobus/%s.greenLight.1" % (outputFolder, fileName)
+	   touchIfNotThere(flag)
 
+for i in range(1,len(illuminaSamples)):
+    sample = illuminaSamples[i]
+    parent = illuminaSamples[ i- 1 ]
+    fileNames = urls[sample]
+    flag =  "%sglobus/%s.finished" % (outputFolder, parent)
+    processed= isProcessed(parent)
+    for f in fileNames:
+    	fileName= f.split("/")[-1]
+	downloadDependency["2"][fileName]=flag
+	if processed:
+           flag =  "%sglobus/%s.greenLight.2" % (outputFolder, fileName)
+	   touchIfNotThere(flag)
+	   
+	
+
+###in case we  killed the snakemake and we want to resume so I am creating make sure the flags are created for downloaded samples
+for i in range(0,len(illuminaSamples)):
+    sample = illuminaSamples[i]
+    flag="%sglobus/%s.finished" % (outputFolder, sample)
+    if exists(flag):
+       continue
+    check_pathes=[
+	"%skmc/%s.kmc_pre" % (outputFolder, sample),
+	"%sgraphs/%s.dbg" % (outputFolder, sample),
+	"%sunitigs/smooth_1/%s.fasta.gz" % (outputFolder, sample)]
+	
+    for path in check_pathes:
+    	if exists(path):
+       	   touchIfNotThere(flag)
+	
 
 
 kmcs=expand("{out}kmc/{experiment}.kmc_pre",out=outputFolder,experiment=illuminaSamples)
+metagraphUnitigsNoSmooth=expand(outputFolder+"unitigs/smooth_1/{sample}.fasta.gz",sample=illuminaSamples)
+
 metagraphUnitigs=expand(outputFolder+"unitigs/smooth_{smooth_value}/{sample}.fasta.gz",sample=illuminaSamples,smooth_value="{smooth_value}")
+
+# contigs2=expand(outputFolder+"unitigs/smooth_10000000/{sample}.fasta.gz",sample=illuminaSamples)
+# process=[]
+# for f in contigs2+ metagraphUnitigsNoSmooth:
+#     if not exists(f):
+#        process.append(f)
+
+
 annodbg=expand(outputFolder+"smooth_{smooth_value}/columns/{sample}.fasta.gz.column.annodbg",sample=illuminaSamples,smooth_value="{smooth_value}")
 annodbgCounts=expand(outputFolder+"smooth_{smooth_value}/columns/{sample}.fasta.gz.column.annodbg.counts",sample=illuminaSamples,smooth_value="{smooth_value}")
 
@@ -95,18 +180,19 @@ def getFile(name):
        raise Exception("No file description form sample %s in sub_samble.csv or "%(name,urlsFile))
 
 	
-localrules: all, createGraphDescriptor, prepareAnnnotationColumns, DownloadGlobus
+localrules: all, createGraphDescriptor, prepareAnnnotationColumns, DownloadGlobus,giveGreenLight, markSampleFinished
 
 rule all:
     input:
-#        outputFolder+"graph.dbg",
-        outputFolder+"smooth_10000000/annotation.row_diff_int_brwt.annodbg",
-	outputFolder+"smooth_10000000/annotation.relaxed.row_diff_int_brwt.annodbg",
+        outputFolder+"smooth_10000000/annotation.relaxed.row_diff_int_brwt.annodbg",
 	outputFolder+"smooth_10000000/graph.desc.tsv",
-	outputFolder+"smooth_10000000/graph.dbg"
+	outputFolder+"smooth_10000000/graph.dbg",
+#	metagraphUnitigsNoSmooth
+
+
 
 rule kmc:
-    input: lambda wildcards: getFile(f"{wildcards.experiment}")         
+    input: ancient(lambda wildcards: getFile(f"{wildcards.experiment}"))         
     params:
         outPrefix=outputFolder +"kmc/{experiment}"
     output:
@@ -117,7 +203,7 @@ rule kmc:
     conda:
          "env.yaml"
     threads: 16
-    priority: 20
+    priority: 40
     resources:
         mem_mb=17000,cores=16
     log: outputFolder +"kmc/{experiment}.log"
@@ -131,24 +217,47 @@ rule kmc:
         """
 
 
-# dependency here is to guide snakemake download files for the same sample together, and dont overload the disk space. Also, I instructing snakemake not start downloading a new sample until metagraph finish  
+rule giveGreenLight:
+    input:
+         lambda wildcards: ancient(downloadDependency[f"{wildcards.id}"][f"{wildcards.file}"])
+    output:
+         outputFolder+"globus/{file}.greenLight.{id}"
+    shell:
+       	"""
+		touch {output}
+        """
+
+rule markSampleFinished:
+    input: ancient(lambda wildcards: getFile(f"{wildcards.experiment}"))         
+    output:
+         outputFolder+"globus/{experiment}.finished"
+    shell:
+       	"""
+		touch {output}
+        """
+	 
+
+
+
+
+# dependency here is to guide snakemake download files for the same sample together, and dont overload the disk space. Also, I instructing snakemake not start downloading a new sample until kmc finish counting the previously downloaded samples 
 rule DownloadGlobus:
     input:
-        dependency = lambda wildcards: downloadDependency[f"{wildcards.file}"] 
+         flag1=ancient(outputFolder+"globus/{file}.greenLight.1"),
+	 flag2=ancient(outputFolder+"globus/{file}.greenLight.2")
     params:
         urls=lambda wildcards: urlsByFileName[f"{wildcards.file}"]
     output:
-          outputFolder+"fastq/{file}"
-#         temp(outputFolder+"fastq/{file}")
+          temp(outputFolder+"fastq/{file}")
     threads: 1
-    priority: 30
+    priority: 5
     retries: 5
     resources:
         mem_mb=1024,cores=1,parallel_download=1
     log: outputFolder+"fastq/{file}.log"
     shell:
        	"""
-		id=$(globus transfer --notify off {globus_ebi_id}:{params.urls} {globus_client_id}:{output}  |grep "Task ID" | sed -e 's/Task ID: //' )
+		id=$(globus transfer -s size --notify off {globus_ebi_id}:{params.urls} {globus_client_id}:{output}  |grep "Task ID" | sed -e 's/Task ID: //' )
 		globus task wait $id
         """
 
@@ -202,22 +311,6 @@ rule DownloadGlobus:
 
 
 
-# rule calculateHistogram:
-#     input: prefix=outputFolder+"kmc/{sample}.kmc_pre", suffix=outputFolder+"kmc/{sample}.kmc_suf"
-#     output:
-#          histogram=outputFolder+"histograms/{sample}.histo"
-#     params:
-#          kmcPrefix=outputFolder+"kmc/{sample}"
-#     conda:
-#          "env.yaml"
-#     threads: 1
-#     resources:
-#         mem_mb=3000,cores=1,mem_gb=2
-#     log: outputFolder+"histograms/{sample}.log"
-#     shell:
-#        	"""
-# 	../computeHistogram -i {params.kmcPrefix} -m 1000 -o {output} &> {log}
-#         """
 
 rule createGraphDescriptor:
     input:
@@ -247,23 +340,23 @@ rule createGraphDescriptor:
 pruneTips= int(kSize)*2
 
 
-ruleorder: smooth_count >  kmc_to_clean_fasta
+#ruleorder: smooth_count >  kmc_to_clean_fasta
 
 
-rule kmc_to_clean_fasta:
+rule kmc_to_graph:
     input: prefix=ancient(outputFolder+"kmc/{sample}.kmc_pre"), suffix=ancient(outputFolder+"kmc/{sample}.kmc_suf")
     output:
-         unitgs= outputFolder+"unitigs/{sample}.fasta.gz",
-         counts= outputFolder+"unitigs/{sample}.kmer_counts.gz",
+         graph= temp(outputFolder+"graphs/{sample}.dbg"),
+         weights= temp(outputFolder+"graphs/{sample}.dbg.weights"),	 
     params:
-         outputPrefix=outputFolder+"unitigs/{sample}"
+         outputFolder= outputFolder+"graphs/"
     conda:
          "env.yaml"
     threads: 16
-    priority: 10
+    priority: 20
     resources:
         mem_mb=20000,cores=16,mem_gb=18
-    log: outputFolder+"unitigs/{sample}.log"
+    log: outputFolder+"graphs/{sample}.log"
     shell:
        	"""
 	    mkdir  -p {tmpFolder}$$/
@@ -275,28 +368,22 @@ rule kmc_to_clean_fasta:
             --mem-cap-gb {resources.mem_gb} \
             --disk-swap  {tmpFolder}$$/\
             -p {threads} \
-            -o  {tmpFolder}$$/{wildcards.sample}\
+            -o  {tmpFolder}$$/graph \
             {input.suffix}  &> {log}
-
-            metagraph clean  \
-            --to-fasta --primary-kmers \
-            --smoothing-window 1 \
-	    --prune-tips {pruneTips} \
-	    --prune-unitigs 0 \
-            -p {threads} \
-            -o {params.outputPrefix} \
-            {tmpFolder}$$/{wildcards.sample}.dbg  &>> {log} \
-         
+	    
+	    mv {tmpFolder}$$/graph.dbg {params.outputFolder}{wildcards.sample}.dbg
+	    mv {tmpFolder}$$/graph.dbg.weights {params.outputFolder}{wildcards.sample}.dbg.weights
+	    ls -lsah {output.graph} >> {log}
             rm -rf {tmpFolder}$$/
         """
 
 
 
  
-rule smooth_count:
+rule clean:
     input:
-         unitigs= outputFolder+"unitigs/{sample}.fasta.gz",
-         counts= outputFolder+"unitigs/{sample}.kmer_counts.gz",
+         graph= ancient(outputFolder+"graphs/{sample}.dbg"),
+         weights= ancient(outputFolder+"graphs/{sample}.dbg.weights")
     output:
          unitigs= outputFolder+"unitigs/smooth_{smooth_value}/{sample}.fasta.gz",
          counts= outputFolder+"unitigs/smooth_{smooth_value}/{sample}.kmer_counts.gz",
@@ -305,24 +392,12 @@ rule smooth_count:
     conda:
          "env.yaml"
     threads: 16
-    priority: 10
+    priority: 30
     resources:
         mem_mb=20000,cores=16,mem_gb=18
     log: outputFolder+"unitigs/smooth_{smooth_value}/{sample}.log"
     shell:
        	"""
-	    mkdir  -p {tmpFolder}$$/
-
-	    metagraph build  \
-            -k {kSize} \
-            --mode canonical \
-            --count-kmers --count-width 16 \
-            --mem-cap-gb {resources.mem_gb} \
-            --disk-swap  {tmpFolder}$$/\
-            -p {threads} \
-            -o  {tmpFolder}$$/{wildcards.sample}\
-            {input.unitigs}  &> {log}
-
             metagraph clean  \
             --to-fasta --primary-kmers \
             --smoothing-window 1 \
@@ -331,9 +406,7 @@ rule smooth_count:
             --smoothing-window {wildcards.smooth_value} \
             -p {threads} \
             -o {params.outputPrefix} \
-            {tmpFolder}$$/{wildcards.sample}.dbg  &>> {log} \
-         
-            rm -rf {tmpFolder}$$/
+            {input.graph}  &> {log} \
         """
 
 
@@ -397,7 +470,7 @@ rule metagraph_buildSmoothMainGraph:
          "env.yaml"
     threads: 32
     resources:
-        mem_mb=12000,cores=32,mem_gb=10
+        mem_mb=250000,cores=32,mem_gb=200
     log: outputFolder+"smooth_{smooth_value}/buildMainGraphlog"
     shell:
        	"""
@@ -494,7 +567,8 @@ rule prepareAnnnotationColumns:
     input:
          flags=batchFlags
     output:
-         columns=temp(expand(outputFolder+"smooth_{smooth_value}/columns/{sample}.fasta.gz.column.annodbg",smooth_value="{smooth_value}",sample=illuminaSamples))
+         columns=temp(expand(outputFolder+"smooth_{smooth_value}/columns/{sample}.fasta.gz.column.annodbg",smooth_value="{smooth_value}",sample=illuminaSamples)),
+         columnsCounts=temp(expand(outputFolder+"smooth_{smooth_value}/columns/{sample}.fasta.gz.column.annodbg.counts",smooth_value="{smooth_value}",sample=illuminaSamples))	 
     params:
          outputPrefix=outputFolder+"smooth_{smooth_value}/columns/"
     conda:
@@ -516,19 +590,19 @@ rule prepareAnnnotationColumns:
 rule optimizeAnnotationColumns:
     input:
          columns=expand(outputFolder+"smooth_{smooth_value}/columns/{sample}.fasta.gz.column.annodbg",smooth_value="{smooth_value}",sample=illuminaSamples),
+         columnsCounts=expand(outputFolder+"smooth_{smooth_value}/columns/{sample}.fasta.gz.column.annodbg.counts",smooth_value="{smooth_value}",sample=illuminaSamples),
          graph=outputFolder+"smooth_{smooth_value}/graph.dbg"
     output:
-         outputFolder+"smooth_{smooth_value}/annotation.row_diff_int_brwt.annodbg",
-	 outputFolder+"smooth_{smooth_value}/annotation.relaxed.row_diff_int_brwt.annodbg"
+         outputFolder+"smooth_{smooth_value}/annotation.relaxed.row_diff_int_brwt.annodbg"
     params:
-         rowDiffPrefix=outputFolder + "smooth_{smooth_value}/rowDiff/",
-	 outputPrefix=outputFolder + "smooth_{smooth_value}/annotation",
-	 outputFolder=outputFolder + "smooth_{smooth_value}/"
+         rowDiffPrefix = outputFolder + "smooth_{smooth_value}/rowDiff/",
+	 outputPrefix  = outputFolder + "smooth_{smooth_value}/annotation",
+	 outputFolder  = outputFolder + "smooth_{smooth_value}/"
     conda:
          "env.yaml"
     threads: 32
     resources:
-        mem_mb=300000,cores=32,mem_gb=20
+        mem_mb=110000,cores=32,mem_gb=100
     log: outputFolder+"smooth_{smooth_value}/optimizeAnnotationColumns.log"
     shell:
        	"""
@@ -544,7 +618,8 @@ rule optimizeAnnotationColumns:
             -o {params.rowDiffPrefix}out \
             -p {threads} \
 	    {input.columns} &> {log}
-    
+ 	echo "stage 0 finished" >> {log}
+   
 	metagraph transform_anno  \
             --anno-type row_diff --count-kmers \
             --row-diff-stage 1 \
@@ -554,7 +629,7 @@ rule optimizeAnnotationColumns:
             -o {params.rowDiffPrefix}out \
             -p {threads} \
 	    {input.columns} &>> {log}
-
+ 	echo "stage 1 finished" >> {log}
 
         metagraph transform_anno  \
             --anno-type row_diff --count-kmers \
@@ -565,23 +640,23 @@ rule optimizeAnnotationColumns:
             -o {params.rowDiffPrefix}out \
             -p {threads} \
 	    {input.columns} &>> {log}
-
+	echo "stage 2 finished" >> {log}
 
         find {params.rowDiffPrefix} -name \"*.column.annodbg\" \
          | metagraph transform_anno  \
             --anno-type row_diff_int_brwt \
-            --greedy --fast --subsample 1000000 \
+            --greedy --fast --subsample {wildcards.smooth_value} \
             -i {input.graph} \
             -o {params.outputPrefix} \
             -p {threads} --parallel-nodes 10  &>> {log}
-
+	echo "transform to brwt  finished" >> {log}
 
         metagraph relax_brwt  \
             -p {threads} \
             --relax-arity 32 \
             -o {params.outputPrefix}.relaxed \
             {params.outputPrefix}.row_diff_int_brwt.annodbg  &>> {log}
-
+	echo "relax finished" >> {log}
 	    rm -rf {tmpFolder}$$/
 	    rm {params.outputFolder}annotation.row_diff_int_brwt.annodbg
 	    rm  -rf {params.rowDiffPrefix}
