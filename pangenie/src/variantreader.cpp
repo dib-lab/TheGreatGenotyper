@@ -162,6 +162,7 @@ VariantReader::VariantReader(string filename, string reference_filename, size_t 
 		}
 		// get chromosome
 		string current_chrom = tokens[0];
+        string variantID=tokens[2];
         if(chromsomes.empty() || chromsomes.back()!= current_chrom)
             chromsomes.push_back(current_chrom);
 		// get position
@@ -270,7 +271,7 @@ VariantReader::VariantReader(string filename, string reference_filename, size_t 
 		DnaSequence right_flank;
 		this->fasta_reader.get_subsequence(current_chrom, current_end_pos, current_end_pos + kmer_size - 1, right_flank);
 		// add Variant to variant_cluster
-		Variant variant (left_flank, right_flank, current_chrom, current_start_pos, current_end_pos, alleles, paths);
+		Variant variant (left_flank, right_flank, current_chrom, current_start_pos, current_end_pos, alleles, paths,variantID);
 		variant_cluster.push_back(variant);
 		previous_chrom = current_chrom;
 		previous_end_pos = current_end_pos;
