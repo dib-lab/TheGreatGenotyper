@@ -21,6 +21,27 @@ if "globus_client_id" in config:
    globus_client_id= config["globus_client_id"]
    
 
+import random
+
+def getHighPartition(sample):
+    partitions=["high2","bmh"]
+    p=hash(sample)%len(partitions)
+    return partitions[p]
+
+def getMeduimPartition(sample):
+    partitions=["med2"]
+    p=hash(sample)%len(partitions)
+    return partitions[p]
+
+def getLowPartition(sample,attempt):
+    if attempt>1:
+       return getMeduimPartition(sample)
+    partitions=["low2"]
+    p=hash(sample)%len(partitions)
+    return partitions[p]
+
+
+
 
 tmp=list(filter(lambda x:x.library=="short",pep.samples))
 illuminaSamples=[s.sample_name for s in tmp]
@@ -29,20 +50,52 @@ illuminaSamples=[s.sample_name for s in tmp]
 urls={}
 urlsByFileName={}
 
-for l in open(urlsFile):
-    sample,url=l.strip().split(",")
+import json
+
+
+downloadData={}
+
+
+with open(urlsFile, "r") as read_content:
+    downloadData = json.load(read_content)
+
+
+kmcfileType= {}
+for acc, data in downloadData.items():
+    sample=data["BioSample"]
     if sample not in urls:
        urls[sample]=[]
+    if data["downloadMethod"] == "globus":
+       kmcfileType[sample] = "-fq"
+       for f in data["fastq"]:
+       	   file=f["filename"]
+	   fileName=outputFolder+"fastq/"+file
+	   urls[sample].append(fileName)
+           urlsByFileName[file]=f["globus"]
+    elif data["downloadMethod"] == "sra":
+    	kmcfileType[sample] = "-fq"
+    	fileName= outputFolder+"fasta/"+acc+".fastq.gz"
+	urls[sample].append(fileName)
+
+# for l in open(urlsFile):
+#     sample,url=l.strip().split(",")
+#     if sample not in urls:
+#        urls[sample]=[]
        
-    file=url.split("/")[-1]
-    fileName=outputFolder+"fastq/"+file
-    urls[sample].append(fileName)
-    urlsByFileName[file]=url
+#     file=url.split("/")[-1]
+#     if "ftp" in url:
+#        downloadTool='fastq/'
+#     else:
+#        downloadTool='sra/'  	
+#     fileName=outputFolder+downloadTool+file
+#     urls[sample].append(fileName)
+#     urlsByFileName[file]=url
 
 
 from os.path import exists
 from pathlib import Path
 from os import makedirs
+
 
 if not exists(outputFolder+"globus"):
    os.makedirs(outputFolder+"globus")
@@ -58,12 +111,12 @@ if not exists(outputFolder+"globus"):
 
 def touchIfNotThere(path):
     if not exists(path):
-       Path(flag).touch()
+       Path(path).touch()
 
 
 downloadDependency={ "1":{}, "2":{} }
 greenLights= {}
-numberParallelSamples=min(8,len(illuminaSamples))
+numberParallelSamples=min(15,len(illuminaSamples))
 
 
 for i in range(0,numberParallelSamples):
@@ -72,11 +125,16 @@ for i in range(0,numberParallelSamples):
        continue
     fileNames = urls[sample]
     for f in fileNames:
-    	fileName= f.split("/")[-1]
+        fileName= f.split("/")[-1]
+	#fileName= f.split("/")[-1].split(".")[0].split("_")[0]
+	flag=outputFolder+"globus/%s.greenLight.1"%(fileName)
 	#give green flag to download those files
-	touchIfNotThere(outputFolder+"globus/%s.greenFlag.1"%(fileName))
-	if i==1:
-       	   touchIfNotThere(outputFolder+"globus/%s.greenFlag.2"%(fileName))
+	touchIfNotThere(flag)
+	downloadDependency["1"][fileName]=flag
+	if i==0:
+            flag=outputFolder+"globus/%s.greenLight.2"%(fileName)
+       	    touchIfNotThere(flag)
+	    downloadDependency["2"][fileName]=flag
 
 
 def isProcessed(sample):
@@ -120,7 +178,6 @@ for i in range(1,len(illuminaSamples)):
 	   touchIfNotThere(flag)
 	   
 	
-
 ###in case we  killed the snakemake and we want to resume so I am creating make sure the flags are created for downloaded samples
 for i in range(0,len(illuminaSamples)):
     sample = illuminaSamples[i]
@@ -143,7 +200,7 @@ metagraphUnitigsNoSmooth=expand(outputFolder+"unitigs/smooth_1/{sample}.fasta.gz
 
 metagraphUnitigs=expand(outputFolder+"unitigs/smooth_{smooth_value}/{sample}.fasta.gz",sample=illuminaSamples,smooth_value="{smooth_value}")
 
-# contigs2=expand(outputFolder+"unitigs/smooth_10000000/{sample}.fasta.gz",sample=illuminaSamples)
+contigs2=expand(outputFolder+"unitigs/smooth_10000000/{sample}.fasta.gz",sample=illuminaSamples)
 # process=[]
 # for f in contigs2+ metagraphUnitigsNoSmooth:
 #     if not exists(f):
@@ -182,19 +239,22 @@ def getFile(name):
 	
 localrules: all, createGraphDescriptor, prepareAnnnotationColumns, DownloadGlobus,giveGreenLight, markSampleFinished
 
+
 rule all:
     input:
-        outputFolder+"smooth_10000000/annotation.relaxed.row_diff_int_brwt.annodbg",
-	outputFolder+"smooth_10000000/graph.desc.tsv",
-	outputFolder+"smooth_10000000/graph.dbg",
-#	metagraphUnitigsNoSmooth
+#        outputFolder+"smooth_10000000/annotation.relaxed.row_diff_int_brwt.annodbg",
+#	outputFolder+"smooth_10000000/graph.desc.tsv",
+#	outputFolder+"smooth_10000000/graph.dbg",
+        contigs2,
+ 	metagraphUnitigsNoSmooth
 
 
 
 rule kmc:
     input: ancient(lambda wildcards: getFile(f"{wildcards.experiment}"))         
     params:
-        outPrefix=outputFolder +"kmc/{experiment}"
+        outPrefix=outputFolder +"kmc/{experiment}",
+        filetype= lambda wildcards: kmcfileType[f"{wildcards.experiment}"]
     output:
          pre=temp(outputFolder +"kmc/{experiment}.kmc_pre"),
 	 suf=temp(outputFolder +"kmc/{experiment}.kmc_suf"),
@@ -203,17 +263,26 @@ rule kmc:
     conda:
          "env.yaml"
     threads: 16
-    priority: 40
+    priority: 1
     resources:
-        mem_mb=17000,cores=16
+        mem_mb=17000,
+        cores=16,
+	nodes = 1,
+        time = 60 * 5,
+        partition =  lambda wildcards: getMeduimPartition(f"{wildcards.experiment}"),
+        tmp= lambda wildcards: "%skmc_%s/"%(tmpFolder,f"{wildcards.experiment}")		
     log: outputFolder +"kmc/{experiment}.log"
     shell:
        	"""
-      	mkdir -p {tmpFolder}$$/
+      	mkdir -p {resources.tmp}
+	function cleanup() {{ rm -rf {resources.tmp}; }}
+	trap cleanup EXIT
+	trap cleanup USR1
+
 	echo {input} |tr -s ' ' $'\n' > {output.lst}
-	kmc -ci{kmcMinCount} -t{threads} -k{kSize} -m16  @{output.lst} {params.outPrefix} {tmpFolder}$$/ &> {log}
+	kmc -ci{kmcMinCount} -t{threads} -k{kSize} -m16 {params.filetype}  @{output.lst} {params.outPrefix} {resources.tmp} &> {log}
         ../computeHistogram -i {params.outPrefix} -m 1000 -o {output.histogram} &>> {log}
-	rm -rf {tmpFolder}$$/
+	rm -rf {resources.tmp}
         """
 
 
@@ -244,13 +313,13 @@ rule markSampleFinished:
 rule DownloadGlobus:
     input:
          flag1=ancient(outputFolder+"globus/{file}.greenLight.1"),
-	 flag2=ancient(outputFolder+"globus/{file}.greenLight.2")
+#	 flag2=ancient(outputFolder+"globus/{file}.greenLight.2")
     params:
         urls=lambda wildcards: urlsByFileName[f"{wildcards.file}"]
     output:
           temp(outputFolder+"fastq/{file}")
     threads: 1
-    priority: 5
+    priority: 1
     retries: 5
     resources:
         mem_mb=1024,cores=1,parallel_download=1
@@ -262,23 +331,83 @@ rule DownloadGlobus:
         """
 
 
-# rule DownloadAspera:
-#     params:
-#         urls=lambda wildcards: urlsByFileName[f"{wildcards.file}"]
+# rule get_fastq_pe_gz:
+#     input:
+#          flag1=ancient(outputFolder+"globus/{accession}_1.fastq.gz.greenLight.1"),
+# 	 flag2=ancient(outputFolder+"globus/{accession}_1.fastq.gz.greenLight.2"),
+#          flag3=ancient(outputFolder+"globus/{accession}_2.fastq.gz.greenLight.1"),
+# 	 flag4=ancient(outputFolder+"globus/{accession}_2.fastq.gz.greenLight.2"),
 #     output:
-#          outputFolder+"fastq/{file}"
-#     conda:
-#          "env.yaml"
-#     threads: 1
-#     priority: 10
-#     retries: 5
-#     resources:
-#         mem_mb=1024,cores=1
-#     log: outputFolder+"fastq/{file}.log"
-#     shell:
-#        	"""
-# 	ascp -QT -l 300m -P33001 -i $CONDA_PREFIX/etc/asperaweb_id_dsa.openssh {params.urls} {output} &> {log} 
-#         """
+#         # the wildcard name must be accession, pointing to an SRA number
+#         temp(outputFolder+"sra/{accession}_1.fastq.gz"),
+#         temp(outputFolder+"sra/{accession}_2.fastq.gz")
+#     log:
+#         outputFolder+"sra/{accession}.log"
+#     params:
+#         extra="--skip-technical"
+#     threads: 6  # defaults to 6
+#     wrapper:
+#         "v1.14.1/bio/sra-tools/fasterq-dump"
+	
+
+
+rule get_fasta:
+    input:
+         flag1=ancient(outputFolder+"globus/{accession}.fastq.gz.greenLight.1"),
+#	 flag2=ancient(outputFolder+"globus/{accession}.fastq.gz.greenLight.2")
+    output:
+         fasta=temp(outputFolder+"fasta/{accession}.fastq.gz"),
+    log:
+        outputFolder+"fasta/{accession}.log"
+    params:
+        extra="--skip-technical"
+    threads: 6  # defaults to 6
+    priority: 5
+    retries: 5
+    resources:
+        mem_mb=1024,
+	cores=6,
+	parallel_sra=1,
+        nodes = 1,
+        time = 60 * 8,
+        partition = lambda wildcards: getHighPartition(f"{wildcards.accession}"),
+        tmp= lambda wildcards: "%sgetfasta_%s/"%(tmpFolder,f"{wildcards.accession}")	
+    conda:
+        "fasterqdumb.yaml"
+    shell:
+        """
+	mkdir -p {resources.tmp}
+
+	function cleanup() {{ rm -rf {resources.tmp} ; }}
+	trap cleanup EXIT
+	trap cleanup USR1
+
+	aws s3 cp --quiet  --no-sign-request s3://sra-pub-run-odp/sra/{wildcards.accession}/{wildcards.accession} {resources.tmp} 	
+	fasterq-dump   --stdout --skip-technical --fasta-unsorted --threads 2 -t {resources.tmp} {resources.tmp}{wildcards.accession}  |seqtk seq -F '#' - | pigz -1 -p4  > {resources.tmp}output.fastq.gz
+	mv {resources.tmp}output.fastq.gz {output.fasta} 
+	ls -lsah {output.fasta}
+ 	rm -rf {resources.tmp}
+	"""
+	
+
+
+rule DownloadAspera:
+    params:
+        urls=lambda wildcards: urlsByFileName[f"{wildcards.file}"]
+    output:
+         outputFolder+"aspera/{file}"
+    conda:
+         "env.yaml"
+    threads: 1
+    priority: 10
+    retries: 5
+    resources:
+        mem_mb=1024,cores=1
+    log: outputFolder+"fastq/{file}.log"
+    shell:
+       	"""
+	ascp -QT -l 300m -P33001 -i $CONDA_PREFIX/etc/asperaweb_id_dsa.openssh {params.urls} {output} &> {log} 
+        """
 
  
 
@@ -353,28 +482,39 @@ rule kmc_to_graph:
     conda:
          "env.yaml"
     threads: 16
-    priority: 20
+    priority: 1
     resources:
-        mem_mb=20000,cores=16,mem_gb=18
+        mem_mb=20000,
+        cores=16,
+        mem_gb=18,
+	nodes = 1,
+        time = lambda wildcards, attempt: 60 * 4 * attempt,
+        partition = lambda wildcards , attempt: getLowPartition(f"{wildcards.sample}", attempt),
+	tmp= lambda wildcards: "%sgraph_%s/"%(tmpFolder,f"{wildcards.sample}")
     log: outputFolder+"graphs/{sample}.log"
     shell:
-       	"""
-	    mkdir  -p {tmpFolder}$$/
+       	"""	    
+	    mkdir  -p {resources.tmp}
+	    function cleanup() {{ rm -rf {resources.tmp}; }}
+	    trap cleanup EXIT
+	    trap cleanup USR1
+
+	    cp {input.prefix} {input.suffix} {resources.tmp}
 
 	    metagraph build  \
             -k {kSize} \
             --mode canonical \
             --count-kmers --count-width 16 \
             --mem-cap-gb {resources.mem_gb} \
-            --disk-swap  {tmpFolder}$$/\
+            --disk-swap  {resources.tmp}\
             -p {threads} \
-            -o  {tmpFolder}$$/graph \
-            {input.suffix}  &> {log}
+            -o  {resources.tmp}graph \
+            {resources.tmp}{wildcards.sample}.kmc_suf  &> {log}
 	    
-	    mv {tmpFolder}$$/graph.dbg {params.outputFolder}{wildcards.sample}.dbg
-	    mv {tmpFolder}$$/graph.dbg.weights {params.outputFolder}{wildcards.sample}.dbg.weights
+	    mv {resources.tmp}graph.dbg {params.outputFolder}{wildcards.sample}.dbg
+	    mv {resources.tmp}graph.dbg.weights {params.outputFolder}{wildcards.sample}.dbg.weights
 	    ls -lsah {output.graph} >> {log}
-            rm -rf {tmpFolder}$$/
+            rm -rf {resources.tmp}
         """
 
 
@@ -392,12 +532,25 @@ rule clean:
     conda:
          "env.yaml"
     threads: 16
-    priority: 30
+    priority: 1
     resources:
-        mem_mb=20000,cores=16,mem_gb=18
+        mem_mb=20000,
+        cores=16,
+        mem_gb=18,
+	nodes = 1,
+        time = lambda wildcards, attempt: 60 * 4 * attempt,
+        partition = lambda wildcards , attempt: getLowPartition(f"{wildcards.sample}", attempt),
+        tmp= lambda wildcards: "%sclean_smooth%s_%s/"%(tmpFolder,f"{wildcards.smooth_value}",f"{wildcards.sample}")
     log: outputFolder+"unitigs/smooth_{smooth_value}/{sample}.log"
     shell:
        	"""
+            mkdir  -p {resources.tmp}
+	    function cleanup() {{ rm -rf {resources.tmp}; }}
+	    trap cleanup EXIT
+	    trap cleanup USR1
+
+	    cp {input.graph} {input.weights} {resources.tmp}
+
             metagraph clean  \
             --to-fasta --primary-kmers \
             --smoothing-window 1 \
@@ -405,8 +558,12 @@ rule clean:
 	    --prune-unitigs 0 \
             --smoothing-window {wildcards.smooth_value} \
             -p {threads} \
-            -o {params.outputPrefix} \
-            {input.graph}  &> {log} \
+            -o {resources.tmp}{wildcards.sample} \
+            {resources.tmp}{wildcards.sample}.dbg  &> {log} 
+
+	    mv {resources.tmp}{wildcards.sample}.fasta.gz {output.unitigs}
+	    mv {resources.tmp}{wildcards.sample}.kmer_counts.gz {output.counts}
+ 	    rm -rf {resources.tmp}
         """
 
 
@@ -470,7 +627,7 @@ rule metagraph_buildSmoothMainGraph:
          "env.yaml"
     threads: 32
     resources:
-        mem_mb=250000,cores=32,mem_gb=200
+        mem_mb=220000,cores=32,mem_gb=200
     log: outputFolder+"smooth_{smooth_value}/buildMainGraphlog"
     shell:
        	"""
@@ -544,7 +701,7 @@ rule createAnnotationColumns:
          "env.yaml"
     threads: 16
     resources:
-        mem_mb=11240,cores=16,mem_gb=10
+        mem_mb=72000,cores=16,mem_gb=70
     log: outputFolder+"smooth_{smooth_value}/columns/{batchID}.done.log"
     shell:
        	"""

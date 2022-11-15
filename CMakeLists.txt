@@ -67,6 +67,8 @@ if(BUILD_STATIC)
   set(BUILD_SHARED_LIBS OFF)
 endif()
 
+set(BUILD_SHARED_LIBS ON)
+
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "RELEASE")
 endif()
@@ -161,7 +163,7 @@ message(WARNING "Compiling without msse4.2 instructions!")
 endif()
 
 if(WITH_AVX OR (NOT DEFINED WITH_AVX AND _cpuinfo MATCHES "(avx2)|(AVX2)"))
-add_compile_options(-mavx -mavx2 -mfma -mbmi -mbmi2)
+add_compile_options(-mavx -mavx2 -mfma -mbmi -mbmi2 )
 else()
 message(WARNING "Compiling without AVX instructions!")
 endif()
@@ -196,14 +198,14 @@ endif()
 
 
 # Profile with gprof
-set(CMAKE_CXX_FLAGS_PROFILE "-pg -DNDEBUG -O2 -g")
-set(CMAKE_EXE_LINKER_FLAGS_PROFILE "-pg -g")
+set(CMAKE_CXX_FLAGS_PROFILE "-pg -DNDEBUG -O2 -g -fsanitize=address -fPIE")
+set(CMAKE_EXE_LINKER_FLAGS_PROFILE "-pg -g ")
 set(CMAKE_SHARED_LINKER_FLAGS_PROFILE "-pg -g")
 
 # Profile with gperftools
-set(CMAKE_CXX_FLAGS_GPROFILE "-fno-omit-frame-pointer -DNDEBUG -O2 -g")
-set(CMAKE_EXE_LINKER_FLAGS_GPROFILE "-g")
-set(CMAKE_SHARED_LINKER_FLAGS_GPROFILE "-g")
+set(CMAKE_CXX_FLAGS_GPROFILE "-fno-omit-frame-pointer -DNDEBUG -O2 -g -fPIE")
+set(CMAKE_EXE_LINKER_FLAGS_GPROFILE "-g -ltcmalloc")
+set(CMAKE_SHARED_LINKER_FLAGS_GPROFILE "-g -ltcmalloc")
 
 set(PROFILER_LIBRARIES PROFILER_LIBRARIES-NOTFOUND)
 find_library(PROFILER_LIBRARIES
