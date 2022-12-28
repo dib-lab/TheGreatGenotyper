@@ -1,0 +1,51 @@
+pepfile: "project_config.yaml"
+configfile: "config.yaml" 
+
+tmpFolder=config["tempFolder"]
+outputFolder=config["outputFolder"]
+kSize=config["kSize"]
+
+
+
+
+tmp=list(filter(lambda x:x.library=="short",pep.samples))
+illuminaSamples=[s.sample_name for s in tmp]
+samples=[(x.sample_name,x.file) for x in tmp]
+samples=dict(samples)
+
+variants  =  list(filter(lambda x:x.library=="variants",pep.samples))[0].file[0]
+reference =  list(filter(lambda x:x.library=="ref"     ,pep.samples))[0].file[0]
+
+
+vcfs=expand("{out}pangenie/{sample}_genotyping.vcf",out=outputFolder,sample=illuminaSamples)
+
+def getFile(name):
+    return samples[name]
+
+
+
+rule all:
+    input:
+        vcfs
+
+
+
+rule Pangenie:
+    input:
+         reads=lambda wildcards: getFile(f"{wildcards.sample}"),
+	 vcf=variants,
+	 reference=reference
+    output:
+         vcf=outputFolder+"pangenie/{sample}_genotyping.vcf",
+         histogram=outputFolder+"pangenie/{sample}_histogram.histo",
+         paths=outputFolder+"pangenie/{sample}_path_segments.fasta",         
+    params:
+         outputPrefix=outputFolder+"pangenie/{sample}"
+    threads: 16
+    resources:
+        mem_mb=22000,cores=16,mem_gb=20
+    log: outputFolder+"pangenie/{sample}.log"
+    shell:
+       	"""
+           /home/mshokrof/pangenie/build/src/PanGenie -i <(gzip -dc {input.reads}) -r {input.reference} -v {input.vcf} -k {kSize} -s {wildcards.sample} -t {threads} -j {threads}  -o {params.outputPrefix} &> {log}
+        """

@@ -305,24 +305,24 @@ void VariantReader::write_path_segments(std::string filename) const {
 			for (auto variant : this->variants_per_chromosome.at(element)) {
 				// generate reference unitig and write to file
 				size_t start_pos = variant.get_start_position();
-				outfile << ">" << element << "_reference_" << start_pos << endl;
+				outfile << ">" << element << "_reference_" << start_pos << "\n";
 				string ref_segment;
 				this->fasta_reader.get_subsequence(element, prev_end, start_pos, ref_segment);
-				outfile << ref_segment << endl;
+				outfile << ref_segment << "\n";
 				for (size_t allele = 0; allele < variant.nr_of_alleles(); ++allele) {
 					// sequence name
-					outfile << ">" << element << "_" << start_pos << "_" << allele << endl;
-					outfile << variant.get_allele_string(allele) << endl;
+					outfile << ">" << element << "_" << start_pos << "_" << allele << "\n";
+					outfile << variant.get_allele_string(allele) << "\n";
 				}
 				prev_end = variant.get_end_position();
 			}
 		}
 		// output reference sequence after last position on chromosome
-		outfile << ">" << element << "_reference_end" << endl;
+		outfile << ">" << element << "_reference_end" << "\n";
 		size_t chr_len = this->fasta_reader.get_size_of(element);
 		string ref_segment;
 		this->fasta_reader.get_subsequence(element, prev_end, chr_len, ref_segment);
-		outfile << ref_segment << endl;
+		outfile << ref_segment << "\n";
 	}
 	outfile.close();
 }
@@ -440,7 +440,7 @@ void VariantReader::open_phasing_outfile(string filename) {
 	this->phasing_outfile << "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT";
         for(auto s :samples)
           this->phasing_outfile <<"\t"<<s;
-        this->phasing_outfile << endl;
+        this->phasing_outfile << "\n";
 
 }
 
@@ -562,7 +562,7 @@ void VariantReader::write_genotypes_of(string chromosome, const vector<Genotypin
 				oss << "," << setprecision(4) << log10(likelihoods[j]);
 			}
 			this->genotyping_outfile << oss.str(); // GL
-			this->genotyping_outfile << ":" << singleton_stats[j].coverage << endl; // KC
+			this->genotyping_outfile << ":" << singleton_stats[j].coverage << "\n"; // KC
 			counter += 1;
 		}
 	}

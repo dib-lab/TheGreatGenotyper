@@ -36,7 +36,7 @@ def getMeduimPartition(sample):
 def getLowPartition(sample,attempt):
     if attempt>1:
        return getMeduimPartition(sample)
-    partitions=["low2"]
+    partitions=["bml"]
     p=hash(sample)%len(partitions)
     return partitions[p]
 
@@ -48,6 +48,12 @@ illuminaSamples=[s.sample_name for s in tmp]
 
 
 urls={}
+kmcfileType= {}
+for s in tmp:
+    if hasattr(s, 'file'): urls[s.sample_name]=s.file
+    kmcfileType[s.sample_name] = "-fq"
+
+
 urlsByFileName={}
 
 import json
@@ -56,11 +62,12 @@ import json
 downloadData={}
 
 
-with open(urlsFile, "r") as read_content:
-    downloadData = json.load(read_content)
+
+if urlsFile != None:
+   with open(urlsFile, "r") as read_content:
+   	 downloadData = json.load(read_content)
 
 
-kmcfileType= {}
 for acc, data in downloadData.items():
     sample=data["BioSample"]
     if sample not in urls:
@@ -242,11 +249,11 @@ localrules: all, createGraphDescriptor, prepareAnnnotationColumns, DownloadGlobu
 
 rule all:
     input:
-#        outputFolder+"smooth_10000000/annotation.relaxed.row_diff_int_brwt.annodbg",
-#	outputFolder+"smooth_10000000/graph.desc.tsv",
-#	outputFolder+"smooth_10000000/graph.dbg",
-        contigs2,
- 	metagraphUnitigsNoSmooth
+        outputFolder+"smooth_10000000/annotation.relaxed.row_diff_int_brwt.annodbg",
+	outputFolder+"smooth_10000000/graph.desc.tsv",
+	outputFolder+"smooth_10000000/graph.dbg",
+#        contigs2,
+# 	metagraphUnitigsNoSmooth
 
 
 
@@ -627,7 +634,13 @@ rule metagraph_buildSmoothMainGraph:
          "env.yaml"
     threads: 32
     resources:
-        mem_mb=220000,cores=32,mem_gb=200
+        mem_mb=220000,
+        cores=32,
+        mem_gb=200,
+	nodes = 1,
+        time = lambda wildcards, attempt: 60 * 100 * attempt,
+        partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.smooth_value}"),
+        tmp= lambda wildcards: "%smaingraph_smooth%s/"%(tmpFolder,f"{wildcards.smooth_value}")
     log: outputFolder+"smooth_{smooth_value}/buildMainGraphlog"
     shell:
        	"""
@@ -699,9 +712,15 @@ rule createAnnotationColumns:
          outputPrefix=outputFolder+"smooth_{smooth_value}/columns/{batchID}/"
     conda:
          "env.yaml"
-    threads: 16
+    threads: 32
     resources:
-        mem_mb=72000,cores=16,mem_gb=70
+        mem_mb=11240,
+        cores=32,
+        mem_gb=10,
+	nodes = 1,
+        time = lambda wildcards, attempt: 60 * 72 * attempt,
+        partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.batchID}"),
+        tmp= lambda wildcards: "%screateAnnotation_smooth%s_batch%s/"%(tmpFolder,f"{wildcards.smooth_value}",f"{wildcards.batchID}")
     log: outputFolder+"smooth_{smooth_value}/columns/{batchID}.done.log"
     shell:
        	"""
@@ -712,7 +731,7 @@ rule createAnnotationColumns:
                 --count-kmers --count-width 16 \
                 -o {params.outputPrefix} \
 		--threads-each 8 \
-                -p 2 \
+                -p 4 \
                 {input.unitigs} &> {log}
 
 	touch {output.batchFlag}
@@ -759,7 +778,13 @@ rule optimizeAnnotationColumns:
          "env.yaml"
     threads: 32
     resources:
-        mem_mb=110000,cores=32,mem_gb=100
+        mem_mb=110000,
+        cores=32,
+        mem_gb=100,
+	nodes = 1,
+        time = lambda wildcards, attempt: 60 * 48 * attempt,
+        partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.smooth_value}"),
+        tmp= lambda wildcards: "%soptomize_smooth%s/"%(tmpFolder,f"{wildcards.smooth_value}")
     log: outputFolder+"smooth_{smooth_value}/optimizeAnnotationColumns.log"
     shell:
        	"""
