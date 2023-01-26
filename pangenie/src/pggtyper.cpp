@@ -43,7 +43,7 @@ void check_input_file(string &filename) {
     // make sure file is not compressed
     if (ends_with(filename, ".gz")) {
         stringstream ss;
-        ss << "File " << filename << " seems to be gzip-compressed. PanGenie requires an uncompressed file." << endl;
+        ss << "File " << filename << " seems to be gzip-compressed. TheGreatGenotyper requires an uncompressed file." << endl;
         throw runtime_error(ss.str());
     }
 }
@@ -138,8 +138,8 @@ int main (int argc, char* argv[])
     double time_total;
 
     cerr << endl;
-    cerr << "program: PanGenie - genotyping and phasing based on kmer-counting and known haplotype sequences." << endl;
-    cerr << "author: Jana Ebler" << endl << endl;
+    cerr << "program: The Great Genotyper for population genotyping by Moustafa Shokrof." << endl;
+    cerr << "it is built on top of Pangenie tool by Jana Ebler" << endl << endl;
     string graphFile = "";
     string annotFile = "";
     string descriptionFile= "";
@@ -162,7 +162,7 @@ int main (int argc, char* argv[])
 
     // parse the command line arguments
     CommandLineParser argument_parser;
-    argument_parser.add_command("PanGenie [options] -i <reads.fa/fq> -r <reference.fa> -v <variants.vcf>");
+    argument_parser.add_command("TheGreatGenotyper [options] -i <reads.fa/fq> -r <reference.fa> -v <variants.vcf>");
     argument_parser.add_mandatory_argument('i', "Metagraph graph path.dbg");
     argument_parser.add_mandatory_argument('a', "Metagraph annotations containig kmer counts");
     argument_parser.add_mandatory_argument('f', "Description file .tsv");
@@ -266,7 +266,7 @@ int main (int argc, char* argv[])
     // prepare subsets of paths to run on
     unsigned short nr_paths = variant_reader.nr_of_paths();
     // TODO: for too large panels, print waring
-    if (nr_paths > 200) cerr << "Warning: panel is large and PanGenie might take a long time genotyping. Try reducing the panel size prior to genotyping." << endl;
+    if (nr_paths > 200) cerr << "Warning: panel is large and TheGreatGenotyper might take a long time genotyping. Try reducing the panel size prior to genotyping." << endl;
     // handle case when sampling_size is not set
     if (sampling_size == 0) {
         if (nr_paths > 25) {
