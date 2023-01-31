@@ -1,0 +1,7 @@
+sample_name,sample_type,BioSample
+hg38,ref,SAMN03145444
+ucd1.2_gff,gff,SAMN03145444
+ucd1.2_rmsk,rmsk,SAMN03145444
+NxB,gold,SAMEA7765441
+NA12878,hifi,HG001
+cattle_taurus_10,graph,COHORT
