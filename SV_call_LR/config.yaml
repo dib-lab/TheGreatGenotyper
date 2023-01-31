@@ -1,0 +1,22 @@
+# where to put results:
+outputFolder: results/
+tempFolder: scratch/
+
+# what tools to use:
+svCallingTools:
+   - sniffles:
+      - minimap2
+   - pbsv:
+      - minimap2
+   - cuteSV:
+      - minimap2      
+
+# variant effect predictor (vep) config:
+vep:
+   plugins:
+   # Add any plugin from https://www.ensembl.org/info/docs/tools/vep/script/vep_plugins.html
+   # Plugin args can be passed as well, e.g. "LoFtool,path/to/custom/scores.txt".
+      - LoFtool
+    # extra command line arguments (e.g. --sift, see docs)
+   extra: ""
+   path: /home/mshokrof/workshop_12Jan_2023_data/vep/
