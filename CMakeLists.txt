@@ -266,7 +266,6 @@ include_directories(
   external-libraries/zlib
   external-libraries/Simple-Web-Server
   ${PROJECT_SOURCE_DIR}/src
-  /home/mshokrof/miniconda3/envs/pangenie/include
 )
 
 findFolly()
