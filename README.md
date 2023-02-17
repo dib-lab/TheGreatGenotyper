@@ -55,7 +55,7 @@ cd TheGreatGenotyper/
 ```bash
 conda env create -f environment.yml
 conda activate gg
-$ conda env config vars set CPATH=${CONDA_PREFIX}/include:${CPATH}
+conda env config vars set CPATH=${CONDA_PREFIX}/include:${CPATH}
 conda activate
 conda activate gg
 ```
@@ -96,6 +96,26 @@ Run The great genotyper
 mkdir test_output
 ./build/pangenie/src/TheGreatGenotyper -j 32 -t 32 -a index/SGDP/annotation.relaxed.row_diff_int_brwt.annodbg -f index/SGDP/graph.desc.tsv -g -i index/SGDP/graph.dbg -r  test_data/GRCh38_chr21.fa  -v test_data/test.vcf -o test_output/test  &> test_output/log
 ```
+
+Postprocessing
+```
+parallel --gnu 'bgzip {} && tabix -p vcf {}.gz' ::: test_output/test_*_genotyping.vcf
+scripts/populationMerge.sh test_output/merged.vcf.bgz test_output/test_*_genotyping.vcf.gz
+```
+
+Query the frequent variants
+```
+bcftools view  -q 0.9 test_output/merged.vcf.bgz |grep -vP "^#" |head
+```
+
+Query the rare variants
+```
+bcftools view  -Q 0.1 test_output/merged.vcf.bgz |grep -vP "^#" |head
+```
+
+
+
+
 
 [![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)](#contributors)
 
