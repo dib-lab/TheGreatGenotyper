@@ -75,17 +75,27 @@ cmake --build build -j4 # -j4 = execute 4 recipes simultaneously.
 
 [![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)](#manual_build_python)
 
-## ➤ 
+## ➤ Run 
+uncompress test_data
+```
+gzip -d test_data/GRCh38_chr21.fa.gz test_data/test.vcf.gz
+```
+Download index(50G) for Simons Genome Diversity population([SGDP](https://www.nature.com/articles/nature18964))
 
-Python bindings are generated using [SWIG](https://github.com/swig/swig). It's **recommended** to install `swig=4.0.2` using [Conda](https://anaconda.org/conda-forge/swig/).
+```
+mkdir -p index/SGDP/
+cd index/SGDP/
+wget https://farm.cse.ucdavis.edu/~mshokrof/SGDP/graph.dbg
+wget https://farm.cse.ucdavis.edu/~mshokrof/SGDP/graph.desc.tsv
+wget https://farm.cse.ucdavis.edu/~mshokrof/SGDP/annotation.relaxed.row_diff_int_brwt.annodbg
+cd -
+```
 
-You can build the python bindings by executing `build_wrapper.sh`, or you can follow the next steps.
-
-### Generate bindings
-
-1. First, you need to follow the instructions in the [Build from source](#build_source).
-2. While `pwd=kProcessor` run: `python setup.py bdist_wheel`.
-3. Install the generated wheel package using: `cd dist && python -m pip install kProcessor*.whl`.
+Run The great genotyper
+```
+mkdir test_output
+./build/pangenie/src/TheGreatGenotyper -j 32 -t 32 -a index/SGDP/annotation.relaxed.row_diff_int_brwt.annodbg -f index/SGDP/graph.desc.tsv -g -i index/SGDP/graph.dbg -r  test_data/GRCh38_chr21.fa  -v test_data/test.vcf -o test_output/test  &> test_output/log
+```
 
 [![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)](#contributors)
 
