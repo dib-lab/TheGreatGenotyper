@@ -88,6 +88,7 @@ cd index/SGDP/
 wget https://farm.cse.ucdavis.edu/~mshokrof/SGDP/graph.dbg
 wget https://farm.cse.ucdavis.edu/~mshokrof/SGDP/graph.desc.tsv
 wget https://farm.cse.ucdavis.edu/~mshokrof/SGDP/annotation.relaxed.row_diff_int_brwt.annodbg
+wget https://farm.cse.ucdavis.edu/~mshokrof/SGDP/samples.csv
 cd -
 ```
 
