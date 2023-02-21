@@ -1,6 +1,5 @@
 
 <h1 align="center"> @DIB-LAB/The Great Genotyper </h1>
- <img src="https://cdn.pixabay.com/photo/2017/06/04/16/33/pyramids-2371501_1280.jpg" alt="Logo"/>
 <details>
 <summary>📖 Table of Contents</summary>
 <br />
@@ -36,7 +35,7 @@
 
 ## ➤ Quick Installation
 
-Download the [precompiled binary](https://github.com/dib-lab/TheGreatGenotyper/releases/download/untagged-6f4ca3f2f787ecf0e1e0/TheGreatGenotyper)
+Download the [precompiled binary Linux-x86_64](https://github.com/dib-lab/TheGreatGenotyper/releases/download/untagged-6f4ca3f2f787ecf0e1e0/TheGreatGenotyper)
 
 [![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)](#build_source)
 
