@@ -159,6 +159,7 @@ int main (int argc, char* argv[])
     bool add_reference = true;
     size_t sampling_size = 0;
     uint64_t hash_size = 3000000000;
+    bool log_scale=false;
 
     // parse the command line arguments
     CommandLineParser argument_parser;
@@ -166,6 +167,7 @@ int main (int argc, char* argv[])
     argument_parser.add_mandatory_argument('i', "Metagraph graph path.dbg");
     argument_parser.add_mandatory_argument('a', "Metagraph annotations containig kmer counts");
     argument_parser.add_mandatory_argument('f', "Description file .tsv");
+    argument_parser.add_flag_argument('l', "the counts in the index are log scale.");
 
     argument_parser.add_mandatory_argument('r', "reference genome in FASTA format. NOTE: INPUT FASTA FILE MUST NOT BE COMPRESSED.");
     argument_parser.add_mandatory_argument('v', "variants in VCF format. NOTE: INPUT VCF FILE MUST NOT BE COMPRESSED.");
@@ -196,6 +198,7 @@ int main (int argc, char* argv[])
     graphFile = argument_parser.get_argument('i');
     annotFile = argument_parser.get_argument('a');
     descriptionFile= argument_parser.get_argument('f');
+    log_scale=argument_parser.get_flag('l');
     reffile = argument_parser.get_argument('r');
     vcffile = argument_parser.get_argument('v');
     //kmersize = stoi(argument_parser.get_argument('k'));
@@ -238,7 +241,7 @@ int main (int argc, char* argv[])
     check_input_file(annotFile);
 
     cerr << "Load Database ..."<< endl;
-    SamplesDatabase database(graphFile,annotFile,descriptionFile,regularization);
+    SamplesDatabase database(graphFile,annotFile,descriptionFile,regularization,log_scale);
     kmersize=database.getKSize();
     unsigned numSamples= database.getNumSamples();
     vector<string> sampleNames=database.getSamplesName();

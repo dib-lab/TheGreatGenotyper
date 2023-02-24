@@ -26,7 +26,7 @@ struct SampleDescriptor{
 class SamplesDatabase {
 public:
   SamplesDatabase();
-  SamplesDatabase(string graphPath, string annotation_path, string descPath,long double regularization);
+  SamplesDatabase(string graphPath, string annotation_path, string descPath,long double regularization,bool log_scale);
   int getKmerCoverage(unsigned sampleIndex);
   size_t getKSize();
   size_t getNumSamples();
@@ -35,6 +35,7 @@ public:
   ProbabilityTable* getSampleProbability(unsigned sampleIndex);
   void getKmerCounts(vector<string>& seqs,vector<unordered_map<string,uint32_t>> & kmerCounts);
 private:
+  bool log_scale;
   size_t kSize;
   typedef std::vector<std::tuple<string, size_t, std::vector<size_t>>> LabelCountAbundancesVec;
   std::shared_ptr<mtg::graph::DeBruijnGraph> graph;

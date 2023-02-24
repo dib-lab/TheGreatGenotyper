@@ -10,9 +10,9 @@
 #include "cli/config/config.hpp"
 #include "cli/load/load_annotated_graph.hpp"
 SamplesDatabase::SamplesDatabase(){
-
+log_scale=false;
 }
-SamplesDatabase::SamplesDatabase(string graph_path, string annotation_path, string descriptionFile,long double regularization){
+SamplesDatabase::SamplesDatabase(string graph_path, string annotation_path, string descriptionFile,long double regularization,bool log_scale){
   graph=mtg::cli::load_critical_dbg(graph_path);
   kSize=graph->get_k();
   auto config = std::make_unique<mtg::cli::Config>();
@@ -20,7 +20,7 @@ SamplesDatabase::SamplesDatabase(string graph_path, string annotation_path, stri
   config->infbase=graph_path;
   config->infbase_annotators.push_back(annotation_path);
   anno_graph=mtg::cli::initialize_annotated_dbg(graph, *config);
-
+  this->log_scale=log;
   ifstream inputDescriptor(descriptionFile);
   uint32_t index=0;
 
@@ -98,11 +98,16 @@ void SamplesDatabase::getKmerCounts(vector<string>& seqs,vector<unordered_map<st
         uint32_t sampleIndex= it->second;
         for(unsigned i = 0; i< numKmers; i++)
         {
-          kmerCounts[sampleIndex][kmers[i]] = counts[i];
+            if(log_scale)
+                kmerCounts[sampleIndex][kmers[i]]= (1 << counts[i]);
+            else
+                kmerCounts[sampleIndex][kmers[i]] = counts[i];
+
         }
 
     }
 
   }
+
 
 }
