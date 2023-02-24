@@ -177,13 +177,11 @@ int clean_graph(Config *config) {
                 if(config->log_counts)
                 {
                     for(unsigned i =0;i< kmer_counts.size(); i++) {
-                        cout<<kmer_counts[i]<<"\t";
                         double tmp = log2(kmer_counts[i]);
                         double base = int(tmp);
                         if (tmp - base > 0.5)
                             base++;
                         kmer_counts[i] = base;
-                        cout<<kmer_counts[i]<<"\n";
                     }
                 }
                 // smooth k-mer counts in the unitig
