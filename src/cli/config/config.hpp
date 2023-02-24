@@ -66,7 +66,6 @@ class Config {
     bool aggregate_columns = false;
     bool coordinates = false;
     bool advanced = false;
-
     unsigned int k = 3;
 
     // Cache ranges of nodes in succinct graphs to search faster.
@@ -94,6 +93,7 @@ class Config {
     unsigned int relax_arity_brwt = 10;
     unsigned int min_tip_size = 1;
     unsigned int min_unitig_median_kmer_abundance = 1;
+    bool log_counts=false;
     int fallback_abundance_cutoff = 1;
     unsigned int port = 5555;
     unsigned int bloom_max_num_hash_functions = 10;
