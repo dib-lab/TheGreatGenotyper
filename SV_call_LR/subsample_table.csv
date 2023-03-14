@@ -1,5 +1,5 @@
 sample_name,file
-hg38,../../data/downloaded/fasta/GRCh38_full_analysis_set_plus_decoy_hla.fa
+hg19,/home/mshokrof/NistSV/hs37d5.fa
 ucd1.2_rmsk,/home/mshokrof/workshop_12Jan_2023_data/ARS-UCD1.2_Btau5.0.1Y.25.rmsk.bed.gz
 ucd1.2_gff,/home/mshokrof/workshop_12Jan_2023_data/ARS-UCD1.2_Btau5.0.1Y.25.gff.gz
 NxB,/home/mshokrof/workshop_12Jan_2023_data/goldstandard/callset_filered.25.bed.gz
