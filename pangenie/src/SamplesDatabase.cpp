@@ -20,7 +20,7 @@ SamplesDatabase::SamplesDatabase(string graph_path, string annotation_path, stri
   config->infbase=graph_path;
   config->infbase_annotators.push_back(annotation_path);
   anno_graph=mtg::cli::initialize_annotated_dbg(graph, *config);
-  this->log_scale=log;
+  this->log_scale=log_scale;
   ifstream inputDescriptor(descriptionFile);
   uint32_t index=0;
 
