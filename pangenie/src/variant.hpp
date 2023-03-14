@@ -31,8 +31,8 @@ public:
 	* Currently, the largest number of alleles and paths supported is 256. This is because unsigned chars are used to store allele ids. For merged variants, the number of alleles can get as
 	* high as the number of paths (if every path carries a different allele), therefore the limit on the number of paths is also 256 to avoid overflows.
 	**/
-	Variant(std::string left_flank, std::string right_flank, std::string chromosome, size_t start_position, size_t end_position, std::vector<std::string> alleles, std::vector<unsigned char> paths, std::string variant_id = ".");
-	Variant(DnaSequence& left_flank, DnaSequence& right_flank, std::string chromosome, size_t start_position, size_t end_position, std::vector<DnaSequence>& alleles, std::vector<unsigned char>& paths, std::string variant_id = ".");
+	Variant(std::string left_flank, std::string right_flank, std::string chromosome, size_t start_position, size_t end_position, std::vector<std::string> alleles, std::vector<unsigned char> paths, std::string variant_id = ".",bool phased=false);
+	Variant(DnaSequence& left_flank, DnaSequence& right_flank, std::string chromosome, size_t start_position, size_t end_position, std::vector<DnaSequence>& alleles, std::vector<unsigned char>& paths, std::string variant_id = ".",bool phased=false);
 	/** add flanking sequences left and right of variant **/
 	void add_flanking_sequence();
 	/** remove flanking sequences left and right of variant **/
@@ -53,6 +53,8 @@ public:
 	size_t get_start_position() const;
 	/** get end position of the variant **/
 	size_t get_end_position() const;
+    /** get phase status of the variant **/
+    bool get_phase_status() const;
 	/** get chromosome **/
 	std::string get_chromosome() const;
 	/** check if given allele is covered by the given path **/
@@ -99,6 +101,7 @@ private:
 	std::vector<unsigned char> paths;
 	bool flanks_added;
 	void set_values(size_t end_position);
+    bool phased;
 };
 
 #endif //VARIANT_HPP

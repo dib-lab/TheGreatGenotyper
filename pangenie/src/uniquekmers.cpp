@@ -4,10 +4,11 @@
 
 using namespace std;
 
-UniqueKmers::UniqueKmers(size_t variant_position)
+UniqueKmers::UniqueKmers(size_t variant_position,bool phased)
 	:variant_pos(variant_position),
 	 current_index(0),
-	 local_coverage(0)
+	 local_coverage(0),
+     phased(phased)
 {}
 
 UniqueKmers::UniqueKmers(const UniqueKmers& p1)
@@ -18,6 +19,7 @@ UniqueKmers::UniqueKmers(const UniqueKmers& p1)
   alleles=p1.alleles;
   path_to_allele=p1.path_to_allele;
   local_coverage=p1.local_coverage;
+  phased = p1.phased;
 }
 
 size_t UniqueKmers::get_variant_position() {
@@ -71,6 +73,9 @@ unsigned short UniqueKmers::get_nr_paths() const {
 	return this->path_to_allele.size();
 }
 
+bool UniqueKmers::get_phase_status() const {
+    return this->phased;
+}
 void UniqueKmers::get_path_ids(vector<unsigned short>& p, vector<unsigned char>& a, vector<unsigned short>* only_include) {
 	if (only_include != nullptr) {
 		// only return paths that are also contained in only_include

@@ -233,14 +233,18 @@ VariantReader::VariantReader(string filename, string reference_filename, size_t 
 		if (add_reference) paths.push_back((unsigned char) 0);
 		unsigned char undefined_index = alleles.size();
 		string undefined_allele = "N";
-
+        bool phased=true;
 		for (size_t i = 9; i < tokens.size(); ++i) {
 			// make sure all genotypes are phased
+            char gtChar='|';
+
 			if (tokens[i].find('/') != string::npos) {
-				throw runtime_error("VariantReader::VariantReader: Found unphased genotype.");
+                gtChar='/';
+                phased=false;
+				//throw runtime_error("VariantReader::VariantReader: Found unphased genotype.");
 			}
 			vector<string> p ;
-			parse_line(p, tokens[i], '|');
+			parse_line(p, tokens[i], gtChar);
 			if (p.size() != 2) {
 				throw runtime_error("VariantReader::VariantReader: Found invalid genotype. Genotypes must be diploid (.|. if missing).");
 			}
@@ -271,11 +275,10 @@ VariantReader::VariantReader(string filename, string reference_filename, size_t 
 		DnaSequence right_flank;
 		this->fasta_reader.get_subsequence(current_chrom, current_end_pos, current_end_pos + kmer_size - 1, right_flank);
 		// add Variant to variant_cluster
-		Variant variant (left_flank, right_flank, current_chrom, current_start_pos, current_end_pos, alleles, paths,variantID);
+		Variant variant (left_flank, right_flank, current_chrom, current_start_pos, current_end_pos, alleles, paths,variantID,phased);
 		variant_cluster.push_back(variant);
 		previous_chrom = current_chrom;
 		previous_end_pos = current_end_pos;
-
 	}
 	// add last cluster to list
 	add_variant_cluster(previous_chrom, &variant_cluster);

@@ -60,7 +60,7 @@ void UniqueKmerComputer::compute_unique_kmers(std::vector<std::vector<UniqueKmer
         const Variant& variant = this->variants->get_variant(this->chromosome, v);
 
 
-        UniqueKmers* u = new UniqueKmers(variant.get_start_position());
+        UniqueKmers* u = new UniqueKmers(variant.get_start_position(),variant.get_phase_status());
         size_t nr_alleles = variant.nr_of_alleles();
         // insert empty alleles (to also capture paths for which no unique kmers exist)
         assert(variant.nr_of_paths() < 65535);

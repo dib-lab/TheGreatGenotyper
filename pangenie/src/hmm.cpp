@@ -211,7 +211,10 @@ void HMM::compute_forward_column(size_t column_index) {
 		size_t cur_index = this->column_indexers.at(column_index)->get_variant_id();
 		size_t prev_pos = this->unique_kmers->at(prev_index)->get_variant_position();
 		size_t cur_pos = this->unique_kmers->at(cur_index)->get_variant_position();
-		transition_probability_computer = new TransitionProbabilityComputer(prev_pos, cur_pos, this->recombrate, nr_paths, this->uniform, this->effective_N);
+        bool phasedTranisitions = this->unique_kmers->at(prev_index)->get_phase_status() &&
+                             this->unique_kmers->at(cur_index)->get_phase_status();
+
+		transition_probability_computer = new TransitionProbabilityComputer(prev_pos, cur_pos, this->recombrate, nr_paths,phasedTranisitions, this->uniform, this->effective_N);
 		
 	}
 
@@ -316,7 +319,10 @@ void HMM::compute_backward_column(size_t column_index) {
 		size_t cur_index = this->column_indexers.at(column_index+1)->get_variant_id();
 		size_t prev_pos = this->unique_kmers->at(prev_index)->get_variant_position();
 		size_t cur_pos = this->unique_kmers->at(cur_index)->get_variant_position();
-		transition_probability_computer = new TransitionProbabilityComputer(prev_pos, cur_pos, this->recombrate, nr_paths, this->uniform, this->effective_N);	
+        bool phasedTranisitions = this->unique_kmers->at(prev_index)->get_phase_status() &&
+                             this->unique_kmers->at(cur_index)->get_phase_status();
+
+		transition_probability_computer = new TransitionProbabilityComputer(prev_pos, cur_pos, this->recombrate, nr_paths,phasedTranisitions, this->uniform, this->effective_N);
 		previous_indexer = this->column_indexers.at(column_index+1);
 		emission_probability_computer = new EmissionProbabilityComputer(this->unique_kmers->at(this->column_indexers.at(column_index+1)->get_variant_id()), this->probabilities);
 
@@ -450,7 +456,7 @@ void HMM::compute_viterbi_column(size_t column_index) {
 		size_t cur_index = this->column_indexers.at(column_index)->get_variant_id();
 		size_t prev_pos = this->unique_kmers->at(prev_index)->get_variant_position();
 		size_t cur_pos = this->unique_kmers->at(cur_index)->get_variant_position();
-		transition_probability_computer = new TransitionProbabilityComputer(prev_pos, cur_pos, this->recombrate, nr_paths, this->uniform, this->effective_N);
+		transition_probability_computer = new TransitionProbabilityComputer(prev_pos, cur_pos, this->recombrate, nr_paths,true, this->uniform, this->effective_N);
 	}
 
 	// construct new column
