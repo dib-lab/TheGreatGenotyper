@@ -307,6 +307,8 @@ void Variant::combine_variants (Variant const &v2){
 	this->uncovered_alleles.insert(this->uncovered_alleles.end(), v2.uncovered_alleles.begin(), v2.uncovered_alleles.end());
 	this->paths = new_paths;
 	this->variant_ids.insert(this->variant_ids.end(), v2.variant_ids.begin(), v2.variant_ids.end());
+    if(!v2.phased)
+        this->phased=false;
 }
 
 void Variant::separate_variants (vector<Variant>* resulting_variants, const GenotypingResult* input_genotyping, vector<GenotypingResult>* resulting_genotyping) const {

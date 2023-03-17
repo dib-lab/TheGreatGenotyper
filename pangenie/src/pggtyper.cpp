@@ -21,6 +21,7 @@
 #include "pathsampler.hpp"
 #include "SamplesDatabase.h"
 #include "omp.h"
+#include "transitionprobabilitycomputer.hpp"
 using namespace std;
 
 
@@ -85,10 +86,10 @@ void prepare_unique_kmers(string chromosome, KmerCounter* genomic_kmer_counts, S
     }
 }
 
-void run_genotyping(string chromosome,unsigned  sampleID, vector<UniqueKmers*>* unique_kmers, ProbabilityTable* probs, bool only_genotyping, bool only_phasing, long double effective_N, vector<unsigned short>* only_paths, Results* results) {
+void run_genotyping(string chromosome,unsigned  sampleID, vector<UniqueKmers*>* unique_kmers,TransitionProbability* transitions, ProbabilityTable* probs, bool only_genotyping, bool only_phasing, long double effective_N, vector<unsigned short>* only_paths, Results* results) {
     Timer timer;
     // construct HMM and run genotyping/phasing
-    HMM hmm(unique_kmers, probs, !only_phasing, !only_genotyping, 1.26, false, effective_N, only_paths, false);
+    HMM hmm(unique_kmers,transitions, probs, !only_phasing, !only_genotyping, 1.26, false, effective_N, only_paths, false);
     // store the results
     {
         lock_guard<mutex> lock_result (results->result_mutex);
@@ -358,6 +359,12 @@ int main (int argc, char* argv[])
         struct rusage r_usage3;
         getrusage(RUSAGE_SELF, &r_usage3);
         cerr << "#### Memory usage until now: " << (r_usage3.ru_maxrss / 1E6) << " GB ####" << endl;
+        cerr<< "Calculating Transition probabilities"<<endl;
+        TransitionProbability* transitions= new TransitionProbability(variants,chrom);
+        transitions->computeLiStephens(1.26);
+        getrusage(RUSAGE_SELF, &r_usage3);
+        cerr << "#### Memory usage until now: " << (r_usage3.ru_maxrss / 1E6) << " GB ####" << endl;
+
         size_t available_threads = min(thread::hardware_concurrency(), numSamples);
         if (nr_core_threads > available_threads) {
             cerr << "Warning: using " << available_threads << " for genotyping." << endl;
@@ -377,7 +384,7 @@ int main (int argc, char* argv[])
                 if (!only_genotyping) {
                     vector<unsigned short> *only_paths = &phasing_paths;
                     function<void()> f_genotyping =
-                            bind(run_genotyping, chrom, sampleID,unique_kmers, probs,
+                            bind(run_genotyping, chrom, sampleID,unique_kmers,transitions, probs,
                                  false, true, effective_N, only_paths, r);
                     threadPool.submit(f_genotyping);
                 }
@@ -387,7 +394,7 @@ int main (int argc, char* argv[])
                     for (size_t s = 0; s < subsets.size(); ++s) {
                         vector<unsigned short> *only_paths = &subsets[s];
                         function<void()> f_genotyping = bind(
-                                run_genotyping, chrom, sampleID,unique_kmers, probs,
+                                run_genotyping, chrom, sampleID,unique_kmers,transitions, probs,
                                 true, false, effective_N, only_paths, r);
                         threadPool.submit(f_genotyping);
                     }
@@ -425,7 +432,7 @@ int main (int argc, char* argv[])
             }
             uniq[chrom].clear();
         }
-
+        delete transitions;
 
         time_writing += timer.get_interval_time();
         cerr<< "Finished chromosome: "<< chrom << endl;
