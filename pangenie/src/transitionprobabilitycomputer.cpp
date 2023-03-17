@@ -74,6 +74,7 @@ void TransitionProbability::computeLiStephens(double recomb_rate, long double ef
         size_t curr_nr_paths= (long double) curr_variant.nr_of_paths();
         size_t next_nr_paths= (long double) next_variant.nr_of_paths();
 
+        bool phased= curr_variant.get_phase_status() && next_variant.get_phase_status();
 
         long double distance = (next_variant_pos - curr_variant_pos) * 0.000004L * ((long double) recomb_rate) * effective_N;
         // use Li-Stephans pair HMM transitions TODO: correct?
@@ -91,9 +92,29 @@ void TransitionProbability::computeLiStephens(double recomb_rate, long double ef
                     for(unsigned path4= 0; path4 < next_nr_paths; path4++)
                     {
                         nr_events = 0;
-                        if (path1 != path3) nr_events += 1;
-                        if (path2 != path4) nr_events += 1;
-                        this->probabilities[v][index] = props[nr_events];
+                        if(phased) {
+                            if (path1 != path3) nr_events += 1;
+                            if (path2 != path4) nr_events += 1;
+                            this->probabilities[v][index] = props[nr_events];
+                        }
+                        else{
+                            if (path1 == path3)
+                            {
+                                if(path2 != path4)
+                                    nr_events+=1;
+                            }
+                            else if (path1 == path4)
+                            {
+                                if(path2 != path3)
+                                    nr_events+=1;
+                            }
+                            else
+                            {
+                                nr_events+=1;
+                                if(path2 != path3 and path2 != path4  )
+                                    nr_events+=1;
+                            }
+                        }
                         index++;
                     }
 
