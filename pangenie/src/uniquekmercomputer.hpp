@@ -9,6 +9,7 @@
 #include "uniquekmers.hpp"
 #include "probabilitytable.hpp"
 #include "SamplesDatabase.h"
+#include "emissionprobabilitycomputer.hpp"
 
 class UniqueKmerComputer {
 public:
@@ -20,7 +21,7 @@ public:
 	**/
 	UniqueKmerComputer (KmerCounter* genomic_kmers, SamplesDatabase* database, VariantReader* variants, std::string chromosome);
 	/** generates UniqueKmers object for each position, ownership of vector is transferred to the caller. **/
-	void compute_unique_kmers(std::vector<std::vector<UniqueKmers*> >* result);
+	void compute_unique_kmers(EmissionProbabilities* emissions, std::vector<UniqueKmers*>* uniqKmers);
 	/** generates empty UniwueKmers objects for each position (no kmers, only paths). Ownership of vector is transferred to caller. **/
 	void compute_empty(std::vector<UniqueKmers*>* result) const;
 

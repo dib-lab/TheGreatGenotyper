@@ -68,6 +68,6 @@ private:
 	std::map<unsigned short, unsigned char> path_to_allele;
 	unsigned short local_coverage;
 	friend class EmissionProbabilityComputer;
-	
+    friend class EmissionProbabilities;
 };
 # endif // UNIQUEKMERS_HPP

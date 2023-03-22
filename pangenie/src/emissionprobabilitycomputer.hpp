@@ -8,7 +8,7 @@
 #include "copynumber.hpp"
 #include "columnindexer.hpp"
 #include "probabilitytable.hpp"
-
+#include "SamplesDatabase.h"
 /** 
 * Computes the emission probabilities for a variant position.
 **/
@@ -31,4 +31,26 @@ private:
 	ProbabilityMatrix state_to_prob;
 	long double compute_emission_probability(unsigned char allele1, unsigned char allele2, bool allele1_undefined, bool allele2_undefined);
 };
+
+typedef std::vector<std::vector<std::vector<std::vector<long double> > > > ProbabilityMatrices;
+
+
+class EmissionProbabilities {
+public:
+    /**
+    * @param uniquekmers all unique kmers for this position
+     **/
+    EmissionProbabilities(SamplesDatabase* samples,unsigned  nr_variants);
+    /** get emission probability for a state in the HMM **/
+    long double get_emission_probability(unsigned variantID,unsigned sampleID, unsigned char allele_id1, unsigned char allele_id2) const;
+    void compute(UniqueKmers* uniq,unsigned variantID,unsigned sampleID);
+    size_t getNumVariants();
+private:
+    std::vector<ProbabilityTable*> probabilities;
+    std::vector<std::vector<bool> > all_zeros;
+    ProbabilityMatrices state_to_prob;
+    unsigned nr_samples;
+    long double compute_emission_probability(UniqueKmers* uniquekmers,unsigned  sample_id,unsigned char allele1, unsigned char allele2, bool allele1_undefined, bool allele2_undefined);
+};
+
 # endif // EMISSIONPROBABILITYCOMPUTER_H

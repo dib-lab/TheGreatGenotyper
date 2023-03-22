@@ -40,17 +40,13 @@ UniqueKmerComputer::UniqueKmerComputer (KmerCounter* genomic_kmers, SamplesDatab
 	jellyfish::mer_dna::k(this->variants->get_kmer_size());
 }
 
-void UniqueKmerComputer::compute_unique_kmers(std::vector<std::vector<UniqueKmers*> >* result) {
+void UniqueKmerComputer::compute_unique_kmers(EmissionProbabilities* result, std::vector<UniqueKmers*>* uniqKmers) {
 	size_t nr_variants = this->variants->size_of(this->chromosome);
     uint32_t numSamples=database->getNumSamples();
     vector<double> localCoverage(numSamples);
-    result->resize(numSamples);
-    for(unsigned i=0; i< numSamples; i++)
-    {
-        result->at(i).resize(nr_variants);
-    }
+    uniqKmers->resize(nr_variants);
     vector<string> seqs;
-#pragma omp parallel for shared(result) firstprivate(localCoverage,numSamples,seqs)
+#pragma omp parallel for shared(result,uniqKmers) firstprivate(localCoverage,numSamples,seqs)
     for (size_t v = 0; v < nr_variants; ++v) {
         // set parameters of distributions
         size_t kmer_size = this->variants->get_kmer_size();
@@ -121,6 +117,8 @@ void UniqueKmerComputer::compute_unique_kmers(std::vector<std::vector<UniqueKmer
             }
         }
 
+
+        (*uniqKmers)[v]=u;
         vector<unordered_map<string,uint32_t>> kmerCounts;
         database->getKmerCounts(seqs,kmerCounts);
 
@@ -163,14 +161,14 @@ void UniqueKmerComputer::compute_unique_kmers(std::vector<std::vector<UniqueKmer
                 }
             }
             vector<Variant> singleton_variants;
-            vector<GenotypingResult> singleton_likelihoods;
             variant.separate_variants(&singleton_variants);
             vector<VariantStats> singleton_stats;
             variant.variant_statistics(sampleU, singleton_stats);
             variants->addVariantStat(v, sampleName, singleton_stats);
-            (result->at(sampleID))[v]=sampleU;
+            result->compute(sampleU,v,sampleID);
+            delete sampleU;
         }
-        delete u;
+        //delete u;
     }
 
 }

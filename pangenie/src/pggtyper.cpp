@@ -51,9 +51,7 @@ void check_input_file(string &filename) {
 
 struct UniqueKmersMap {
     mutex kmers_mutex;
-    vector<
-    map<string, vector<UniqueKmers*> >
-    > unique_kmers;
+    map<string, vector<UniqueKmers*> > unique_kmers;
     map<string, double> runtimes;
 };
 
@@ -67,29 +65,31 @@ struct Results {
 
 
 
-void prepare_unique_kmers(string chromosome, KmerCounter* genomic_kmer_counts, SamplesDatabase* database, VariantReader* variant_reader,UniqueKmersMap* unique_kmers_map) {
+void prepare_unique_kmers(string chromosome, KmerCounter* genomic_kmer_counts, SamplesDatabase* database, VariantReader* variant_reader,EmissionProbabilities* emissions,UniqueKmersMap* unique_kmers_map) {
     Timer timer;
     UniqueKmerComputer kmer_computer(genomic_kmer_counts, database,variant_reader, chromosome);
-    std::vector< std::vector<UniqueKmers*> > unique_kmers;
+    std::vector<UniqueKmers*>  unique_kmers;
     unsigned numSamples= database->getNumSamples();
     // this needs to be map or vector of vectors for each sample
-    kmer_computer.compute_unique_kmers(&unique_kmers);
+
+    kmer_computer.compute_unique_kmers(emissions,&unique_kmers);
+
     // store the results
     {
         lock_guard<mutex> lock_kmers (unique_kmers_map->kmers_mutex);
-        for(unsigned sampleID=0; sampleID<numSamples ;sampleID++) {
-            auto tmp = pair<string, vector<UniqueKmers *>>(
-                    chromosome, move(unique_kmers[sampleID]));
-            unique_kmers_map->unique_kmers[sampleID].insert(tmp);
-        }
+        auto tmp = pair<string, vector<UniqueKmers *>>(
+        chromosome, move(unique_kmers));
+        unique_kmers_map->unique_kmers.insert(tmp);
         unique_kmers_map->runtimes[chromosome]+=timer.get_total_time();
     }
 }
 
-void run_genotyping(string chromosome,unsigned  sampleID, vector<UniqueKmers*>* unique_kmers,TransitionProbability* transitions, ProbabilityTable* probs, bool only_genotyping, bool only_phasing, long double effective_N, vector<unsigned short>* only_paths, Results* results) {
+void run_genotyping(string chromosome,unsigned  sampleID, vector<UniqueKmers*>* unique_kmers,TransitionProbability* transitions, EmissionProbabilities* emissions, bool only_genotyping, bool only_phasing, long double effective_N, vector<unsigned short>* only_paths, Results* results) {
     Timer timer;
     // construct HMM and run genotyping/phasing
-    HMM hmm(unique_kmers,transitions, probs, !only_phasing, !only_genotyping, 1.26, false, effective_N, only_paths, false);
+
+    HMM hmm(unique_kmers,transitions,emissions, sampleID, !only_phasing, !only_genotyping, 1.26, false, effective_N, only_paths, false);
+
     // store the results
     {
         lock_guard<mutex> lock_result (results->result_mutex);
@@ -327,7 +327,7 @@ int main (int argc, char* argv[])
 
     // UniqueKmers for each chromosome
     UniqueKmersMap unique_kmers_list;
-    unique_kmers_list.unique_kmers.resize(numSamples);
+    //unique_kmers_list.unique_kmers.resize(numSamples);
     Results results;
     results.result.resize(numSamples);
     variant_reader.open_genotyping_outfile(outname);
@@ -340,8 +340,9 @@ int main (int argc, char* argv[])
         VariantReader* variants = &variant_reader;
         UniqueKmersMap* result = &unique_kmers_list;
         KmerCounter* genomic_counts = &genomic_kmer_counts;
+        EmissionProbabilities* emissions=new EmissionProbabilities(&database,variants->size_of(chrom));
         timer.get_interval_time();
-        prepare_unique_kmers( chrom, genomic_counts, &database, variants, result);
+        prepare_unique_kmers(chrom, genomic_counts, &database, variants, emissions,result);
         time_unique_kmers += timer.get_interval_time();
         cerr<< "Finished Determining unique kmers for chromosome: "<< chrom << endl;
         struct rusage r_usage3;
@@ -365,28 +366,19 @@ int main (int argc, char* argv[])
             pangenie::ThreadPool threadPool (nr_core_threads);
             for(unsigned sampleID=0; sampleID<numSamples ;sampleID++)  {
                 vector<UniqueKmers *> *unique_kmers =
-                        &unique_kmers_list.unique_kmers[sampleID][chrom];
+                        &unique_kmers_list.unique_kmers[chrom];
                 ProbabilityTable *probs = database.getSampleProbability(sampleID);
                 Results *r = &results;
                 // if requested, run phasing first
-                if (!only_genotyping) {
-                    vector<unsigned short> *only_paths = &phasing_paths;
-                    function<void()> f_genotyping =
-                            bind(run_genotyping, chrom, sampleID,unique_kmers,transitions, probs,
-                                 false, true, effective_N, only_paths, r);
+                for (size_t s = 0; s < subsets.size(); ++s) {
+                    vector<unsigned short> *only_paths = &subsets[s];
+                    function<void()> f_genotyping = bind(
+                            run_genotyping, chrom, sampleID,unique_kmers,transitions, emissions,
+                            true, false, effective_N, only_paths, r);
                     threadPool.submit(f_genotyping);
                 }
 
-                if (!only_phasing) {
-                    // if requested, run genotying
-                    for (size_t s = 0; s < subsets.size(); ++s) {
-                        vector<unsigned short> *only_paths = &subsets[s];
-                        function<void()> f_genotyping = bind(
-                                run_genotyping, chrom, sampleID,unique_kmers,transitions, probs,
-                                true, false, effective_N, only_paths, r);
-                        threadPool.submit(f_genotyping);
-                    }
-                }
+
             }
         }
 
@@ -403,13 +395,10 @@ int main (int argc, char* argv[])
 
             results.result[sampleID][chrom].clear();
         }
-        for(auto uniq: unique_kmers_list.unique_kmers) {
-            for (size_t i = 0; i < uniq[chrom].size(); ++i) {
-                delete uniq[chrom][i];
-                uniq[chrom][i] = nullptr;
-            }
-            uniq[chrom].clear();
+        for(auto uniq: unique_kmers_list.unique_kmers[chrom]) {
+            delete uniq;
         }
+        unique_kmers_list.unique_kmers[chrom].clear();
         delete transitions;
 
         time_writing += timer.get_interval_time();

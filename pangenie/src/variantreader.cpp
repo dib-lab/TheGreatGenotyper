@@ -500,7 +500,7 @@ void VariantReader::write_genotypes_of(string chromosome, string sample_name,con
 		vector<Variant> singleton_variants;
 		vector<GenotypingResult> singleton_likelihoods;
 //		vector<VariantStats> singleton_stats;
-//		variant.separate_variants(&singleton_variants, &genotyping_result.at(i), &singleton_likelihoods);
+		variant.separate_variants(&singleton_variants, &genotyping_result.at(i), &singleton_likelihoods);
 //		variant.variant_statistics(unique_kmers->at(i), singleton_stats);
         vector<VariantStats> singleton_stats= variantsStatsPerSample[sample_name][i];
 		for (size_t j = 0; j < singleton_variants.size(); ++j) {
