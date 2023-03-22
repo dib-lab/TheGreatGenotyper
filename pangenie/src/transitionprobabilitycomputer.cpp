@@ -114,6 +114,7 @@ void TransitionProbability::computeLiStephens(double recomb_rate, long double ef
                                 if(path2 != path3 and path2 != path4  )
                                     nr_events+=1;
                             }
+                            this->probabilities[v][index] = props[nr_events];
                         }
                         index++;
                     }

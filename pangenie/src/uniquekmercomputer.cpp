@@ -162,6 +162,12 @@ void UniqueKmerComputer::compute_unique_kmers(std::vector<std::vector<UniqueKmer
                     //	cerr<<"KMERFN"<<"\t"<<kmer.first<<"\t"<<read_kmercount<<"\n";
                 }
             }
+            vector<Variant> singleton_variants;
+            vector<GenotypingResult> singleton_likelihoods;
+            variant.separate_variants(&singleton_variants);
+            vector<VariantStats> singleton_stats;
+            variant.variant_statistics(sampleU, singleton_stats);
+            variants->addVariantStat(v, sampleName, singleton_stats);
             (result->at(sampleID))[v]=sampleU;
         }
         delete u;

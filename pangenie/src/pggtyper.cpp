@@ -330,20 +330,8 @@ int main (int argc, char* argv[])
     unique_kmers_list.unique_kmers.resize(numSamples);
     Results results;
     results.result.resize(numSamples);
-    vector<VariantReader> outputVCFs(numSamples);
+    variant_reader.open_genotyping_outfile(outname);
 
-    for(unsigned sampleID=0; sampleID<numSamples ;sampleID++) {
-        outputVCFs[sampleID] = variant_reader;
-        string sampleName = database.getSampleName(sampleID);
-        outputVCFs[sampleID].setSampleName(sampleName);
-        // prepare output files
-        if (!only_phasing)
-            outputVCFs[sampleID].open_genotyping_outfile(outname + "_" + sampleName +
-                                                         "_genotyping.vcf");
-        if (!only_genotyping)
-            outputVCFs[sampleID].open_phasing_outfile(outname + "_" + sampleName +
-                                                      "_phasing.vcf");
-    }
 
 
     for(auto chrom : chromosomes)
@@ -408,21 +396,11 @@ int main (int argc, char* argv[])
         timer.get_interval_time();
         for (unsigned sampleID = 0; sampleID < numSamples; sampleID++) {
             // write VCF
-
-            if (!only_phasing) {
-                // output genotyping results
-                outputVCFs[sampleID].write_genotypes_of(
-                        chrom, results.result[sampleID][chrom],
-                        &unique_kmers_list.unique_kmers[sampleID][chrom],
-                        ignore_imputed);
-            }
-            if (!only_genotyping) {
                 // output phasing results
-                outputVCFs[sampleID].write_phasing_of(
-                        chrom, results.result[sampleID][chrom],
-                        &unique_kmers_list.unique_kmers[sampleID][chrom],
-                        ignore_imputed);
-            }
+            variant_reader.write_genotypes_of(
+                    chrom,sampleNames[sampleID], results.result[sampleID][chrom],
+                    ignore_imputed);
+
             results.result[sampleID][chrom].clear();
         }
         for(auto uniq: unique_kmers_list.unique_kmers) {
@@ -444,12 +422,7 @@ int main (int argc, char* argv[])
 
     }
 
-    for(unsigned sampleID=0; sampleID<numSamples ;sampleID++) {
-        if (!only_phasing)
-            outputVCFs[sampleID].close_genotyping_outfile();
-        if (!only_genotyping)
-            outputVCFs[sampleID].close_phasing_outfile();
-    }
+    variant_reader.close_genotyping_outfile();
 
 
     time_total = timer.get_total_time();
