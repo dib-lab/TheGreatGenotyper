@@ -1,6 +1,7 @@
 #include <stdexcept>
 #include <sstream>
 #include "uniquekmers.hpp"
+#include <algorithm>
 
 using namespace std;
 
@@ -8,7 +9,8 @@ UniqueKmers::UniqueKmers(size_t variant_position,bool phased)
 	:variant_pos(variant_position),
 	 current_index(0),
 	 local_coverage(0),
-     phased(phased)
+     phased(phased),
+     max_allele_id(-1)
 {}
 
 UniqueKmers::UniqueKmers(const UniqueKmers& p1)
@@ -20,6 +22,7 @@ UniqueKmers::UniqueKmers(const UniqueKmers& p1)
   path_to_allele=p1.path_to_allele;
   local_coverage=p1.local_coverage;
   phased = p1.phased;
+  max_allele_id = p1.max_allele_id;
 }
 
 size_t UniqueKmers::get_variant_position() {
@@ -162,4 +165,13 @@ void UniqueKmers::set_undefined_allele (unsigned char allele_id) {
 		throw runtime_error("UniqueKmers::set_undefined_allele: allele_id " + to_string(allele_id) + " does not exist.");
 	}
 	this->alleles[allele_id].second = true;
+}
+
+unsigned short UniqueKmers::get_max_allele_id(){
+    if(max_allele_id!=-1)
+        return max_allele_id;
+    for (auto it = this->alleles.begin(); it != this->alleles.end(); ++it) {
+        max_allele_id = max((int)it->first, max_allele_id);
+    }
+    return max_allele_id;
 }
