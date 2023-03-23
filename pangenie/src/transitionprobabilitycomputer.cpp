@@ -179,13 +179,10 @@ populationJointProbability::populationJointProbability(VariantReader* variants, 
     this->variants=variants;
     size_t nr_variants = this->variants->size_of(this->chromosome);
     this->probabilities = std::vector<std::vector<long double> >(nr_variants);
-    cout<<nr_variants<<endl;
-    cout<<this->chromosome<<endl;
-    cout<<chromosome<<endl;
+
 
 
     for (size_t v = 0; v < nr_variants-1; ++v) {
-        cout<<v<<endl;
         const Variant& curr_variant = this->variants->get_variant(this->chromosome, v);
         const Variant& next_variant = this->variants->get_variant(this->chromosome, v+1);
 
