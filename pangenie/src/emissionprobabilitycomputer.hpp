@@ -51,6 +51,8 @@ private:
     ProbabilityMatrices state_to_prob;
     unsigned nr_samples;
     long double compute_emission_probability(UniqueKmers* uniquekmers,unsigned  sample_id,unsigned char allele1, unsigned char allele2, bool allele1_undefined, bool allele2_undefined);
+
+	friend class populationJointProbability;
 };
 
 # endif // EMISSIONPROBABILITYCOMPUTER_H

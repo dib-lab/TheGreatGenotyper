@@ -3,6 +3,7 @@
 
 #include "uniquekmers.hpp"
 #include "variantreader.hpp"
+#include "emissionprobabilitycomputer.hpp"
 
 /** 
 * Computes the transition probabilities between variants.
@@ -20,6 +21,7 @@ private:
 };
 class TransitionProbability{
 public:
+    TransitionProbability(){}
     TransitionProbability(VariantReader* variants,std::string chromsome);
     virtual long double get(unsigned from_variant, unsigned to_variant,unsigned short path_id1, unsigned short path_id2, unsigned short path_id3, unsigned short path_id4)=0;
     void save(std::string filename);
@@ -35,8 +37,16 @@ class LiStephens: public TransitionProbability{
 public:
     LiStephens(VariantReader* variants,std::string chromsome,double recomb_rate, long double effective_N = 25000.0L);
     long double get(unsigned from_variant, unsigned to_variant,unsigned short path_id1, unsigned short path_id2, unsigned short path_id3, unsigned short path_id4);
-    void save(std::string filename);
-    void load(std::string filename);
+
+};
+
+class populationJointProbability: public TransitionProbability{
+public:
+    populationJointProbability(VariantReader* variants, std::string chromsome,std::vector<UniqueKmers*>* unique_kmers);
+	populationJointProbability(VariantReader* variants, std::string chromsome, EmissionProbabilities* emissions,std::vector<UniqueKmers*>* unique_kmers);
+	long double get(unsigned from_variant, unsigned to_variant,unsigned short path_id1, unsigned short path_id2, unsigned short path_id3, unsigned short path_id4);
+private:
+	std::vector<UniqueKmers*>* unique_kmers;
 };
 
 

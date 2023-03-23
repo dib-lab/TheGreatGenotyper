@@ -62,6 +62,39 @@ variants(variants),
 chromosome(chromosome)
 {}
 
+
+
+void TransitionProbability::save(std::string filename){
+    std::ofstream ofs(filename, std::ios::binary);
+    if (!ofs) {
+        std::cerr << "Failed to open file: " << filename << std::endl;
+        return;
+    }
+    size_t size = this->probabilities.size();
+    ofs.write(reinterpret_cast<const char*>(&size), sizeof(size));
+    for (const auto& row : this->probabilities) {
+        size = row.size();
+        ofs.write(reinterpret_cast<const char*>(&size), sizeof(size));
+        ofs.write(reinterpret_cast<const char*>(row.data()), size * sizeof(long double));
+    }
+}
+void TransitionProbability::load(std::string filename){
+    std::ifstream ifs(filename, std::ios::binary);
+    if (!ifs) {
+        throw runtime_error("Failed to open file: "+filename);
+        return ;
+    }
+    size_t size;
+    ifs.read(reinterpret_cast<char*>(&size), sizeof(size));
+    this->probabilities.resize(size);
+    for (auto& row : this->probabilities) {
+        ifs.read(reinterpret_cast<char*>(&size), sizeof(size));
+        row.resize(size);
+        ifs.read(reinterpret_cast<char*>(row.data()), size * sizeof(long double));
+    }
+}
+
+
 LiStephens::LiStephens(VariantReader* variants,std::string chromosome,double recomb_rate, long double effective_N)
         :TransitionProbability(variants,chromosome )
 {
@@ -91,8 +124,11 @@ LiStephens::LiStephens(VariantReader* variants,std::string chromosome,double rec
 
 
 long double LiStephens::get(unsigned from_variant, unsigned to_variant,unsigned short path_id1, unsigned short path_id2, unsigned short path_id3, unsigned short path_id4){
-    if(to_variant < from_variant)
-        swap(from_variant,to_variant);
+    if(to_variant < from_variant) {
+        swap(from_variant, to_variant);
+        swap(path_id1, path_id3);
+        swap(path_id2, path_id4);
+    }
     const Variant& curr_variant = this->variants->get_variant(this->chromosome, from_variant);
     const Variant& next_variant = this->variants->get_variant(this->chromosome, to_variant);
     bool phased =  curr_variant.get_phase_status() && next_variant.get_phase_status();
@@ -129,32 +165,89 @@ long double LiStephens::get(unsigned from_variant, unsigned to_variant,unsigned 
 
 }
 
-void TransitionProbability::save(std::string filename){
-    std::ofstream ofs(filename, std::ios::binary);
-    if (!ofs) {
-        std::cerr << "Failed to open file: " << filename << std::endl;
-        return;
-    }
-    size_t size = this->probabilities.size();
-    ofs.write(reinterpret_cast<const char*>(&size), sizeof(size));
-    for (const auto& row : this->probabilities) {
-        size = row.size();
-        ofs.write(reinterpret_cast<const char*>(&size), sizeof(size));
-        ofs.write(reinterpret_cast<const char*>(row.data()), size * sizeof(long double));
+populationJointProbability::populationJointProbability(VariantReader* variants, std::string chromsome,std::vector<UniqueKmers*>* unique_kmers)
+        :TransitionProbability(variants,chromosome ), unique_kmers(unique_kmers)
+{
+
+}
+
+populationJointProbability::populationJointProbability(VariantReader* variants, std::string chromsome, EmissionProbabilities* emissions,std::vector<UniqueKmers*>* unique_kmers)
+        : unique_kmers(unique_kmers)
+{
+    type="JointProbability";
+    this->chromosome=chromsome;
+    this->variants=variants;
+    size_t nr_variants = this->variants->size_of(this->chromosome);
+    this->probabilities = std::vector<std::vector<long double> >(nr_variants);
+    cout<<nr_variants<<endl;
+    cout<<this->chromosome<<endl;
+    cout<<chromosome<<endl;
+
+
+    for (size_t v = 0; v < nr_variants-1; ++v) {
+        cout<<v<<endl;
+        const Variant& curr_variant = this->variants->get_variant(this->chromosome, v);
+        const Variant& next_variant = this->variants->get_variant(this->chromosome, v+1);
+
+
+
+        vector<unsigned char> curr_unique_alleles;
+        (*unique_kmers)[v]->get_allele_ids(curr_unique_alleles);
+
+        vector<unsigned char> next_unique_alleles;
+        (*unique_kmers)[v+1]->get_allele_ids(next_unique_alleles);
+
+        unsigned char curr_max_allele = (*unique_kmers)[v]->get_max_allele_id();
+        unsigned char next_max_allele = (*unique_kmers)[v+1]->get_max_allele_id();
+
+        this->probabilities[v].resize(curr_max_allele* curr_max_allele* next_max_allele* next_max_allele);
+        for (auto c1 : curr_unique_alleles) {
+            for (auto c2 : curr_unique_alleles) {
+                for (auto n1 : next_unique_alleles) {
+                    for (auto n2 : next_unique_alleles) {
+                        long double jointPropSum=0;
+                        for(unsigned i =0 ;i <emissions->nr_samples;i++)
+                        {
+                            jointPropSum += (emissions->state_to_prob[v][c1][c2][i] * emissions->state_to_prob[v+1][n1][n2][i]);
+                        }
+                        jointPropSum /= emissions->nr_samples;
+                        size_t index = ((int)c1 * curr_max_allele * next_max_allele * next_max_allele) +
+                                       ((int)c2 * next_max_allele * next_max_allele) +
+                                       ((int)n1 * next_max_allele) +
+                                       (int)n2;
+                        this->probabilities[v][index]=jointPropSum;
+                    }
+                }
+            }
+        }
+
+
+
     }
 }
-void TransitionProbability::load(std::string filename){
-    std::ifstream ifs(filename, std::ios::binary);
-    if (!ifs) {
-        throw runtime_error("Failed to open file: "+filename);
-        return ;
+long double populationJointProbability::get(unsigned from_variant, unsigned to_variant,unsigned short path_id1, unsigned short path_id2, unsigned short path_id3, unsigned short path_id4)
+{
+    if(to_variant < from_variant) {
+        swap(from_variant, to_variant);
+        swap(path_id1, path_id3);
+        swap(path_id2, path_id4);
     }
-    size_t size;
-    ifs.read(reinterpret_cast<char*>(&size), sizeof(size));
-    this->probabilities.resize(size);
-    for (auto& row : this->probabilities) {
-        ifs.read(reinterpret_cast<char*>(&size), sizeof(size));
-        row.resize(size);
-        ifs.read(reinterpret_cast<char*>(row.data()), size * sizeof(long double));
-    }
+    const Variant& curr_variant = this->variants->get_variant(this->chromosome, from_variant);
+    const Variant& next_variant = this->variants->get_variant(this->chromosome, to_variant);
+
+    unsigned char from_allele1 =  curr_variant.get_allele_on_path(path_id1);
+    unsigned char from_allele2 =  curr_variant.get_allele_on_path(path_id2);
+
+    unsigned char to_allele1 =  next_variant.get_allele_on_path(path_id3);
+    unsigned char to_allele2 =  next_variant.get_allele_on_path(path_id4);
+
+    unsigned char from_max_allele = (*unique_kmers)[from_variant]->get_max_allele_id();
+    unsigned char to_max_allele = (*unique_kmers)[to_variant]->get_max_allele_id();
+
+    size_t index = ((int)to_allele1 * from_max_allele * to_max_allele * to_max_allele) +
+                   ((int)to_allele2 * to_max_allele * to_max_allele) +
+                   ((int)from_max_allele * to_max_allele) +
+                   (int)to_max_allele;
+    return this->probabilities[from_variant][index];
+
 }

@@ -153,6 +153,7 @@ int main (int argc, char* argv[])
     string sample_name = "sample";
     size_t nr_jellyfish_threads = 1;
     size_t nr_core_threads = 1;
+    bool population_transitions = false;
     bool only_genotyping = true;
     bool only_phasing = false;
     long double effective_N = 0.00001L;
@@ -179,6 +180,7 @@ int main (int argc, char* argv[])
 //	argument_parser.add_optional_argument('s', "sample", "name of the sample (will be used in the output VCFs)");
     argument_parser.add_optional_argument('j', "1", "number of threads to use for kmer-counting");
     argument_parser.add_optional_argument('t', "1", "number of threads to use for core algorithm. Largest number of threads possible is the number of chromosomes given in the VCF");
+    argument_parser.add_flag_argument('q', "use population transitions instead of LiStephens");
     argument_parser.add_optional_argument('m', "", "Load the tranistions from this file");
     argument_parser.add_optional_argument('n', "", "compute the tranistions and save them to this file");
 //	argument_parser.add_optional_argument('n', "0.00001", "effective population size");
@@ -233,7 +235,8 @@ int main (int argc, char* argv[])
 //	sampling_size = stoi(argument_parser.get_argument('a'));
     istringstream iss(argument_parser.get_argument('e'));
     iss >> hash_size;
-    
+
+    population_transitions = argument_parser.get_flag('q');
     transitionsLoadFilePrefix= argument_parser.get_argument('m');
     transitionsSaveFilePrefix= argument_parser.get_argument('n');
 
@@ -362,12 +365,14 @@ int main (int argc, char* argv[])
         if(transitionsLoadFilePrefix != "")
         {
             cerr<<"Loading tranitions from "<<transitionsLoadFilePrefix+"."+chrom<<endl;
-            transitions = new LiStephens(variants,chrom,1.26,effective_N);
+            //transitions = new LiStephens(variants,chrom,1.26,effective_N);
+            transitions= new populationJointProbability(variants,chrom,&unique_kmers_list.unique_kmers[chrom]);
             transitions->load(transitionsLoadFilePrefix+"."+chrom);
         }
         else {
-            cerr<< "Calculating Transition probabilities"<<endl;
-            transitions= new LiStephens(variants,chrom,1.26,effective_N);
+            cerr<< "Calculating Transition probabilities for "<<chrom<<endl;
+            transitions= new populationJointProbability(variants,chrom,emissions,&(unique_kmers_list.unique_kmers[chrom]));
+           // transitions= new LiStephens(variants,chrom,1.26,effective_N);
         }
         if(transitionsSaveFilePrefix != "")
         {

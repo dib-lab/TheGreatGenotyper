@@ -57,6 +57,7 @@ public:
 	bool is_undefined_allele (unsigned char allele_id) const;
 	/** set allele to undefined **/
 	void set_undefined_allele (unsigned char allele_id);
+    unsigned short get_max_allele_id();
 
 private:
 	size_t variant_pos;
@@ -67,6 +68,7 @@ private:
 	std::map<unsigned char, std::pair<KmerPath, bool>> alleles;
 	std::map<unsigned short, unsigned char> path_to_allele;
 	unsigned short local_coverage;
+    int max_allele_id;
 	friend class EmissionProbabilityComputer;
     friend class EmissionProbabilities;
 };
