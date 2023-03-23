@@ -370,6 +370,7 @@ int main (int argc, char* argv[])
         }
         if(transitionsSaveFilePrefix != "")
         {
+            cerr<< "Saving Transition probabilities to "<<transitionsSaveFilePrefix+"."+chrom<<endl;
             transitions->save(transitionsSaveFilePrefix+"."+chrom);
         }
         getrusage(RUSAGE_SELF, &r_usage3);
