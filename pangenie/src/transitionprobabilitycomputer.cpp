@@ -86,7 +86,6 @@ LiStephens::LiStephens(VariantReader* variants,std::string chromosome,double rec
 
         this->probabilities[v] = {no_recomb_prob*no_recomb_prob, no_recomb_prob*recomb_prob, recomb_prob*recomb_prob};
 
-        this->probabilities[v]= std::vector<long double>(curr_nr_paths*next_nr_paths*curr_nr_paths*next_nr_paths);
     }
 }
 
