@@ -2,6 +2,7 @@
 #include <math.h>
 #include "transitionprobabilitycomputer.hpp"
 #include <iostream>
+#include <fstream>
 
 using namespace std;
 
@@ -138,4 +139,33 @@ long double TransitionProbability::get(unsigned from_variant, unsigned to_varian
 
     return this->probabilities[from_variant][index];
 
+}
+void TransitionProbability::save(std::string filename){
+    std::ofstream ofs(filename, std::ios::binary);
+    if (!ofs) {
+        std::cerr << "Failed to open file: " << filename << std::endl;
+        return;
+    }
+    size_t size = this->probabilities.size();
+    ofs.write(reinterpret_cast<const char*>(&size), sizeof(size));
+    for (const auto& row : this->probabilities) {
+        size = row.size();
+        ofs.write(reinterpret_cast<const char*>(&size), sizeof(size));
+        ofs.write(reinterpret_cast<const char*>(row.data()), size * sizeof(long double));
+    }
+}
+void TransitionProbability::load(std::string filename){
+    std::ifstream ifs(filename, std::ios::binary);
+    if (!ifs) {
+        throw runtime_error("Failed to open file: "+filename);
+        return ;
+    }
+    size_t size;
+    ifs.read(reinterpret_cast<char*>(&size), sizeof(size));
+    this->probabilities.resize(size);
+    for (auto& row : this->probabilities) {
+        ifs.read(reinterpret_cast<char*>(&size), sizeof(size));
+        row.resize(size);
+        ifs.read(reinterpret_cast<char*>(row.data()), size * sizeof(long double));
+    }
 }

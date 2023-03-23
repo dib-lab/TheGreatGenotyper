@@ -146,6 +146,8 @@ int main (int argc, char* argv[])
     string descriptionFile= "";
     string reffile = "";
     string vcffile = "";
+    string transitionsLoadFilePrefix = "";
+    string transitionsSaveFilePrefix = "";
     size_t kmersize = 31;
     string outname = "result";
     string sample_name = "sample";
@@ -177,6 +179,8 @@ int main (int argc, char* argv[])
 //	argument_parser.add_optional_argument('s', "sample", "name of the sample (will be used in the output VCFs)");
     argument_parser.add_optional_argument('j', "1", "number of threads to use for kmer-counting");
     argument_parser.add_optional_argument('t', "1", "number of threads to use for core algorithm. Largest number of threads possible is the number of chromosomes given in the VCF");
+    argument_parser.add_optional_argument('m', "", "Load the tranistions from this file");
+    argument_parser.add_optional_argument('n', "", "compute the tranistions and save them to this file");
 //	argument_parser.add_optional_argument('n', "0.00001", "effective population size");
     argument_parser.add_flag_argument('g', "run genotyping (Forward backward algorithm, default behaviour).");
     argument_parser.add_flag_argument('p', "run phasing (Viterbi algorithm). Experimental feature.");
@@ -229,6 +233,9 @@ int main (int argc, char* argv[])
 //	sampling_size = stoi(argument_parser.get_argument('a'));
     istringstream iss(argument_parser.get_argument('e'));
     iss >> hash_size;
+    
+    transitionsLoadFilePrefix= argument_parser.get_argument('m');
+    transitionsSaveFilePrefix= argument_parser.get_argument('n');
 
     // print info
     cerr << "Files and parameters used:" << endl;
@@ -240,6 +247,8 @@ int main (int argc, char* argv[])
     check_input_file(descriptionFile);
     check_input_file(graphFile);
     check_input_file(annotFile);
+    
+    
 
     cerr << "Load Database ..."<< endl;
     SamplesDatabase database(graphFile,annotFile,descriptionFile,regularization,log_scale);
@@ -348,9 +357,21 @@ int main (int argc, char* argv[])
         struct rusage r_usage3;
         getrusage(RUSAGE_SELF, &r_usage3);
         cerr << "#### Memory usage until now: " << (r_usage3.ru_maxrss / 1E6) << " GB ####" << endl;
-        cerr<< "Calculating Transition probabilities"<<endl;
+
         TransitionProbability* transitions= new TransitionProbability(variants,chrom);
-        transitions->computeLiStephens(1.26);
+        if(transitionsLoadFilePrefix != "")
+        {
+            cerr<<"Loading tranitions from "<<transitionsLoadFilePrefix+"."+chrom<<endl;
+            transitions->load(transitionsLoadFilePrefix+"."+chrom);
+        }
+        else {
+            cerr<< "Calculating Transition probabilities"<<endl;
+            transitions->computeLiStephens(1.26);
+        }
+        if(transitionsSaveFilePrefix != "")
+        {
+            transitions->save(transitionsSaveFilePrefix+"."+chrom);
+        }
         getrusage(RUSAGE_SELF, &r_usage3);
         cerr << "#### Memory usage until now: " << (r_usage3.ru_maxrss / 1E6) << " GB ####" << endl;
 

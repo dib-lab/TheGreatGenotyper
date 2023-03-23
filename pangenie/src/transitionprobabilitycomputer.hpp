@@ -23,7 +23,8 @@ public:
     TransitionProbability(VariantReader* variants,std::string chromsome);
     void computeLiStephens(double recomb_rate, long double effective_N = 25000.0L);
     long double get(unsigned from_variant, unsigned to_variant,unsigned short path_id1, unsigned short path_id2, unsigned short path_id3, unsigned short path_id4);
-
+    void save(std::string filename);
+    void load(std::string filename);
 private:
     VariantReader* variants;
     std::string chromosome;
