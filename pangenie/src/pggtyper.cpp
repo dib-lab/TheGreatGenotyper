@@ -84,11 +84,11 @@ void prepare_unique_kmers(string chromosome, KmerCounter* genomic_kmer_counts, S
     }
 }
 
-void run_genotyping(string chromosome,unsigned  sampleID, vector<UniqueKmers*>* unique_kmers,TransitionProbability* transitions, EmissionProbabilities* emissions, bool only_genotyping, bool only_phasing, long double effective_N, vector<unsigned short>* only_paths, Results* results) {
+void run_genotyping(string chromosome,unsigned  sampleID, vector<UniqueKmers*>* unique_kmers,TransitionProbability* transitions, EmissionProbabilities* emissions, bool only_genotyping, bool only_phasing, vector<unsigned short>* only_paths, Results* results) {
     Timer timer;
     // construct HMM and run genotyping/phasing
 
-    HMM hmm(unique_kmers,transitions,emissions, sampleID, !only_phasing, !only_genotyping, 1.26, false, effective_N, only_paths, false);
+    HMM hmm(unique_kmers,transitions,emissions, sampleID, !only_phasing, !only_genotyping, only_paths, false);
 
     // store the results
     {
@@ -358,15 +358,16 @@ int main (int argc, char* argv[])
         getrusage(RUSAGE_SELF, &r_usage3);
         cerr << "#### Memory usage until now: " << (r_usage3.ru_maxrss / 1E6) << " GB ####" << endl;
 
-        TransitionProbability* transitions= new TransitionProbability(variants,chrom);
+        TransitionProbability* transitions;
         if(transitionsLoadFilePrefix != "")
         {
             cerr<<"Loading tranitions from "<<transitionsLoadFilePrefix+"."+chrom<<endl;
+            transitions = new LiStephens(variants,chrom,1.26,effective_N);
             transitions->load(transitionsLoadFilePrefix+"."+chrom);
         }
         else {
             cerr<< "Calculating Transition probabilities"<<endl;
-            transitions->computeLiStephens(1.26);
+            transitions= new LiStephens(variants,chrom,1.26,effective_N);
         }
         if(transitionsSaveFilePrefix != "")
         {
@@ -396,7 +397,7 @@ int main (int argc, char* argv[])
                     vector<unsigned short> *only_paths = &subsets[s];
                     function<void()> f_genotyping = bind(
                             run_genotyping, chrom, sampleID,unique_kmers,transitions, emissions,
-                            true, false, effective_N, only_paths, r);
+                            true, false, only_paths, r);
                     threadPool.submit(f_genotyping);
                 }
 
