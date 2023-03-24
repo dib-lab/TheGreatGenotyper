@@ -183,7 +183,7 @@ populationJointProbability::populationJointProbability(VariantReader* variants, 
     this->probabilities = std::vector<std::vector<long double> >(nr_variants);
 
 
-    //#pragma omp parallel for
+    #pragma omp parallel for
     for (size_t v = 0; v < nr_variants-1; ++v) {
         const Variant& curr_variant = this->variants->get_variant(this->chromosome, v);
         const Variant& next_variant = this->variants->get_variant(this->chromosome, v+1);
@@ -224,6 +224,8 @@ populationJointProbability::populationJointProbability(VariantReader* variants, 
 
 
     }
+
+    normalize();
 }
 long double populationJointProbability::get(unsigned from_variant, unsigned to_variant,unsigned short path_id1, unsigned short path_id2, unsigned short path_id3, unsigned short path_id4)
 {
@@ -250,4 +252,54 @@ long double populationJointProbability::get(unsigned from_variant, unsigned to_v
                    (int)to_allele2;
     return this->probabilities[from_variant][index];
 
+}
+
+void populationJointProbability::normalize()
+{
+    size_t nr_variants = this->variants->size_of(this->chromosome);
+#pragma omp parallel for
+    for (size_t v = 0; v < nr_variants-1; ++v) {
+        const Variant& curr_variant = this->variants->get_variant(this->chromosome, v);
+        const Variant& next_variant = this->variants->get_variant(this->chromosome, v+1);
+
+
+
+        vector<unsigned char> curr_unique_alleles;
+        (*unique_kmers)[v]->get_allele_ids(curr_unique_alleles);
+
+        vector<unsigned char> next_unique_alleles;
+        (*unique_kmers)[v+1]->get_allele_ids(next_unique_alleles);
+
+        unsigned char curr_max_allele = (*unique_kmers)[v]->get_max_allele_id()+1;
+        unsigned char next_max_allele = (*unique_kmers)[v+1]->get_max_allele_id()+1;
+
+        this->probabilities[v].resize(curr_max_allele* curr_max_allele* next_max_allele* next_max_allele);
+        for (auto c1 : curr_unique_alleles) {
+            for (auto c2 : curr_unique_alleles) {
+                long double sum=0;
+                for (auto n1 : next_unique_alleles) {
+                    for (auto n2 : next_unique_alleles) {
+                        size_t index = ((int)c1 * curr_max_allele * next_max_allele * next_max_allele) +
+                                       ((int)c2 * next_max_allele * next_max_allele) +
+                                       ((int)n1 * next_max_allele) +
+                                       (int)n2;
+                        sum+=this->probabilities[v][index];
+                    }
+                }
+                for (auto n1 : next_unique_alleles) {
+                    for (auto n2 : next_unique_alleles) {
+                        size_t index = ((int)c1 * curr_max_allele * next_max_allele * next_max_allele) +
+                                       ((int)c2 * next_max_allele * next_max_allele) +
+                                       ((int)n1 * next_max_allele) +
+                                       (int)n2;
+                        this->probabilities[v][index]/=sum;
+                    }
+                }
+            }
+        }
+
+
+
+
+    }
 }
