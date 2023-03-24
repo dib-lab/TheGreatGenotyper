@@ -45,6 +45,7 @@ public:
     populationJointProbability(VariantReader* variants, std::string chromsome,std::vector<UniqueKmers*>* unique_kmers);
 	populationJointProbability(VariantReader* variants, std::string chromsome, EmissionProbabilities* emissions,std::vector<UniqueKmers*>* unique_kmers);
 	long double get(unsigned from_variant, unsigned to_variant,unsigned short path_id1, unsigned short path_id2, unsigned short path_id3, unsigned short path_id4);
+    void normalize();
 private:
 	std::vector<UniqueKmers*>* unique_kmers;
 };
