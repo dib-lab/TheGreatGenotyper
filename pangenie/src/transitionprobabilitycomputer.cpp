@@ -166,9 +166,11 @@ long double LiStephens::get(unsigned from_variant, unsigned to_variant,unsigned 
 }
 
 populationJointProbability::populationJointProbability(VariantReader* variants, std::string chromsome,std::vector<UniqueKmers*>* unique_kmers)
-        :TransitionProbability(variants,chromosome ), unique_kmers(unique_kmers)
+        : unique_kmers(unique_kmers)
 {
-
+    type="JointProbability";
+    this->chromosome=chromsome;
+    this->variants=variants;
 }
 
 populationJointProbability::populationJointProbability(VariantReader* variants, std::string chromsome, EmissionProbabilities* emissions,std::vector<UniqueKmers*>* unique_kmers)
