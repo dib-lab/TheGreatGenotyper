@@ -13,17 +13,11 @@ SamplesDatabase::SamplesDatabase(){
 log_scale=false;
 }
 SamplesDatabase::SamplesDatabase(string graph_path, string annotation_path, string descriptionFile,long double regularization,bool log_scale){
-  graph=mtg::cli::load_critical_dbg(graph_path);
-  kSize=graph->get_k();
-  auto config = std::make_unique<mtg::cli::Config>();
-  config->query_counts=true;
-  config->infbase=graph_path;
-  config->infbase_annotators.push_back(annotation_path);
-  anno_graph=mtg::cli::initialize_annotated_dbg(graph, *config);
-  this->log_scale=log_scale;
+    this->graph_path= graph_path;
+    this->anno_path= annotation_path;
+    this->log_scale=log_scale;
   ifstream inputDescriptor(descriptionFile);
   uint32_t index=0;
-
   string sample_name,sampleLabel;
   int coverage;
   while(inputDescriptor>> sample_name>> coverage >> sampleLabel)
@@ -31,6 +25,20 @@ SamplesDatabase::SamplesDatabase(string graph_path, string annotation_path, stri
     samples.push_back(SampleDescriptor(sample_name,sampleLabel,coverage,regularization));
     metaLabel_to_Index[sampleLabel]=index++;
   }
+}
+
+void SamplesDatabase::load_graph(){
+    graph=mtg::cli::load_critical_dbg(graph_path);
+    kSize=graph->get_k();
+    auto config = std::make_unique<mtg::cli::Config>();
+    config->query_counts=true;
+    config->infbase=graph_path;
+    config->infbase_annotators.push_back(anno_path);
+    anno_graph=mtg::cli::initialize_annotated_dbg(graph, *config);
+}
+void SamplesDatabase::delete_graph(){
+    anno_graph= nullptr;
+    graph = nullptr;
 }
 
 size_t SamplesDatabase::getKSize()

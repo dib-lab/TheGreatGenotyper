@@ -141,6 +141,7 @@ int main (int argc, char* argv[])
     cerr << endl;
     cerr << "program: The Great Genotyper for population genotyping by Moustafa Shokrof." << endl;
     cerr << "it is built on top of Pangenie tool by Jana Ebler" << endl << endl;
+    string graphFolders = "";
     string graphFile = "";
     string annotFile = "";
     string descriptionFile= "";
@@ -168,9 +169,9 @@ int main (int argc, char* argv[])
     // parse the command line arguments
     CommandLineParser argument_parser;
     argument_parser.add_command("TheGreatGenotyper [options] -i <reads.fa/fq> -r <reference.fa> -v <variants.vcf>");
-    argument_parser.add_mandatory_argument('i', "Metagraph graph path.dbg");
-    argument_parser.add_mandatory_argument('a', "Metagraph annotations containig kmer counts");
-    argument_parser.add_mandatory_argument('f', "Description file .tsv");
+    argument_parser.add_mandatory_argument('i', "Metagraph graph database folders");
+   // argument_parser.add_mandatory_argument('a', "Metagraph annotations containig kmer counts");
+   // argument_parser.add_mandatory_argument('f', "Description file .tsv");
     argument_parser.add_flag_argument('l', "the counts in the index are log scale.");
 
     argument_parser.add_mandatory_argument('r', "reference genome in FASTA format. NOTE: INPUT FASTA FILE MUST NOT BE COMPRESSED.");
@@ -202,9 +203,10 @@ int main (int argc, char* argv[])
     } catch (const exception& e) {
         return 0;
     }
-    graphFile = argument_parser.get_argument('i');
-    annotFile = argument_parser.get_argument('a');
-    descriptionFile= argument_parser.get_argument('f');
+    graphFolders = argument_parser.get_argument('i');
+    //graphFile = argument_parser.get_argument('i');
+    //annotFile = argument_parser.get_argument('a');
+    //descriptionFile= argument_parser.get_argument('f');
     log_scale=argument_parser.get_flag('l');
     reffile = argument_parser.get_argument('r');
     vcffile = argument_parser.get_argument('v');
@@ -247,17 +249,34 @@ int main (int argc, char* argv[])
     // check if input files exist and are uncompressed
     check_input_file(reffile);
     check_input_file(vcffile);
-    check_input_file(descriptionFile);
-    check_input_file(graphFile);
-    check_input_file(annotFile);
+    check_input_file(graphFolders);
+//    check_input_file(descriptionFile);
+//    check_input_file(graphFile);
+//    check_input_file(annotFile);
     
     
 
     cerr << "Load Database ..."<< endl;
-    SamplesDatabase database(graphFile,annotFile,descriptionFile,regularization,log_scale);
-    kmersize=database.getKSize();
-    unsigned numSamples= database.getNumSamples();
-    vector<string> sampleNames=database.getSamplesName();
+    vector<SamplesDatabase*> databases;
+    ifstream databasesFolder(graphFolders);
+    string prefix;
+    unsigned numSamples= 0;
+    vector<string> sampleNames;
+    while(databasesFolder>>prefix)
+    {
+        graphFile = prefix + "graph.dbg";
+        descriptionFile = prefix + "graph.desc.tsv";
+        annotFile=prefix+"annotation.relaxed.row_diff_int_brwt.annodbg";
+        databases.push_back(new SamplesDatabase(graphFile,annotFile,descriptionFile,regularization,log_scale));
+        numSamples+= databases.back()->getNumSamples();
+        vector<string> tmp=databases.back()->getSamplesName();
+        for(auto s :tmp)
+            sampleNames.push_back(s);
+    }
+    databases[0]->load_graph();
+    kmersize=databases[0]->getKSize();
+
+
     struct rusage r_usageD;
     getrusage(RUSAGE_SELF, &r_usageD);
     cerr << "#### Memory usage until now: " << (r_usageD.ru_maxrss / 1E6) << " GB ####" << endl;
@@ -345,16 +364,15 @@ int main (int argc, char* argv[])
     variant_reader.open_genotyping_outfile(outname);
 
 
-
     for(auto chrom : chromosomes)
     {
         cerr << "Determine unique kmers for chromosome: "<< chrom << endl;
         VariantReader* variants = &variant_reader;
         UniqueKmersMap* result = &unique_kmers_list;
         KmerCounter* genomic_counts = &genomic_kmer_counts;
-        EmissionProbabilities* emissions=new EmissionProbabilities(&database,variants->size_of(chrom));
+        EmissionProbabilities* emissions=new EmissionProbabilities(databases[0],variants->size_of(chrom));
         timer.get_interval_time();
-        prepare_unique_kmers(chrom, genomic_counts, &database, variants, emissions,result);
+        prepare_unique_kmers(chrom, genomic_counts, databases[0], variants, emissions,result);
         time_unique_kmers += timer.get_interval_time();
         cerr<< "Finished Determining unique kmers for chromosome: "<< chrom << endl;
         struct rusage r_usage3;
