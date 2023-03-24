@@ -223,7 +223,6 @@ populationJointProbability::populationJointProbability(VariantReader* variants, 
 
 
     }
-    cout<<"Here"<<endl;
 }
 long double populationJointProbability::get(unsigned from_variant, unsigned to_variant,unsigned short path_id1, unsigned short path_id2, unsigned short path_id3, unsigned short path_id4)
 {
@@ -244,10 +243,10 @@ long double populationJointProbability::get(unsigned from_variant, unsigned to_v
     unsigned char from_max_allele = (*unique_kmers)[from_variant]->get_max_allele_id() +1;
     unsigned char to_max_allele = (*unique_kmers)[to_variant]->get_max_allele_id()+ 1;
 
-    size_t index = ((int)to_allele1 * from_max_allele * to_max_allele * to_max_allele) +
-                   ((int)to_allele2 * to_max_allele * to_max_allele) +
-                   ((int)from_max_allele * to_max_allele) +
-                   (int)to_max_allele;
+    size_t index = ((int)from_allele1 * from_max_allele * to_max_allele * to_max_allele) +
+                   ((int)from_allele2 * to_max_allele * to_max_allele) +
+                   ((int)to_allele1 * to_max_allele) +
+                   (int)to_allele2;
     return this->probabilities[from_variant][index];
 
 }
