@@ -395,7 +395,6 @@ int main (int argc, char* argv[])
             for(unsigned sampleID=0; sampleID<numSamples ;sampleID++)  {
                 vector<UniqueKmers *> *unique_kmers =
                         &unique_kmers_list.unique_kmers[chrom];
-                ProbabilityTable *probs = database.getSampleProbability(sampleID);
                 Results *r = &results;
                 // if requested, run phasing first
                 for (size_t s = 0; s < subsets.size(); ++s) {

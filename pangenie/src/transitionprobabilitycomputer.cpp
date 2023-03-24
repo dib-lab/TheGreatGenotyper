@@ -212,7 +212,6 @@ populationJointProbability::populationJointProbability(VariantReader* variants, 
                                        ((int)c2 * next_max_allele * next_max_allele) +
                                        ((int)n1 * next_max_allele) +
                                        (int)n2;
-			cout<<index<<"\t"<<this->probabilities[v].size()<<endl;
                         this->probabilities[v][index]=jointPropSum;
                     }
                 }
