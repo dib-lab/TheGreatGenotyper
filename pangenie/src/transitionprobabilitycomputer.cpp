@@ -198,7 +198,7 @@ populationJointProbability::populationJointProbability(VariantReader* variants, 
 
         unsigned char curr_max_allele = (*unique_kmers)[v]->get_max_allele_id()+1;
         unsigned char next_max_allele = (*unique_kmers)[v+1]->get_max_allele_id()+1;
-
+        vector<long double> tmp(emissions->nr_samples);
         this->probabilities[v].resize(curr_max_allele* curr_max_allele* next_max_allele* next_max_allele);
         for (auto c1 : curr_unique_alleles) {
             for (auto c2 : curr_unique_alleles) {
@@ -207,9 +207,12 @@ populationJointProbability::populationJointProbability(VariantReader* variants, 
                         long double jointPropSum=0;
                         for(unsigned i =0 ;i <emissions->nr_samples;i++)
                         {
-                            jointPropSum += (emissions->state_to_prob[v][c1][c2][i] * emissions->state_to_prob[v+1][n1][n2][i]);
+                            tmp[i]=(emissions->state_to_prob[v][c1][c2][i] * emissions->state_to_prob[v+1][n1][n2][i]);
+                          //  jointPropSum += (emissions->state_to_prob[v][c1][c2][i] * emissions->state_to_prob[v+1][n1][n2][i]);
                         }
-                        jointPropSum /= emissions->nr_samples;
+                        //jointPropSum /= emissions->nr_samples;
+                        sort(tmp.begin(),tmp.end());
+                        jointPropSum=tmp[(emissions->nr_samples/2)];
                         size_t index = ((int)c1 * curr_max_allele * next_max_allele * next_max_allele) +
                                        ((int)c2 * next_max_allele * next_max_allele) +
                                        ((int)n1 * next_max_allele) +
