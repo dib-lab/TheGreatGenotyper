@@ -57,7 +57,7 @@ struct UniqueKmersMap {
 
 struct Results {
     mutex result_mutex;
-    vector<
+    map<string,
     map<string, vector<GenotypingResult>>
     > result;
     map<string, double> runtimes;
@@ -84,7 +84,7 @@ void prepare_unique_kmers(string chromosome, KmerCounter* genomic_kmer_counts, S
     }
 }
 
-void run_genotyping(string chromosome,unsigned  sampleID, vector<UniqueKmers*>* unique_kmers,TransitionProbability* transitions, EmissionProbabilities* emissions, bool only_genotyping, bool only_phasing, vector<unsigned short>* only_paths, Results* results) {
+void run_genotyping(string chromosome,unsigned  sampleID,string sampleName, vector<UniqueKmers*>* unique_kmers,TransitionProbability* transitions, EmissionProbabilities* emissions, bool only_genotyping, bool only_phasing, vector<unsigned short>* only_paths, Results* results) {
     Timer timer;
     // construct HMM and run genotyping/phasing
 
@@ -93,22 +93,25 @@ void run_genotyping(string chromosome,unsigned  sampleID, vector<UniqueKmers*>* 
     // store the results
     {
         lock_guard<mutex> lock_result (results->result_mutex);
-
+        if(results->result.find(sampleName) == results->result.end())
+        {
+            results->result[sampleName]=map<string, vector<GenotypingResult>>();
+        }
         // combine the new results to the already existing ones (if present)
-        if (results->result[sampleID].find(chromosome) == results->result[sampleID].end()) {
-            results->result[sampleID].insert(pair<string, vector<GenotypingResult>> (chromosome, hmm.move_genotyping_result()));
+        if (results->result[sampleName].find(chromosome) == results->result[sampleName].end()) {
+            results->result[sampleName].insert(pair<string, vector<GenotypingResult>> (chromosome, hmm.move_genotyping_result()));
         } else {
             // combine newly computed likelihoods with already exisiting ones
             size_t index = 0;
             vector<GenotypingResult> genotypes = hmm.move_genotyping_result();
             for (auto likelihoods : genotypes) {
-                results->result[sampleID].at(chromosome).at(index).combine(likelihoods);
+                results->result[sampleName].at(chromosome).at(index).combine(likelihoods);
                 index += 1;
             }
         }
         // normalize the likelihoods after they have been combined
-        for (size_t i = 0; i < results->result[sampleID].at(chromosome).size(); ++i) {
-            results->result[sampleID].at(chromosome).at(i).normalize();
+        for (size_t i = 0; i < results->result[sampleName].at(chromosome).size(); ++i) {
+            results->result[sampleName].at(chromosome).at(i).normalize();
         }
 
         if (results->runtimes.find(chromosome) == results->runtimes.end()) {
@@ -360,36 +363,49 @@ int main (int argc, char* argv[])
     UniqueKmersMap unique_kmers_list;
     //unique_kmers_list.unique_kmers.resize(numSamples);
     Results results;
-    results.result.resize(numSamples);
+    //results.result.resize(numSamples);
     variant_reader.open_genotyping_outfile(outname);
+    map<string,vector<EmissionProbabilities*> > allEmissions;
+    for(auto chrom : chromosomes)
+    {
+        allEmissions[chrom]=vector<EmissionProbabilities*>();
+    }
+    struct rusage r_usage3;
+    cerr << "Calculate emissions  " << endl;
+    for(unsigned i=0; i< databases.size(); i++)
+    {
+        if(i!=0)
+            databases[i]->load_graph();
+        for(auto chrom : chromosomes)
+        {
+            cerr << "Determine unique kmers for chromosome: "<< chrom << endl;
+            EmissionProbabilities* emissions=new EmissionProbabilities(databases[i],variant_reader.size_of(chrom));
+            timer.get_interval_time();
+            prepare_unique_kmers(chrom, &genomic_kmer_counts, databases[i], &variant_reader, emissions,&unique_kmers_list);
+            allEmissions[chrom].push_back(emissions);
+            time_unique_kmers += timer.get_interval_time();
+            cerr<< "Finished Determining unique kmers for chromosome: "<< chrom << endl;
 
+            getrusage(RUSAGE_SELF, &r_usage3);
+            cerr << "#### Memory usage until now: " << (r_usage3.ru_maxrss / 1E6) << " GB ####" << endl;
+        }
+        databases[i]->delete_graph();
+    }
+    cerr <<"Finished computing emissions"<<endl;
 
     for(auto chrom : chromosomes)
     {
-        cerr << "Determine unique kmers for chromosome: "<< chrom << endl;
-        VariantReader* variants = &variant_reader;
-        UniqueKmersMap* result = &unique_kmers_list;
-        KmerCounter* genomic_counts = &genomic_kmer_counts;
-        EmissionProbabilities* emissions=new EmissionProbabilities(databases[0],variants->size_of(chrom));
-        timer.get_interval_time();
-        prepare_unique_kmers(chrom, genomic_counts, databases[0], variants, emissions,result);
-        time_unique_kmers += timer.get_interval_time();
-        cerr<< "Finished Determining unique kmers for chromosome: "<< chrom << endl;
-        struct rusage r_usage3;
-        getrusage(RUSAGE_SELF, &r_usage3);
-        cerr << "#### Memory usage until now: " << (r_usage3.ru_maxrss / 1E6) << " GB ####" << endl;
-
         TransitionProbability* transitions;
         if(transitionsLoadFilePrefix != "")
         {
             cerr<<"Loading tranitions from "<<transitionsLoadFilePrefix+"."+chrom<<endl;
             //transitions = new LiStephens(variants,chrom,1.26,effective_N);
-            transitions= new populationJointProbability(variants,chrom,&unique_kmers_list.unique_kmers[chrom]);
+            transitions= new populationJointProbability(&variant_reader,chrom,&unique_kmers_list.unique_kmers[chrom]);
             transitions->load(transitionsLoadFilePrefix+"."+chrom);
         }
         else {
             cerr<< "Calculating Transition probabilities for "<<chrom<<endl;
-            transitions= new populationJointProbability(variants,chrom,emissions,&(unique_kmers_list.unique_kmers[chrom]));
+            transitions= new populationJointProbability(&variant_reader,chrom,allEmissions[chrom],&(unique_kmers_list.unique_kmers[chrom]));
            // transitions= new LiStephens(variants,chrom,1.26,effective_N);
         }
         if(transitionsSaveFilePrefix != "")
@@ -406,45 +422,50 @@ int main (int argc, char* argv[])
             nr_core_threads = available_threads;
         }
 
-        cerr << "Construct HMM and run core algorithm for chromosome: "<< chrom << endl;
-        {
-            // create thread pool
-            pangenie::ThreadPool threadPool (nr_core_threads);
-            for(unsigned sampleID=0; sampleID<numSamples ;sampleID++)  {
-                vector<UniqueKmers *> *unique_kmers =
-                        &unique_kmers_list.unique_kmers[chrom];
-                Results *r = &results;
-                // if requested, run phasing first
-                for (size_t s = 0; s < subsets.size(); ++s) {
-                    vector<unsigned short> *only_paths = &subsets[s];
-                    function<void()> f_genotyping = bind(
-                            run_genotyping, chrom, sampleID,unique_kmers,transitions, emissions,
-                            true, false, only_paths, r);
-                    threadPool.submit(f_genotyping);
+        for(unsigned i=0; i< databases.size(); i++) {
+            cerr<<"Processing database "<<i<<endl;
+            cerr << "Construct HMM and run core algorithm for chromosome: " << chrom << endl;
+            {
+                // create thread pool
+                pangenie::ThreadPool threadPool(nr_core_threads);
+                for (unsigned sampleID = 0; sampleID < databases[i]->getNumSamples(); sampleID++) {
+                    vector<UniqueKmers *> *unique_kmers =
+                            &unique_kmers_list.unique_kmers[chrom];
+                    Results *r = &results;
+                    string sampleName= databases[i]->getSampleName(sampleID);
+                    for (size_t s = 0; s < subsets.size(); ++s) {
+                        vector<unsigned short> *only_paths = &subsets[s];
+                        function<void()> f_genotyping = bind(
+                                run_genotyping, chrom, sampleID,sampleName, unique_kmers, transitions, allEmissions[chrom][i],
+                                true, false, only_paths, r);
+                        threadPool.submit(f_genotyping);
+                    }
+
+
                 }
-
-
             }
-        }
 
-        cerr<< "Finished genotyping for chromosome: "<< chrom << endl;
+            cerr << "Finished genotyping for chromosome: " << chrom << endl;
 
-        cerr<< "writing results for chromosome: "<< chrom << endl;
-        timer.get_interval_time();
-        for (unsigned sampleID = 0; sampleID < numSamples; sampleID++) {
-            // write VCF
+            cerr << "writing results for chromosome: " << chrom << endl;
+            timer.get_interval_time();
+            for (unsigned sampleID = 0; sampleID < databases[i]->getNumSamples(); sampleID++) {
+                // write VCF
                 // output phasing results
-            variant_reader.write_genotypes_of(
-                    chrom,sampleNames[sampleID], results.result[sampleID][chrom],
-                    ignore_imputed);
+                string sampleName= databases[i]->getSampleName(sampleID);
+                variant_reader.write_genotypes_of(
+                        chrom, sampleName, results.result[sampleName][chrom],
+                        ignore_imputed);
 
-            results.result[sampleID][chrom].clear();
+                results.result[sampleName][chrom].clear();
+            }
+            delete transitions;
         }
-        for(auto uniq: unique_kmers_list.unique_kmers[chrom]) {
-            delete uniq;
-        }
-        unique_kmers_list.unique_kmers[chrom].clear();
-        delete transitions;
+//        for(auto uniq: unique_kmers_list.unique_kmers[chrom]) {
+//            delete uniq;
+//        }
+
+
 
         time_writing += timer.get_interval_time();
         cerr<< "Finished chromosome: "<< chrom << endl;

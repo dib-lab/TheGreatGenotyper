@@ -173,7 +173,7 @@ populationJointProbability::populationJointProbability(VariantReader* variants, 
     this->variants=variants;
 }
 
-populationJointProbability::populationJointProbability(VariantReader* variants, std::string chromsome, EmissionProbabilities* emissions,std::vector<UniqueKmers*>* unique_kmers)
+populationJointProbability::populationJointProbability(VariantReader* variants, std::string chromsome, vector<EmissionProbabilities*> allemissions,std::vector<UniqueKmers*>* unique_kmers)
         : unique_kmers(unique_kmers)
 {
     type="JointProbability";
@@ -205,11 +205,15 @@ populationJointProbability::populationJointProbability(VariantReader* variants, 
                 for (auto n1 : next_unique_alleles) {
                     for (auto n2 : next_unique_alleles) {
                         long double jointPropSum=0;
-                        for(unsigned i =0 ;i <emissions->nr_samples;i++)
-                        {
-                            jointPropSum += (emissions->state_to_prob[v][c1][c2][i] * emissions->state_to_prob[v+1][n1][n2][i]);
+                        long double count=0;
+                        for(auto emissions : allemissions) {
+                            for (unsigned i = 0; i < emissions->nr_samples; i++) {
+                                jointPropSum += (emissions->state_to_prob[v][c1][c2][i] *
+                                                 emissions->state_to_prob[v + 1][n1][n2][i]);
+                            }
+                            count+=emissions->nr_samples;
                         }
-                        jointPropSum /= emissions->nr_samples;
+                        jointPropSum /= count;
                         size_t index = ((int)c1 * curr_max_allele * next_max_allele * next_max_allele) +
                                        ((int)c2 * next_max_allele * next_max_allele) +
                                        ((int)n1 * next_max_allele) +
