@@ -276,6 +276,7 @@ int main (int argc, char* argv[])
         for(auto s :tmp)
             sampleNames.push_back(s);
     }
+
     databases[0]->load_graph();
     kmersize=databases[0]->getKSize();
 
@@ -346,7 +347,7 @@ int main (int argc, char* argv[])
 
     // count kmers in allele + reference sequence
     cerr << "Count kmers in genome ..." << endl;
-    JellyfishCounter genomic_kmer_counts (segment_file, kmersize, nr_jellyfish_threads, hash_size);
+    JellyfishCounter* genomic_kmer_counts= new  JellyfishCounter(segment_file, kmersize, nr_jellyfish_threads, hash_size);
 
     // TODO: only for analysis
     struct rusage r_usage1;
@@ -381,17 +382,18 @@ int main (int argc, char* argv[])
             cerr << "Determine unique kmers for chromosome: "<< chrom << endl;
             EmissionProbabilities* emissions=new EmissionProbabilities(databases[i],variant_reader.size_of(chrom));
             timer.get_interval_time();
-            prepare_unique_kmers(chrom, &genomic_kmer_counts, databases[i], &variant_reader, emissions,&unique_kmers_list);
+            prepare_unique_kmers(chrom, genomic_kmer_counts, databases[i], &variant_reader, emissions,&unique_kmers_list);
             allEmissions[chrom].push_back(emissions);
             time_unique_kmers += timer.get_interval_time();
             cerr<< "Finished Determining unique kmers for chromosome: "<< chrom << endl;
 
             getrusage(RUSAGE_SELF, &r_usage3);
-            cerr << "#### Memory usage until now: " << (r_usage3.ru_maxrss / 1E6) << " GB ####" << endl;
+            cerr << "#### Memory usage until now: " << (r_usage3.ru_maxrss / 1E6) << " MB ####" << endl;
         }
         databases[i]->delete_graph();
     }
     cerr <<"Finished computing emissions"<<endl;
+    delete genomic_kmer_counts;
 
     for(auto chrom : chromosomes)
     {
@@ -460,11 +462,13 @@ int main (int argc, char* argv[])
                 results.result[sampleName][chrom].clear();
             }
 
+
+        }
+        for(auto uniq: unique_kmers_list.unique_kmers[chrom]) {
+            delete uniq;
         }
         delete transitions;
-//        for(auto uniq: unique_kmers_list.unique_kmers[chrom]) {
-//            delete uniq;
-//        }
+
 
 
 

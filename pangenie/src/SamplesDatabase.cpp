@@ -35,10 +35,13 @@ void SamplesDatabase::load_graph(){
     config->infbase=graph_path;
     config->infbase_annotators.push_back(anno_path);
     anno_graph=mtg::cli::initialize_annotated_dbg(graph, *config);
+
 }
 void SamplesDatabase::delete_graph(){
-    anno_graph= nullptr;
-    graph = nullptr;
+    this->graph.reset();
+    this->anno_graph.reset();
+
+
 }
 
 size_t SamplesDatabase::getKSize()
