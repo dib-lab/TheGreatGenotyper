@@ -459,8 +459,9 @@ int main (int argc, char* argv[])
 
                 results.result[sampleName][chrom].clear();
             }
-            delete transitions;
+
         }
+        delete transitions;
 //        for(auto uniq: unique_kmers_list.unique_kmers[chrom]) {
 //            delete uniq;
 //        }
