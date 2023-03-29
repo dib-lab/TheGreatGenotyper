@@ -284,16 +284,19 @@ VariantReader::VariantReader(string filename, string reference_filename, size_t 
 	// add last cluster to list
 	add_variant_cluster(previous_chrom, &variant_cluster);
 
-    for(auto s: samples)
-    {
-        this->variantsStatsPerSample[previous_chrom][s]= std::vector<std::vector<VariantStats> >(this->nr_variants);
-    }
+
 
 	cerr << "Identified " << this->nr_variants << " variants in total from VCF-file." << endl;
 }
 
 void VariantReader::addVariantStat(unsigned int variantID, std::string sampleName,std::string chromosome, std::vector<VariantStats> & stat)
 {
+    if(this->variantsStatsPerSample.find(chromosome) == this->variantsStatsPerSample.end())
+        this->variantsStatsPerSample[chromosome]=std::map<std::string, std::vector<std::vector<VariantStats> >  >();
+    if(this->variantsStatsPerSample[chromosome].find(sampleName) == this->variantsStatsPerSample[chromosome].end())
+    {
+        this->variantsStatsPerSample[chromosome][sampleName]= std::vector<std::vector<VariantStats> >(size_of(chromosome));
+    }
     this->variantsStatsPerSample[chromosome][sampleName][variantID]=stat;
 }
 
