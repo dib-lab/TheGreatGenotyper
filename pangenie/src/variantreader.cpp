@@ -286,15 +286,15 @@ VariantReader::VariantReader(string filename, string reference_filename, size_t 
 
     for(auto s: samples)
     {
-        this->variantsStatsPerSample[s]= std::vector<std::vector<VariantStats> >(this->nr_variants);
+        this->variantsStatsPerSample[previous_chrom][s]= std::vector<std::vector<VariantStats> >(this->nr_variants);
     }
 
 	cerr << "Identified " << this->nr_variants << " variants in total from VCF-file." << endl;
 }
 
-void VariantReader::addVariantStat(unsigned int variantID, std::string sampleName, std::vector<VariantStats> & stat)
+void VariantReader::addVariantStat(unsigned int variantID, std::string sampleName,std::string chromosome, std::vector<VariantStats> & stat)
 {
-    this->variantsStatsPerSample[sampleName][variantID]=stat;
+    this->variantsStatsPerSample[chromosome][sampleName][variantID]=stat;
 }
 
 size_t VariantReader::get_kmer_size() const {
@@ -502,7 +502,7 @@ void VariantReader::write_genotypes_of(string chromosome, string sample_name,con
 //		vector<VariantStats> singleton_stats;
 		variant.separate_variants(&singleton_variants, &genotyping_result.at(i), &singleton_likelihoods);
 //		variant.variant_statistics(unique_kmers->at(i), singleton_stats);
-        vector<VariantStats> singleton_stats= variantsStatsPerSample[sample_name][i];
+        vector<VariantStats> singleton_stats= variantsStatsPerSample[chromosome][sample_name][i];
 		for (size_t j = 0; j < singleton_variants.size(); ++j) {
 			Variant v = singleton_variants[j];
 			v.remove_flanking_sequence();
