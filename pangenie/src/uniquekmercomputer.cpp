@@ -31,28 +31,25 @@ void unique_kmers(DnaSequence& allele, unsigned char index, size_t kmer_size, ma
 	}
 }
 
-UniqueKmerComputer::UniqueKmerComputer (KmerCounter* genomic_kmers, SamplesDatabase* database, VariantReader* variants, string chromosome)
+UniqueKmerComputer::UniqueKmerComputer (KmerCounter* genomic_kmers,  VariantReader* variants, string chromosome)
 	:genomic_kmers(genomic_kmers),
-         database(database),
 	 variants(variants),
 	 chromosome(chromosome)
 {
 	jellyfish::mer_dna::k(this->variants->get_kmer_size());
+    compute_unique_kmers();
 }
 
-void UniqueKmerComputer::compute_unique_kmers(EmissionProbabilities* result, std::vector<UniqueKmers*>* uniqKmers) {
+void UniqueKmerComputer::compute_unique_kmers() {
 	size_t nr_variants = this->variants->size_of(this->chromosome);
-    uint32_t numSamples=database->getNumSamples();
-    vector<double> localCoverage(numSamples);
-    uniqKmers->resize(nr_variants);
-    vector<string> seqs;
-#pragma omp parallel for shared(result,uniqKmers) firstprivate(localCoverage,numSamples,seqs)
+    uniqKmers.resize(nr_variants);
+#pragma omp parallel for shared(uniqKmers)
     for (size_t v = 0; v < nr_variants; ++v) {
         // set parameters of distributions
         size_t kmer_size = this->variants->get_kmer_size();
 
-        compute_local_coverage(this->chromosome, v, 2*kmer_size,localCoverage);
-        map <jellyfish::mer_dna, vector<unsigned char>> occurences;
+
+
         const Variant& variant = this->variants->get_variant(this->chromosome, v);
 
 
@@ -66,7 +63,7 @@ void UniqueKmerComputer::compute_unique_kmers(EmissionProbabilities* result, std
             u->insert_path(p,a);
         }
 
-        seqs.resize(nr_alleles);
+
         for (unsigned char a = 0; a < nr_alleles; ++a) {
             // consider all alleles not undefined
             if (variant.is_undefined_allele(a)) {
@@ -75,11 +72,10 @@ void UniqueKmerComputer::compute_unique_kmers(EmissionProbabilities* result, std
                 continue;
             }
             DnaSequence allele = variant.get_allele_sequence(a);
-            unique_kmers(allele, a, kmer_size, occurences);
-            seqs[a]=allele.to_string();
+            unique_kmers(allele, a, kmer_size, u->occurences);
         }
 
-        for (auto kmer = occurences.cbegin(), next_it = kmer; kmer != occurences.cend(); kmer = next_it)
+        for (auto kmer = u->occurences.cbegin(), next_it = kmer; kmer != u->occurences.cend(); kmer = next_it)
         {
             bool ignoreKmer=false;
             size_t genomic_count = this->genomic_kmers->getKmerAbundance(kmer->first);
@@ -113,26 +109,57 @@ void UniqueKmerComputer::compute_unique_kmers(EmissionProbabilities* result, std
             ++next_it;
             if (ignoreKmer)
             {
-                occurences.erase(kmer);
+                u->occurences.erase(kmer);
             }
         }
 
 
-        (*uniqKmers)[v]=u;
+        uniqKmers[v]=u;
+
+        //delete u;
+    }
+
+}
+
+void UniqueKmerComputer::compute_emissions(SamplesDatabase* database, EmissionProbabilities* result){
+    size_t nr_variants = this->variants->size_of(this->chromosome);
+    uint32_t numSamples=database->getNumSamples();
+    vector<double> localCoverage(numSamples);
+    vector<string> seqs;
+#pragma omp parallel for shared(result,uniqKmers) firstprivate(localCoverage,numSamples,seqs)
+    for (size_t v = 0; v < nr_variants; ++v) {
+        // set parameters of distributions
+        size_t kmer_size = this->variants->get_kmer_size();
+
+        compute_local_coverage(database,this->chromosome, v, 2 * kmer_size, localCoverage);
+
+        const Variant &variant = this->variants->get_variant(this->chromosome, v);
+        size_t nr_alleles = variant.nr_of_alleles();
+        seqs.resize(nr_alleles);
+        for (unsigned char a = 0; a < nr_alleles; ++a) {
+            // consider all alleles not undefined
+            if (variant.is_undefined_allele(a)) {
+                // skip kmers of alleles that are undefined
+                continue;
+            }
+            DnaSequence allele = variant.get_allele_sequence(a);
+            seqs[a]=allele.to_string();
+        }
+
         vector<unordered_map<string,uint32_t>> kmerCounts;
         database->getKmerCounts(seqs,kmerCounts);
-
+        UniqueKmers* sampleU= uniqKmers[v];
         for(unsigned sampleID=0; sampleID< numSamples ; sampleID++) {
             string sampleName=database->getSampleName(sampleID);
             //bool debug= (sampleName=="SRR17029944");
-            UniqueKmers* sampleU=new UniqueKmers(*u);
+
             unsigned sampleKmerCoverage=database->getKmerCoverage(sampleID);
             sampleU->set_coverage(localCoverage[sampleID]);
             // if(debug) cerr<<"Local Coverage "<<localCoverage[sampleID]<<"\n";
             //		  debug=false;
             ProbabilityTable* probabilities=database->getSampleProbability(sampleID);
             size_t nr_kmers_used = 0;
-            for (auto &kmer : occurences) {
+            for (auto &kmer : sampleU->occurences) {
                 if (nr_kmers_used > 300)
                     break;
 
@@ -166,11 +193,9 @@ void UniqueKmerComputer::compute_unique_kmers(EmissionProbabilities* result, std
             variant.variant_statistics(sampleU, singleton_stats);
             variants->addVariantStat(v, sampleName, singleton_stats);
             result->compute(sampleU,v,sampleID);
-            delete sampleU;
-        }
-        //delete u;
-    }
 
+        }
+    }
 }
 
 void UniqueKmerComputer::compute_empty(vector<UniqueKmers*>* result) const {
@@ -191,7 +216,7 @@ void UniqueKmerComputer::compute_empty(vector<UniqueKmers*>* result) const {
 	}
 }
 
-void UniqueKmerComputer::compute_local_coverage(string chromosome, size_t var_index, size_t length,vector<double>& result) {
+void UniqueKmerComputer::compute_local_coverage(SamplesDatabase* database,string chromosome, size_t var_index, size_t length,vector<double>& result) {
         DnaSequence left_overhang;
 	DnaSequence right_overhang;
 	

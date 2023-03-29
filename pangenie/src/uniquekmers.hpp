@@ -1,6 +1,6 @@
 #ifndef UNIQUEKMERS_HPP
 #define UNIQUEKMERS_HPP
-
+#include <jellyfish/mer_dna.hpp>
 #include <vector>
 #include <string>
 #include <map>
@@ -58,7 +58,7 @@ public:
 	/** set allele to undefined **/
 	void set_undefined_allele (unsigned char allele_id);
     unsigned short get_max_allele_id();
-
+    std::map <jellyfish::mer_dna, std::vector<unsigned char>> occurences;
 private:
 	size_t variant_pos;
 	size_t current_index;

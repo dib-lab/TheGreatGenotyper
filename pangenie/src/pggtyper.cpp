@@ -51,7 +51,7 @@ void check_input_file(string &filename) {
 
 struct UniqueKmersMap {
     mutex kmers_mutex;
-    map<string, vector<UniqueKmers*> > unique_kmers;
+    map<string, UniqueKmerComputer* > unique_kmers;
     map<string, double> runtimes;
 };
 
@@ -65,21 +65,18 @@ struct Results {
 
 
 
-void prepare_unique_kmers(string chromosome, KmerCounter* genomic_kmer_counts, SamplesDatabase* database, VariantReader* variant_reader,EmissionProbabilities* emissions,UniqueKmersMap* unique_kmers_map) {
+void prepare_unique_kmers(string chromosome, KmerCounter* genomic_kmer_counts, VariantReader* variant_reader,UniqueKmersMap* unique_kmers_map) {
     Timer timer;
-    UniqueKmerComputer kmer_computer(genomic_kmer_counts, database,variant_reader, chromosome);
-    std::vector<UniqueKmers*>  unique_kmers;
-    unsigned numSamples= database->getNumSamples();
+    (*unique_kmers_map).unique_kmers[chromosome]=new UniqueKmerComputer(genomic_kmer_counts,variant_reader, chromosome);
     // this needs to be map or vector of vectors for each sample
 
-    kmer_computer.compute_unique_kmers(emissions,&unique_kmers);
 
     // store the results
     {
         lock_guard<mutex> lock_kmers (unique_kmers_map->kmers_mutex);
-        auto tmp = pair<string, vector<UniqueKmers *>>(
-        chromosome, move(unique_kmers));
-        unique_kmers_map->unique_kmers.insert(tmp);
+//        auto tmp = pair<string, vector<UniqueKmers *>>(
+//        chromosome, move(unique_kmers));
+        //unique_kmers_map->unique_kmers.insert(tmp);
         unique_kmers_map->runtimes[chromosome]+=timer.get_total_time();
     }
 }
@@ -362,6 +359,14 @@ int main (int argc, char* argv[])
 
     // UniqueKmers for each chromosome
     UniqueKmersMap unique_kmers_list;
+
+    for(auto chrom : chromosomes) {
+        cerr << "Determine unique kmers for chromosome: " << chrom << endl;
+        prepare_unique_kmers(chrom, genomic_kmer_counts, &variant_reader,&unique_kmers_list);
+    }
+
+
+
     //unique_kmers_list.unique_kmers.resize(numSamples);
     Results results;
     //results.result.resize(numSamples);
@@ -375,24 +380,27 @@ int main (int argc, char* argv[])
     cerr << "Calculate emissions  " << endl;
     for(unsigned i=0; i< databases.size(); i++)
     {
+        cerr<< "Loading Database "<<i<<endl;
         if(i!=0)
             databases[i]->load_graph();
         for(auto chrom : chromosomes)
         {
-            cerr << "Determine unique kmers for chromosome: "<< chrom << endl;
+            cerr << "Calculating emissions for chromosome: "<< chrom << endl;
             EmissionProbabilities* emissions=new EmissionProbabilities(databases[i],variant_reader.size_of(chrom));
             timer.get_interval_time();
-            prepare_unique_kmers(chrom, genomic_kmer_counts, databases[i], &variant_reader, emissions,&unique_kmers_list);
+            unique_kmers_list.unique_kmers[chrom]->compute_emissions(databases[i],emissions);
+
             allEmissions[chrom].push_back(emissions);
             time_unique_kmers += timer.get_interval_time();
-            cerr<< "Finished Determining unique kmers for chromosome: "<< chrom << endl;
+            cerr<< "Finished Calculating emissions for chromosome: "<< chrom << endl;
 
             getrusage(RUSAGE_SELF, &r_usage3);
-            cerr << "#### Memory usage until now: " << (r_usage3.ru_maxrss / 1E6) << " MB ####" << endl;
+            cerr << "#### Memory usage until now: " << (r_usage3.ru_maxrss / 1E6) << " GB ####" << endl;
         }
         databases[i]->delete_graph();
     }
     cerr <<"Finished computing emissions"<<endl;
+
     delete genomic_kmer_counts;
 
     for(auto chrom : chromosomes)
@@ -402,12 +410,12 @@ int main (int argc, char* argv[])
         {
             cerr<<"Loading tranitions from "<<transitionsLoadFilePrefix+"."+chrom<<endl;
             //transitions = new LiStephens(variants,chrom,1.26,effective_N);
-            transitions= new populationJointProbability(&variant_reader,chrom,&unique_kmers_list.unique_kmers[chrom]);
+            transitions= new populationJointProbability(&variant_reader,chrom,&unique_kmers_list.unique_kmers[chrom]->uniqKmers);
             transitions->load(transitionsLoadFilePrefix+"."+chrom);
         }
         else {
             cerr<< "Calculating Transition probabilities for "<<chrom<<endl;
-            transitions= new populationJointProbability(&variant_reader,chrom,allEmissions[chrom],&(unique_kmers_list.unique_kmers[chrom]));
+            transitions= new populationJointProbability(&variant_reader,chrom,allEmissions[chrom],&(unique_kmers_list.unique_kmers[chrom]->uniqKmers));
            // transitions= new LiStephens(variants,chrom,1.26,effective_N);
         }
         if(transitionsSaveFilePrefix != "")
@@ -432,7 +440,7 @@ int main (int argc, char* argv[])
                 pangenie::ThreadPool threadPool(nr_core_threads);
                 for (unsigned sampleID = 0; sampleID < databases[i]->getNumSamples(); sampleID++) {
                     vector<UniqueKmers *> *unique_kmers =
-                            &unique_kmers_list.unique_kmers[chrom];
+                            &unique_kmers_list.unique_kmers[chrom]->uniqKmers;
                     Results *r = &results;
                     string sampleName= databases[i]->getSampleName(sampleID);
                     for (size_t s = 0; s < subsets.size(); ++s) {
@@ -464,7 +472,7 @@ int main (int argc, char* argv[])
 
 
         }
-        for(auto uniq: unique_kmers_list.unique_kmers[chrom]) {
+        for(auto uniq: unique_kmers_list.unique_kmers[chrom]->uniqKmers) {
             delete uniq;
         }
         delete transitions;
