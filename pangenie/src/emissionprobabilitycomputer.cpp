@@ -16,6 +16,8 @@ EmissionProbabilityComputer::EmissionProbabilityComputer(UniqueKmers* uniquekmer
 	unsigned char max_allele = *max_element(std::begin(unique_alleles), std::end(unique_alleles));
 	this->state_to_prob = vector< vector<long double>>(max_allele+1, vector<long double>(max_allele+1));
 
+
+
 	for (auto a1 : unique_alleles) {
 		for (auto a2 : unique_alleles) {
 			bool a1_is_undefined = uniquekmers->is_undefined_allele(a1);
@@ -23,6 +25,7 @@ EmissionProbabilityComputer::EmissionProbabilityComputer(UniqueKmers* uniquekmer
 			this->state_to_prob[a1][a2] = compute_emission_probability(a1, a2, a1_is_undefined, a2_is_undefined);
 			if (this->state_to_prob[a1][a2] > 0) this->all_zeros = false;
 		}
+
 	}
 
 //	if (this->all_zeros) cerr << "EmissionProbabilities at position " << uniquekmers->get_variant_position() << " are all zero. Set to uniform." << endl;
@@ -56,7 +59,8 @@ long double EmissionProbabilityComputer::compute_emission_probability(unsigned c
 EmissionProbabilities::EmissionProbabilities(SamplesDatabase* samples,unsigned  nr_variants)
 {
 
-    this->state_to_prob = std::vector<std::vector<std::vector<std::vector<long double> > > >(nr_variants);
+    this->state_to_prob = std::vector<std::vector<long double> > (nr_variants);
+    this->numAllelesPerVariant = std::vector<unsigned short> (nr_variants);
     nr_samples= samples->getNumSamples();
     all_zeros=std::vector<std::vector<bool> >(nr_variants,std::vector<bool>(nr_samples,true));
     probabilities.resize(nr_samples);
@@ -68,7 +72,14 @@ EmissionProbabilities::EmissionProbabilities(SamplesDatabase* samples,unsigned  
 
 long double EmissionProbabilities::get_emission_probability(unsigned variantID,unsigned sampleID, unsigned char allele_id1, unsigned char allele_id2) const {
     if (this->all_zeros[variantID][sampleID]) return 1.0L;
-    return this->state_to_prob[variantID][allele_id1][allele_id2][sampleID];
+    unsigned short max_allele= this->numAllelesPerVariant[variantID];
+    unsigned size= (max_allele*(max_allele+1))/2;
+    if(allele_id1 > allele_id2)
+        swap(allele_id1,allele_id2);
+
+    unsigned index=((int)allele_id1*(int)max_allele) - (((int)allele_id1-1)*(int)allele_id1)/2 + ((int)allele_id2-(int)allele_id1);
+    index+=(sampleID*size);
+    return this->state_to_prob[variantID][index];
 }
 size_t EmissionProbabilities::getNumVariants(){
     return all_zeros.size();
@@ -79,21 +90,24 @@ void EmissionProbabilities::compute(UniqueKmers* uniq,unsigned variantID,unsigne
     vector<unsigned char> unique_alleles;
     uniq->get_allele_ids(unique_alleles);
 
-
+    unsigned char max_allele = *max_element(std::begin(unique_alleles), std::end(unique_alleles)) +1;
+    unsigned size= (max_allele*(max_allele+1))/2;
     if(state_to_prob[variantID].size()==0) {
-        unsigned char max_allele = *max_element(std::begin(unique_alleles), std::end(unique_alleles));
-        this->state_to_prob[variantID].resize(max_allele + 1);
-        for (auto a2: unique_alleles) {
-            this->state_to_prob[variantID][a2].resize(max_allele + 1, std::vector<long double>(nr_samples));
-        }
+        this->state_to_prob[variantID].resize(size*nr_samples);
     }
+
+    numAllelesPerVariant[variantID]=max_allele;
 
     for (auto a1 : unique_alleles) {
         for (auto a2 : unique_alleles) {
             bool a1_is_undefined = uniq->is_undefined_allele(a1);
             bool a2_is_undefined = uniq->is_undefined_allele(a2);
-            this->state_to_prob[variantID][a1][a2][sampleID] = compute_emission_probability(uniq,sampleID,a1, a2, a1_is_undefined, a2_is_undefined);
-            if (this->state_to_prob[variantID][a1][a2][sampleID] > 0) this->all_zeros[variantID][sampleID] = false;
+            if(a1 > a2)
+                swap(a1,a2);
+            unsigned index=((int)a1*(int)max_allele) - (((int)a1-1)*(int)a1)/2 + ((int)a2-(int)a1);
+            index+=(sampleID*size);
+            this->state_to_prob[variantID][index] = compute_emission_probability(uniq,sampleID,a1, a2, a1_is_undefined, a2_is_undefined);
+            if (this->state_to_prob[variantID][index] > 0) this->all_zeros[variantID][sampleID] = false;
         }
     }
 
