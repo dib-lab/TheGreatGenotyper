@@ -58,7 +58,7 @@ long double EmissionProbabilityComputer::compute_emission_probability(unsigned c
 
 EmissionProbabilities::EmissionProbabilities(SamplesDatabase* samples,unsigned  nr_variants)
 {
-
+    this->state_to_prob2 = std::vector<std::vector<std::vector<std::vector<long double> > > >(nr_variants);
     this->state_to_prob = std::vector<std::vector<long double> > (nr_variants);
     this->numAllelesPerVariant = std::vector<unsigned short> (nr_variants);
     nr_samples= samples->getNumSamples();
@@ -66,6 +66,7 @@ EmissionProbabilities::EmissionProbabilities(SamplesDatabase* samples,unsigned  
     probabilities.resize(nr_samples);
     for(unsigned i=0;i< nr_samples;i++)
         probabilities[i]=samples->getSampleProbability(i);
+
 
 //	if (this->all_zeros) cerr << "EmissionProbabilities at position " << uniquekmers->get_variant_position() << " are all zero. Set to uniform." << endl;
 }
@@ -79,6 +80,8 @@ long double EmissionProbabilities::get_emission_probability(unsigned variantID,u
 
     unsigned index=((int)allele_id1*(int)max_allele) - (((int)allele_id1-1)*(int)allele_id1)/2 + ((int)allele_id2-(int)allele_id1);
     index+=(sampleID*size);
+    //cout<<this->state_to_prob2[variantID][allele_id1][allele_id2][sampleID]<<" "<<this->state_to_prob[variantID][index]<<endl;
+    return this->state_to_prob2[variantID][allele_id1][allele_id2][sampleID];
     return this->state_to_prob[variantID][index];
 }
 size_t EmissionProbabilities::getNumVariants(){
@@ -94,6 +97,10 @@ void EmissionProbabilities::compute(UniqueKmers* uniq,unsigned variantID,unsigne
     unsigned size= (max_allele*(max_allele+1))/2;
     if(state_to_prob[variantID].size()==0) {
         this->state_to_prob[variantID].resize(size*nr_samples);
+        this->state_to_prob2[variantID].resize(max_allele);
+        for (auto a2: unique_alleles) {
+            this->state_to_prob2[variantID][a2].resize(max_allele , std::vector<long double>(nr_samples));
+        }
     }
 
     numAllelesPerVariant[variantID]=max_allele;
@@ -107,6 +114,8 @@ void EmissionProbabilities::compute(UniqueKmers* uniq,unsigned variantID,unsigne
             unsigned index=((int)a1*(int)max_allele) - (((int)a1-1)*(int)a1)/2 + ((int)a2-(int)a1);
             index+=(sampleID*size);
             this->state_to_prob[variantID][index] = compute_emission_probability(uniq,sampleID,a1, a2, a1_is_undefined, a2_is_undefined);
+            this->state_to_prob2[variantID][a1][a2][sampleID] = compute_emission_probability(uniq,sampleID,a1, a2, a1_is_undefined, a2_is_undefined);
+
             if (this->state_to_prob[variantID][index] > 0) this->all_zeros[variantID][sampleID] = false;
         }
     }
