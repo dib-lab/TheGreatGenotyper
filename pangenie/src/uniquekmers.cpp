@@ -23,6 +23,7 @@ UniqueKmers::UniqueKmers(const UniqueKmers& p1)
   local_coverage=p1.local_coverage;
   phased = p1.phased;
   max_allele_id = p1.max_allele_id;
+  occurences=p1.occurences;
 }
 
 size_t UniqueKmers::get_variant_position() {
