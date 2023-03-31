@@ -149,6 +149,9 @@ int main (int argc, char* argv[])
     string vcffile = "";
     string transitionsLoadFilePrefix = "";
     string transitionsSaveFilePrefix = "";
+    string emissionsLoadFilePrefix = "";
+    string emissionsSaveFilePrefix = "";
+    string emissionsPrefix = "";
     size_t kmersize = 31;
     string outname = "result";
     string sample_name = "sample";
@@ -184,6 +187,10 @@ int main (int argc, char* argv[])
     argument_parser.add_flag_argument('q', "use population transitions instead of LiStephens");
     argument_parser.add_optional_argument('m', "", "Load the tranistions from this file");
     argument_parser.add_optional_argument('n', "", "compute the tranistions and save them to this file");
+
+    argument_parser.add_optional_argument('x', "", "Load the emissions from this file");
+    argument_parser.add_optional_argument('y', "", "compute the emissions and save them to this file");
+
 //	argument_parser.add_optional_argument('n', "0.00001", "effective population size");
     argument_parser.add_flag_argument('g', "run genotyping (Forward backward algorithm, default behaviour).");
     argument_parser.add_flag_argument('p', "run phasing (Viterbi algorithm). Experimental feature.");
@@ -241,6 +248,9 @@ int main (int argc, char* argv[])
     population_transitions = argument_parser.get_flag('q');
     transitionsLoadFilePrefix= argument_parser.get_argument('m');
     transitionsSaveFilePrefix= argument_parser.get_argument('n');
+
+    emissionsLoadFilePrefix= argument_parser.get_argument('x');
+    emissionsSaveFilePrefix= argument_parser.get_argument('y');
 
     // print info
     cerr << "Files and parameters used:" << endl;
@@ -378,6 +388,20 @@ int main (int argc, char* argv[])
     }
     struct rusage r_usage3;
     cerr << "Calculate emissions  " << endl;
+    if(emissionsSaveFilePrefix != "" && emissionsLoadFilePrefix== "")
+    {
+        emissionsPrefix=emissionsSaveFilePrefix;
+    }
+    else if(emissionsSaveFilePrefix == "" && emissionsLoadFilePrefix != "")
+    {
+        emissionsPrefix=emissionsLoadFilePrefix;
+    }
+    else{
+        cerr<<"Exactly one of emissionsLoadFilePrefix and emissionsSaveFilePrefix has to be defined"<<endl;
+        cerr<<"emissionsLoadFilePrefix(-x): "<<emissionsLoadFilePrefix<<endl;
+        cerr<<"emissionsSaveFilePrefix(-y): "<<emissionsSaveFilePrefix<<endl;
+        return -1;
+    }
     for(unsigned i=0; i< databases.size(); i++)
     {
         cerr<< "Loading Database "<<i<<endl;
@@ -388,8 +412,12 @@ int main (int argc, char* argv[])
             cerr << "Calculating emissions for chromosome: "<< chrom << endl;
             EmissionProbabilities* emissions=new EmissionProbabilities(databases[i],variant_reader.size_of(chrom));
             timer.get_interval_time();
-            unique_kmers_list.unique_kmers[chrom]->compute_emissions(databases[i],emissions);
-
+            if(emissionsSaveFilePrefix != "") {
+                unique_kmers_list.unique_kmers[chrom]->compute_emissions(databases[i], emissions);
+                string filename=emissionsSaveFilePrefix+"."+chrom+ "."+to_string(i);
+                emissions->save(filename);
+                emissions->destroy();
+            }
             allEmissions[chrom].push_back(emissions);
             time_unique_kmers += timer.get_interval_time();
             cerr<< "Finished Calculating emissions for chromosome: "<< chrom << endl;
@@ -405,6 +433,11 @@ int main (int argc, char* argv[])
 
     for(auto chrom : chromosomes)
     {
+        for(unsigned i=0; i< databases.size(); i++)
+        {
+            string filename=emissionsSaveFilePrefix+"."+chrom+ "."+to_string(i);
+            allEmissions[chrom][i]->load(filename);
+        }
         TransitionProbability* transitions;
         if(transitionsLoadFilePrefix != "")
         {
@@ -476,6 +509,10 @@ int main (int argc, char* argv[])
             delete uniq;
         }
         delete transitions;
+        for(unsigned i=0; i< databases.size(); i++)
+        {
+            delete allEmissions[chrom][i];
+        }
 
 
 

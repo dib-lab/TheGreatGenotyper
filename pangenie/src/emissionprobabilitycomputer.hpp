@@ -45,6 +45,9 @@ public:
     long double get_emission_probability(unsigned variantID,unsigned sampleID, unsigned char allele_id1, unsigned char allele_id2) const;
     void compute(UniqueKmers* uniq,unsigned variantID,unsigned sampleID);
     size_t getNumVariants();
+    void save(std::string filename);
+    void load(std::string filename);
+    void destroy();
 private:
     std::vector<ProbabilityTable*> probabilities;
     std::vector<std::vector<bool> > all_zeros;

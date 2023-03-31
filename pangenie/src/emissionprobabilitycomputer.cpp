@@ -136,3 +136,72 @@ long double EmissionProbabilities::compute_emission_probability(UniqueKmers* uni
     return result;
 }
 
+void EmissionProbabilities::save(std::string filename){
+    std::ofstream ofs(filename, std::ios::binary);
+    if (!ofs) {
+        std::cerr << "Failed to open file: " << filename << std::endl;
+        return;
+    }
+    unsigned nr_variants = this->state_to_prob.size();
+    ofs.write(reinterpret_cast<const char*>(&nr_variants), sizeof(nr_variants));
+    for (const auto& row : this->state_to_prob) {
+        size_t size = row.size();
+        ofs.write(reinterpret_cast<const char*>(&size), sizeof(size));
+        ofs.write(reinterpret_cast<const char*>(row.data()), size * sizeof(long double));
+    }
+    ofs.write(reinterpret_cast<const char*>(numAllelesPerVariant.data()), nr_variants * sizeof(unsigned short));
+    ofs.write(reinterpret_cast<const char*>(&nr_samples), sizeof(nr_samples));
+    vector<char> tmp(nr_samples);
+    for (const auto& row : this->all_zeros)
+    {
+        for(unsigned  i =0 ; i< row.size();i++)
+            tmp[i]=(char)row[i];
+        ofs.write(reinterpret_cast<const char*>(tmp.data()), nr_samples );
+    }
+
+
+
+}
+void EmissionProbabilities::load(std::string filename){
+    std::ifstream ifs(filename, std::ios::binary);
+    if (!ifs) {
+        throw runtime_error("Failed to open file: "+filename);
+        return ;
+    }
+    unsigned nr_variants;
+    ifs.read(reinterpret_cast<char*>(&nr_variants), sizeof(nr_variants));
+    this->state_to_prob.resize(nr_variants);
+    for (auto& row : this->state_to_prob) {
+        size_t size;
+        ifs.read(reinterpret_cast<char*>(&size), sizeof(size));
+        row.resize(size);
+        ifs.read(reinterpret_cast<char*>(row.data()), size * sizeof(long double));
+    }
+
+    numAllelesPerVariant.resize(nr_variants);
+    ifs.read(reinterpret_cast<char*>(numAllelesPerVariant.data()), nr_variants * sizeof(unsigned short));
+    size_t loadedNr_samples;
+    ifs.read(reinterpret_cast<char*>(&loadedNr_samples), sizeof(loadedNr_samples));
+    if(loadedNr_samples!=nr_samples)
+    {
+        throw runtime_error("file is corrupted: "+filename);
+    }
+    all_zeros.resize(nr_variants);
+    vector<char> tmp(nr_samples);
+    for (auto& row : this->all_zeros)
+    {
+        ifs.read(reinterpret_cast<char*>(tmp.data()), nr_samples);
+        row.resize(nr_samples);
+        for(unsigned  i =0 ; i< row.size();i++)
+            row[i]=(bool)tmp[i];
+    }
+
+
+}
+void EmissionProbabilities::destroy()
+{
+    this->state_to_prob = std::vector<std::vector<long double> > (1);
+    this->numAllelesPerVariant = std::vector<unsigned short> (1);
+    all_zeros=std::vector<std::vector<bool> >(1);
+
+}
