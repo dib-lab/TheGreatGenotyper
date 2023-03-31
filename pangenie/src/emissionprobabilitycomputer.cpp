@@ -89,8 +89,9 @@ void EmissionProbabilities::compute(UniqueKmers* uniq,unsigned variantID,unsigne
 {
     vector<unsigned char> unique_alleles;
     uniq->get_allele_ids(unique_alleles);
+    sort(unique_alleles.begin(),unique_alleles.end());
 
-    unsigned char max_allele = *max_element(std::begin(unique_alleles), std::end(unique_alleles)) +1;
+    unsigned char max_allele = unique_alleles[unique_alleles.size()-1] +1;
     unsigned size= (max_allele*(max_allele+1))/2;
     if(state_to_prob[variantID].size()==0) {
         this->state_to_prob[variantID].resize(size*nr_samples);
@@ -98,12 +99,12 @@ void EmissionProbabilities::compute(UniqueKmers* uniq,unsigned variantID,unsigne
 
     numAllelesPerVariant[variantID]=max_allele;
 
-    for (auto a1 : unique_alleles) {
-        for (auto a2 : unique_alleles) {
+    for (unsigned i=0;i< unique_alleles.size();i++) {
+        for (unsigned j=i; j< unique_alleles.size(); j ++) {
+            auto a1=unique_alleles[i];
+            auto a2=unique_alleles[j];
             bool a1_is_undefined = uniq->is_undefined_allele(a1);
             bool a2_is_undefined = uniq->is_undefined_allele(a2);
-            if(a1 > a2)
-                swap(a1,a2);
             unsigned index=((int)a1*(int)max_allele) - (((int)a1-1)*(int)a1)/2 + ((int)a2-(int)a1);
             index+=(sampleID*size);
             this->state_to_prob[variantID][index] = compute_emission_probability(uniq,sampleID,a1, a2, a1_is_undefined, a2_is_undefined);
