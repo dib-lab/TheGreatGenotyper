@@ -75,13 +75,14 @@ long double EmissionProbabilities::get_emission_probability(unsigned variantID,u
     if (this->all_zeros[variantID][sampleID]) return 1.0L;
     unsigned short max_allele= this->numAllelesPerVariant[variantID];
     unsigned size= (max_allele*(max_allele+1))/2;
+    return this->state_to_prob2[variantID][allele_id1][allele_id2][sampleID];
     if(allele_id1 > allele_id2)
         swap(allele_id1,allele_id2);
 
     unsigned index=((int)allele_id1*(int)max_allele) - (((int)allele_id1-1)*(int)allele_id1)/2 + ((int)allele_id2-(int)allele_id1);
     index+=(sampleID*size);
     //cout<<this->state_to_prob2[variantID][allele_id1][allele_id2][sampleID]<<" "<<this->state_to_prob[variantID][index]<<endl;
-    return this->state_to_prob2[variantID][allele_id1][allele_id2][sampleID];
+
     return this->state_to_prob[variantID][index];
 }
 size_t EmissionProbabilities::getNumVariants(){
@@ -109,14 +110,15 @@ void EmissionProbabilities::compute(UniqueKmers* uniq,unsigned variantID,unsigne
         for (auto a2 : unique_alleles) {
             bool a1_is_undefined = uniq->is_undefined_allele(a1);
             bool a2_is_undefined = uniq->is_undefined_allele(a2);
+            this->state_to_prob2[variantID][a1][a2][sampleID] = compute_emission_probability(uniq,sampleID,a1, a2, a1_is_undefined, a2_is_undefined);
+
             if(a1 > a2)
                 swap(a1,a2);
             unsigned index=((int)a1*(int)max_allele) - (((int)a1-1)*(int)a1)/2 + ((int)a2-(int)a1);
             index+=(sampleID*size);
             this->state_to_prob[variantID][index] = compute_emission_probability(uniq,sampleID,a1, a2, a1_is_undefined, a2_is_undefined);
-            this->state_to_prob2[variantID][a1][a2][sampleID] = compute_emission_probability(uniq,sampleID,a1, a2, a1_is_undefined, a2_is_undefined);
-
-            if (this->state_to_prob[variantID][index] > 0) this->all_zeros[variantID][sampleID] = false;
+            if (this->state_to_prob2[variantID][a1][a2][sampleID] > 0) this->all_zeros[variantID][sampleID] = false;
+            //if (this->state_to_prob[variantID][index] > 0) this->all_zeros[variantID][sampleID] = false;
         }
     }
 
