@@ -16,7 +16,7 @@ with open('requirements.txt') as f:
 
 test_requirements = ['pytest']
 
-with open('../../../package.json') as f:
+with open('../../package.json') as f:
     version = json.load(f)['version']
 
 setup(
