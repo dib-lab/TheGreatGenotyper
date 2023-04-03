@@ -31,6 +31,8 @@ std::vector<unsigned char> construct_index(std::vector<T>& alleles, bool referen
 	return index;
 }
 
+
+
 class VariantReader {
 public:
 	VariantReader (std::string filename, std::string reference_filename, size_t kmer_size, bool add_reference, std::vector<std::string> sample );
@@ -58,7 +60,7 @@ public:
 	void get_left_overhang(std::string chromosome, size_t index, size_t length, DnaSequence& result) const;
 	void get_right_overhang(std::string chromosome, size_t index, size_t length, DnaSequence& result) const;
     void setSampleName(std::string sampleName);
-    void addVariantStat(unsigned int variantID, std::string sampleName,std::string chromosome, std::vector<VariantStats> & stat);
+    void addVariantStat(unsigned int variantID, unsigned int sampleID,std::string chromosome,std::vector<unsigned char>& defined_alleles ,std::vector<VariantStats> & stat);
 private:
 	FastaReader fasta_reader;
 	size_t kmer_size;
@@ -73,7 +75,8 @@ private:
 	bool phasing_outfile_open;
 	static std::map< std::string, std::vector<Variant> > variants_per_chromosome;
 	static std::map< std::string, std::vector<std::vector<std::string>>> variant_ids;
-    std::map<std::string, std::map<std::string, std::vector<std::vector<VariantStats> >  > > variantsStatsPerSample;
+//  std::map<std::string, std::map<std::string, std::vector<std::vector<VariantStats> >  > > variantsStatsPerSample;
+    std::map<std::string, std::vector<std::vector<unsigned short>> > variantsStatsPerSample;
 	void add_variant_cluster(std::string& chromosome, std::vector<Variant>* cluster);
 	void insert_ids(std::string& chromosome, std::vector<DnaSequence>& alleles, std::vector<std::string>& variant_ids, bool reference_added);
 	std::string get_ids(std::string chromosome, std::vector<std::string>& alleles, size_t variant_index, bool reference_added);

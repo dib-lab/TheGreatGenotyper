@@ -125,7 +125,8 @@ void UniqueKmerComputer::compute_emissions(SamplesDatabase* database, EmissionPr
     size_t nr_variants = this->variants->size_of(this->chromosome);
     uint32_t numSamples=database->getNumSamples();
     vector<double> localCoverage(numSamples);
-    vector<string> seqs(100);
+    vector<string> seqs;
+    seqs.resize(100);
 #pragma omp parallel for shared(result,uniqKmers) firstprivate(localCoverage,numSamples,seqs)
     for (size_t v = 0; v < nr_variants; ++v) {
         // set parameters of distributions
@@ -135,8 +136,8 @@ void UniqueKmerComputer::compute_emissions(SamplesDatabase* database, EmissionPr
 
         const Variant &variant = this->variants->get_variant(this->chromosome, v);
         size_t nr_alleles = variant.nr_of_alleles();
-        if(nr_alleles >= seqs.size())
-            seqs.resize(nr_alleles);
+        seqs.resize(nr_alleles);
+        vector<unsigned char> defined_alleles;
         for (unsigned char a = 0; a < nr_alleles; ++a) {
             // consider all alleles not undefined
             if (variant.is_undefined_allele(a)) {
@@ -145,6 +146,7 @@ void UniqueKmerComputer::compute_emissions(SamplesDatabase* database, EmissionPr
             }
             DnaSequence allele = variant.get_allele_sequence(a);
             seqs[a]=allele.to_string();
+            defined_alleles.push_back(a);
         }
 
         vector<unordered_map<string,uint32_t>> kmerCounts;
@@ -193,7 +195,7 @@ void UniqueKmerComputer::compute_emissions(SamplesDatabase* database, EmissionPr
             variant.separate_variants(&singleton_variants);
             vector<VariantStats> singleton_stats;
             variant.variant_statistics(sampleU, singleton_stats);
-            variants->addVariantStat(v, sampleName,this->chromosome, singleton_stats);
+            variants->addVariantStat(v, sampleID,this->chromosome, defined_alleles,singleton_stats);
             result->compute(sampleU,v,sampleID);
             delete sampleU;
         }

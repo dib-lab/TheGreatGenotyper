@@ -376,6 +376,8 @@ int main (int argc, char* argv[])
     }
 
 
+    getrusage(RUSAGE_SELF, &r_usage1);
+    cerr << "#### Memory usage until now: " << (r_usage1.ru_maxrss / 1E6) << " GB ####" << endl;
 
     //unique_kmers_list.unique_kmers.resize(numSamples);
     Results results;
@@ -529,6 +531,8 @@ int main (int argc, char* argv[])
 
     variant_reader.close_genotyping_outfile();
 
+    for(auto d: databases)
+        delete d;
 
     time_total = timer.get_total_time();
 
