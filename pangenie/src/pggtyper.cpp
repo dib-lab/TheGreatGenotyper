@@ -445,8 +445,20 @@ int main (int argc, char* argv[])
         {
             cerr<<"Loading tranitions from "<<transitionsLoadFilePrefix+"."+chrom<<endl;
             //transitions = new LiStephens(variants,chrom,1.26,effective_N);
-            transitions= new populationJointProbability(&variant_reader,chrom,&unique_kmers_list.unique_kmers[chrom]->uniqKmers);
-            transitions->load(transitionsLoadFilePrefix+"."+chrom);
+            vector<EmissionProbabilities*> tmp_emissions(4);
+            for(unsigned i=0;i <4 ;i++)
+            {
+                tmp_emissions[i]=new EmissionProbabilities();
+                string path=transitionsLoadFilePrefix +"."+chrom+"."+to_string(i);
+                tmp_emissions[i]->load(path);
+            }
+            transitions= new populationJointProbability(&variant_reader,chrom,tmp_emissions,&unique_kmers_list.unique_kmers[chrom]->uniqKmers);
+
+            for(unsigned i=0;i <4 ;i++)
+            {
+                delete tmp_emissions[i];
+            }
+
         }
         else {
             cerr<< "Calculating Transition probabilities for "<<chrom<<endl;

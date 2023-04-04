@@ -54,7 +54,13 @@ long double EmissionProbabilityComputer::compute_emission_probability(unsigned c
 	}
 	return result;
 }
+EmissionProbabilities::EmissionProbabilities()
+{
 
+    nr_samples=0;
+
+//	if (this->all_zeros) cerr << "EmissionProbabilities at position " << uniquekmers->get_variant_position() << " are all zero. Set to uniform." << endl;
+}
 
 EmissionProbabilities::EmissionProbabilities(SamplesDatabase* samples,unsigned  nr_variants)
 {
@@ -182,7 +188,7 @@ void EmissionProbabilities::load(std::string filename){
     ifs.read(reinterpret_cast<char*>(numAllelesPerVariant.data()), nr_variants * sizeof(unsigned short));
     size_t loadedNr_samples;
     ifs.read(reinterpret_cast<char*>(&loadedNr_samples), sizeof(loadedNr_samples));
-    if(loadedNr_samples!=nr_samples)
+    if(nr_samples!=0 && loadedNr_samples!=nr_samples)
     {
         throw runtime_error("file is corrupted: "+filename);
     }

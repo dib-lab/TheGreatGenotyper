@@ -198,7 +198,11 @@ populationJointProbability::populationJointProbability(VariantReader* variants, 
 
         unsigned char curr_max_allele = (*unique_kmers)[v]->get_max_allele_id()+1;
         unsigned char next_max_allele = (*unique_kmers)[v+1]->get_max_allele_id()+1;
-
+        vector<vector<int> > chosenIDs= {{ 47, 62, 65, 187, 199, 233, 263, 270},
+                                         { 5, 52, 67, 69, 85, 170, 190, 216, 225} ,
+                                         { 35, 77, 81, 95, 99, 135, 239},
+                                         { 82, 116}
+        };
         this->probabilities[v].resize(curr_max_allele* curr_max_allele* next_max_allele* next_max_allele);
         for (auto c1 : curr_unique_alleles) {
             for (auto c2 : curr_unique_alleles) {
@@ -206,8 +210,9 @@ populationJointProbability::populationJointProbability(VariantReader* variants, 
                     for (auto n2 : next_unique_alleles) {
                         long double jointPropSum=0;
                         long double count=0;
-                        for(auto emissions : allemissions) {
-                            for (unsigned i = 0; i < emissions->nr_samples; i++) {
+                        for(unsigned j=0; j < allemissions.size(); j++) {
+                            auto emissions= allemissions[j];
+                            for (auto i: chosenIDs[j]) {
                                 jointPropSum += (emissions->get_emission_probability(v,i,c1,c2)*
                                         emissions->get_emission_probability(v+1,i,n1,n2));
                             }
