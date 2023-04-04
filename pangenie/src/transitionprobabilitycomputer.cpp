@@ -222,6 +222,8 @@ populationJointProbability::populationJointProbability(VariantReader* variants, 
                         long double count=0;
                         for(auto emissions : allemissions) {
                             for (unsigned i = 0; i < emissions->nr_samples; i++) {
+                                if(emissions->all_zeros[v][i] || emissions->all_zeros[v+1][i])
+                                    continue;
                                 long double a=emissions->get_emission_probability(v,i,c1,c2,false);
                                 long double b=emissions->get_emission_probability(v+1,i,n1,n2,false);
 
