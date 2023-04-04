@@ -40,6 +40,7 @@ public:
     /**
     * @param uniquekmers all unique kmers for this position
      **/
+    EmissionProbabilities();
     EmissionProbabilities(SamplesDatabase* samples,unsigned  nr_variants);
     /** get emission probability for a state in the HMM **/
     long double get_emission_probability(unsigned variantID,unsigned sampleID, unsigned char allele_id1, unsigned char allele_id2) const;
