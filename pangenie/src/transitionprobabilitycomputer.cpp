@@ -199,6 +199,18 @@ populationJointProbability::populationJointProbability(VariantReader* variants, 
         unsigned char curr_max_allele = (*unique_kmers)[v]->get_max_allele_id()+1;
         unsigned char next_max_allele = (*unique_kmers)[v+1]->get_max_allele_id()+1;
 
+        const size_t curr_variant_pos = curr_variant.get_start_position();
+        const size_t next_variant_pos = next_variant.get_start_position();
+        long double recomb_rate=1.26;
+        long double effective_N=25000.0L;
+        auto curr_nr_paths = curr_variant.nr_of_paths();
+
+        long double distance = (next_variant_pos - curr_variant_pos) * 0.000004L * (recomb_rate) * effective_N;
+        // use Li-Stephans pair HMM transitions TODO: correct?
+        long double recomb_prob = (1.0L - exp(-distance /  (long double)curr_nr_paths) )* (1.0L /  (long double)curr_nr_paths);
+        long double no_recomb_prob = exp(-distance /  (long double)curr_nr_paths) + recomb_prob;
+
+
         this->probabilities[v].resize(curr_max_allele* curr_max_allele* next_max_allele* next_max_allele);
         for (auto c1 : curr_unique_alleles) {
             for (auto c2 : curr_unique_alleles) {
@@ -225,7 +237,8 @@ populationJointProbability::populationJointProbability(VariantReader* variants, 
                                        ((int)c2 * next_max_allele * next_max_allele) +
                                        ((int)n1 * next_max_allele) +
                                        (int)n2;
-                        this->probabilities[v][index]=jointPropSum;
+
+                        this->probabilities[v][index]= jointPropSum * no_recomb_prob;
                     }
                 }
             }
