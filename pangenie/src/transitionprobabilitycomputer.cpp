@@ -205,11 +205,18 @@ populationJointProbability::populationJointProbability(VariantReader* variants, 
         long double effective_N=25000.0L;
         auto curr_nr_paths = curr_variant.nr_of_paths();
 
-        long double distance = (next_variant_pos - curr_variant_pos) * 0.000004L * (recomb_rate) * effective_N;
-        // use Li-Stephans pair HMM transitions TODO: correct?
-        long double recomb_prob = (1.0L - exp(-distance /  (long double)curr_nr_paths) )* (1.0L /  (long double)curr_nr_paths);
-        long double no_recomb_prob = exp(-distance /  (long double)curr_nr_paths) + recomb_prob;
+//        long double distance = (next_variant_pos - curr_variant_pos) * 0.000004L * (recomb_rate) * effective_N;
+//        // use Li-Stephans pair HMM transitions TODO: correct?
+//        long double recomb_prob = (1.0L - exp(-distance /  (long double)curr_nr_paths) )* (1.0L /  (long double)curr_nr_paths);
+//        long double no_recomb_prob = exp(-distance /  (long double)curr_nr_paths) + recomb_prob;
+//
 
+          long double distance = (next_variant_pos - curr_variant_pos);
+          long double no_recomb_prob=exp( -0.00000001L*distance);
+//        // use Li-Stephans pair HMM transitions TODO: correct?
+//        long double recomb_prob = (1.0L - exp(-distance /  (long double)curr_nr_paths) )* (1.0L /  (long double)curr_nr_paths);
+//        long double no_recomb_prob = exp(-distance /  (long double)curr_nr_paths) + recomb_prob;
+//
 
         this->probabilities[v].resize(curr_max_allele* curr_max_allele* next_max_allele* next_max_allele);
         for (auto c1 : curr_unique_alleles) {
