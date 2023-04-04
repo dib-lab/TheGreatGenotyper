@@ -76,8 +76,8 @@ EmissionProbabilities::EmissionProbabilities(SamplesDatabase* samples,unsigned  
 //	if (this->all_zeros) cerr << "EmissionProbabilities at position " << uniquekmers->get_variant_position() << " are all zero. Set to uniform." << endl;
 }
 
-long double EmissionProbabilities::get_emission_probability(unsigned variantID,unsigned sampleID, unsigned char allele_id1, unsigned char allele_id2) const {
-    if (this->all_zeros[variantID][sampleID]) return 1.0L;
+long double EmissionProbabilities::get_emission_probability(unsigned variantID,unsigned sampleID, unsigned char allele_id1, unsigned char allele_id2 ,bool return_one_if_all_zeros) const {
+    if (return_one_if_all_zeros&& this->all_zeros[variantID][sampleID]) return 1.0L;
     unsigned short max_allele= this->numAllelesPerVariant[variantID];
     unsigned size= (max_allele*(max_allele+1))/2;
     if(allele_id1 > allele_id2)

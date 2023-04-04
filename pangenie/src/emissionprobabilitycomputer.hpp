@@ -43,7 +43,7 @@ public:
     EmissionProbabilities();
     EmissionProbabilities(SamplesDatabase* samples,unsigned  nr_variants);
     /** get emission probability for a state in the HMM **/
-    long double get_emission_probability(unsigned variantID,unsigned sampleID, unsigned char allele_id1, unsigned char allele_id2) const;
+    long double get_emission_probability(unsigned variantID,unsigned sampleID, unsigned char allele_id1, unsigned char allele_id2,bool return_one_if_all_zeros=true) const;
     void compute(UniqueKmers* uniq,unsigned variantID,unsigned sampleID);
     size_t getNumVariants();
     void save(std::string filename);

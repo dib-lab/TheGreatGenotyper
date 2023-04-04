@@ -205,15 +205,22 @@ populationJointProbability::populationJointProbability(VariantReader* variants, 
                 for (auto n1 : next_unique_alleles) {
                     for (auto n2 : next_unique_alleles) {
                         long double jointPropSum=0;
+                        long double norm_a=0.00000000001L;
+                        long double norm_b=0.00000000001L;
                         long double count=0;
                         for(auto emissions : allemissions) {
                             for (unsigned i = 0; i < emissions->nr_samples; i++) {
-                                jointPropSum += (emissions->get_emission_probability(v,i,c1,c2)*
-                                        emissions->get_emission_probability(v+1,i,n1,n2));
+                                long double a=emissions->get_emission_probability(v,i,c1,c2,false);
+                                long double b=emissions->get_emission_probability(v+1,i,n1,n2,false);
+
+                                jointPropSum += (a*b);
+                                norm_a+= a*a;
+                                norm_b+= b*b;
                             }
                             count+=emissions->nr_samples;
                         }
-                        jointPropSum /= count;
+
+                        jointPropSum /= (sqrt(norm_a) * sqrt(norm_b));
                         size_t index = ((int)c1 * curr_max_allele * next_max_allele * next_max_allele) +
                                        ((int)c2 * next_max_allele * next_max_allele) +
                                        ((int)n1 * next_max_allele) +
