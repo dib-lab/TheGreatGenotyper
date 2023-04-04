@@ -192,6 +192,7 @@ void EmissionProbabilities::load(std::string filename){
     {
         throw runtime_error("file is corrupted: "+filename);
     }
+    nr_samples=loadedNr_samples;
     all_zeros.resize(nr_variants);
     vector<char> tmp(nr_samples);
     for (auto& row : this->all_zeros)
