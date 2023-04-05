@@ -9,6 +9,7 @@
 #include "columnindexer.hpp"
 #include "probabilitytable.hpp"
 #include "SamplesDatabase.h"
+#include "genotypingresult.hpp"
 /** 
 * Computes the emission probabilities for a variant position.
 **/
@@ -50,6 +51,7 @@ public:
     void save(std::string filename);
     void load(std::string filename);
     void destroy();
+    vector<vector<GenotypingResult> > result;
 private:
     std::vector<ProbabilityTable*> probabilities;
     std::vector<std::vector<bool> > all_zeros;

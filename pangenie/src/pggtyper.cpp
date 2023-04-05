@@ -404,6 +404,8 @@ int main (int argc, char* argv[])
         cerr<<"emissionsSaveFilePrefix(-y): "<<emissionsSaveFilePrefix<<endl;
         return -1;
     }
+
+
     for(unsigned i=0; i< databases.size(); i++)
     {
         cerr<< "Loading Database "<<i<<endl;
@@ -416,6 +418,8 @@ int main (int argc, char* argv[])
             timer.get_interval_time();
             if(emissionsSaveFilePrefix != "") {
                 unique_kmers_list.unique_kmers[chrom]->compute_emissions(databases[i], emissions);
+                cout<<"Here"<<endl;
+                emissions->compute_most_likely_genotypes(&unique_kmers_list.unique_kmers[chrom]->uniqKmers);
                 string filename=emissionsSaveFilePrefix+"."+chrom+ "."+to_string(i);
                 emissions->save(filename);
                 emissions->destroy();
@@ -430,6 +434,20 @@ int main (int argc, char* argv[])
         databases[i]->delete_graph();
     }
     cerr <<"Finished computing emissions"<<endl;
+
+    for(unsigned i=0; i< databases.size(); i++) {
+        for (unsigned sampleID = 0; sampleID < databases[i]->getNumSamples(); sampleID++) {
+            // write VCF
+            // output phasing results
+            for(auto chrom : chromosomes) {
+                string sampleName = databases[i]->getSampleName(sampleID);
+                variant_reader.write_genotypes_of(
+                        chrom, sampleName, allEmissions[chrom][i]->result[sampleID],
+                        ignore_imputed);
+            }
+        }
+    }
+    return 0;
 
     delete genomic_kmer_counts;
 
