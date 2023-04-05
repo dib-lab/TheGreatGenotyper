@@ -121,6 +121,58 @@ void EmissionProbabilities::compute(UniqueKmers* uniq,unsigned variantID,unsigne
 
 }
 
+void EmissionProbabilities::compute_most_likely_genotypes(std::vector<UniqueKmers*>* uniqKmers)
+{
+
+    unsigned nr_variants=getNumVariants();
+    most_likely_gts=std::vector<std::vector<std::pair<unsigned char, unsigned char> > >(nr_variants);
+    gts_qual=std::vector<std::vector<long double> >(nr_variants);
+#pragma omp parallel for
+    for(unsigned variantID=0; variantID<nr_variants; variantID++) {
+        auto uniq=(*uniqKmers)[variantID];
+        vector<unsigned char> unique_alleles;
+        uniq->get_allele_ids(unique_alleles);
+        sort(unique_alleles.begin(), unique_alleles.end());
+
+        unsigned char max_allele = unique_alleles[unique_alleles.size() - 1] + 1;
+        unsigned size = (max_allele * (max_allele + 1)) / 2;
+
+        most_likely_gts[variantID] = std::vector<std::pair<unsigned char, unsigned char> >(nr_samples);
+        gts_qual[variantID] = std::vector<long double>(nr_samples);
+        for(unsigned sampleID=0; sampleID<nr_samples; sampleID++) {
+            pair<unsigned char, unsigned char> most_likely_gt={-1,-1};
+            long double prob=0.0L;
+            if(this->all_zeros[variantID][sampleID])
+            {
+                most_likely_gts[variantID][sampleID]={max_allele,max_allele};
+                gts_qual[variantID][sampleID]=0;
+                continue;
+            }
+            long double prob_sum=0;
+            for (unsigned i = 0; i < unique_alleles.size(); i++) {
+                for (unsigned j = i; j < unique_alleles.size(); j++) {
+                    auto a1 = unique_alleles[i];
+                    auto a2 = unique_alleles[j];
+                    unsigned index =
+                            ((int) a1 * (int) max_allele) - (((int) a1 - 1) * (int) a1) / 2 + ((int) a2 - (int) a1);
+                    index += (sampleID * size);
+                    prob_sum+=this->state_to_prob[variantID][index];
+
+                    if(prob < this->state_to_prob[variantID][index])
+                    {
+                        most_likely_gt={a1,a2};
+                        prob =this->state_to_prob[variantID][index];
+
+                    }
+                }
+            }
+
+            most_likely_gts[variantID][sampleID]= most_likely_gt;
+            gts_qual[variantID][sampleID]= prob/prob_sum;
+        }
+    }
+
+}
 
 
 long double EmissionProbabilities::compute_emission_probability(UniqueKmers* uniquekmers,unsigned  sample_id,unsigned char allele_id1, unsigned char allele_id2, bool a1_undefined, bool a2_undefined){

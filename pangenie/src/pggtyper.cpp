@@ -451,6 +451,7 @@ int main (int argc, char* argv[])
                 tmp_emissions[i]=new EmissionProbabilities();
                 string path=transitionsLoadFilePrefix +"."+chrom+"."+to_string(i);
                 tmp_emissions[i]->load(path);
+                tmp_emissions[i]->compute_most_likely_genotypes(&unique_kmers_list.unique_kmers[chrom]->uniqKmers);
             }
             transitions= new populationJointProbability(&variant_reader,chrom,tmp_emissions,&unique_kmers_list.unique_kmers[chrom]->uniqKmers);
 
