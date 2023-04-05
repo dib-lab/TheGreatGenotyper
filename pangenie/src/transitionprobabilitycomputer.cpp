@@ -3,6 +3,7 @@
 #include "transitionprobabilitycomputer.hpp"
 #include <iostream>
 #include <fstream>
+#include <time.h>
 
 using namespace std;
 
@@ -181,7 +182,7 @@ populationJointProbability::populationJointProbability(VariantReader* variants, 
     this->variants=variants;
     size_t nr_variants = this->variants->size_of(this->chromosome);
     this->probabilities = std::vector<std::vector<long double> >(nr_variants);
-
+    srandom(time(NULL));
 
     #pragma omp parallel for
     for (size_t v = 0; v < nr_variants-1; ++v) {
@@ -246,8 +247,8 @@ populationJointProbability::populationJointProbability(VariantReader* variants, 
                                        ((int)c2 * next_max_allele * next_max_allele) +
                                        ((int)n1 * next_max_allele) +
                                        (int)n2;
-
-                        this->probabilities[v][index]= jointPropSum * no_recomb_prob;
+                        long double rand= (double)(random()%1000)/(double)1000;
+                        this->probabilities[v][index]= rand;
                     }
                 }
             }
