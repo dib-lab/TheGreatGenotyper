@@ -223,20 +223,24 @@ populationJointProbability::populationJointProbability(VariantReader* variants, 
         for(auto i: curr_unique_alleles)
             for(auto j: curr_unique_alleles)
             {
-                gts_per_state[i][j]=0;
+                gts_per_state[i][j]=0.0L;
             }
         for(auto emissions : allemissions) {
             for (unsigned i = 0; i < emissions->nr_samples; i++) {
                 if (emissions->all_zeros[v][i] || emissions->all_zeros[v + 1][i])
                     continue;
 // get likely and check quallity
-                long double curr_qual = emissions->gts_qual[v][i];
-                long double next_qual = emissions->gts_qual[v+1][i];
-                if(curr_qual < 0.7 || next_qual < 0.7)
-                    continue;
+//                long double curr_qual = emissions->gts_qual[v][i];
+//                long double next_qual = emissions->gts_qual[v+1][i];
+//                if(curr_qual < 0.7 || next_qual < 0.7)
+//                    continue;
 
-                pair<unsigned char,unsigned char> curr_gt = emissions->most_likely_gts[v][i];
-                pair<unsigned char,unsigned char> next_gt = emissions->most_likely_gts[v+1][i];
+ //               pair<unsigned char,unsigned char> curr_gt = emissions->most_likely_gts[v][i];
+//pair<unsigned char,unsigned char> next_gt = emissions->most_likely_gts[v+1][i];
+
+                pair<unsigned char,unsigned char> curr_gt = emissions->result[i][v].get_likeliest_genotype();
+                pair<unsigned char,unsigned char> next_gt = emissions->result[i][v+1].get_likeliest_genotype();
+
 
                 size_t index = ((int)curr_gt.first * curr_max_allele * next_max_allele * next_max_allele) +
                                ((int)curr_gt.second * next_max_allele * next_max_allele) +
@@ -247,12 +251,12 @@ populationJointProbability::populationJointProbability(VariantReader* variants, 
             }
         }
 
-        for(auto i:curr_unique_alleles)
-            for(auto j : curr_unique_alleles)
-            {
-                cout<<int(i)<<"/"<<int(j)<<" : "<<gts_per_state[i][j]<<" , ";
-            }
-        cout<<"\n";
+//        for(auto i:curr_unique_alleles)
+//            for(auto j : curr_unique_alleles)
+//            {
+//                cout<<int(i)<<"/"<<int(j)<<" : "<<gts_per_state[i][j]<<" , ";
+//            }
+//        cout<<"\n";
 
         for (auto c1 : curr_unique_alleles) {
             for (auto c2: curr_unique_alleles) {
@@ -272,7 +276,7 @@ populationJointProbability::populationJointProbability(VariantReader* variants, 
                                        (int)n2;
 
                         this->probabilities[v][index] = this->probabilities[v][index_with_value];
-                        if(gts_per_state[c1][c2] != 0) {
+                        if(gts_per_state[c1][c2] > 0.0L) {
                             this->probabilities[v][index] /= gts_per_state[c1][c2];
                         }
                         else{
