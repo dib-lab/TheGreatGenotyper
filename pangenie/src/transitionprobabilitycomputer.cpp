@@ -182,8 +182,8 @@ populationJointProbability::populationJointProbability(VariantReader* variants, 
     size_t nr_variants = this->variants->size_of(this->chromosome);
     this->probabilities = std::vector<std::vector<long double> >(nr_variants);
 
-
-    #pragma omp parallel for
+    int gts_per_state[100][100];
+    #pragma omp parallel for firstprivate(gts_per_state)
     for (size_t v = 0; v < nr_variants-1; ++v) {
         const Variant& curr_variant = this->variants->get_variant(this->chromosome, v);
         const Variant& next_variant = this->variants->get_variant(this->chromosome, v+1);
@@ -219,41 +219,98 @@ populationJointProbability::populationJointProbability(VariantReader* variants, 
 //
 
         this->probabilities[v].resize(curr_max_allele* curr_max_allele* next_max_allele* next_max_allele);
+        this->probabilities[v].assign(curr_max_allele* curr_max_allele* next_max_allele* next_max_allele,0.0);
+        for(auto i: curr_unique_alleles)
+            for(auto j: curr_unique_alleles)
+            {
+                gts_per_state[i][j]=0;
+            }
+        for(auto emissions : allemissions) {
+            for (unsigned i = 0; i < emissions->nr_samples; i++) {
+                if (emissions->all_zeros[v][i] || emissions->all_zeros[v + 1][i])
+                    continue;
+// get likely and check quallity
+                long double curr_qual = emissions->gts_qual[v][i];
+                long double next_qual = emissions->gts_qual[v+1][i];
+                if(curr_qual < 0.7 || next_qual < 0.7)
+                    continue;
+
+                pair<unsigned char,unsigned char> curr_gt = emissions->most_likely_gts[v][i];
+                pair<unsigned char,unsigned char> next_gt = emissions->most_likely_gts[v+1][i];
+
+                size_t index = ((int)curr_gt.first * curr_max_allele * next_max_allele * next_max_allele) +
+                               ((int)curr_gt.second * next_max_allele * next_max_allele) +
+                               ((int)next_gt.first * next_max_allele) +
+                               (int)next_gt.second;
+                gts_per_state[(int)curr_gt.first][(int)curr_gt.second]+=1;
+                this->probabilities[v][index] +=1;
+            }
+        }
+
+        for(auto i:curr_unique_alleles)
+            for(auto j : curr_unique_alleles)
+            {
+                cout<<int(i)<<"/"<<int(j)<<" : "<<gts_per_state[i][j]<<" , ";
+            }
+        cout<<"\n";
+
         for (auto c1 : curr_unique_alleles) {
-            for (auto c2 : curr_unique_alleles) {
-                for (auto n1 : next_unique_alleles) {
-                    for (auto n2 : next_unique_alleles) {
-                        long double jointPropSum=0;
-                        long double norm_a=0.00000000001L;
-                        long double norm_b=0.00000000001L;
-                        long double count=0;
-                        for(auto emissions : allemissions) {
-                            for (unsigned i = 0; i < emissions->nr_samples; i++) {
-                                if(emissions->all_zeros[v][i] || emissions->all_zeros[v+1][i])
-                                    continue;
-                                long double a=emissions->get_emission_probability(v,i,c1,c2,false);
-                                long double b=emissions->get_emission_probability(v+1,i,n1,n2,false);
-
-                                jointPropSum += (a*b);
-                                norm_a+= a*a;
-                                norm_b+= b*b;
-                            }
-                            count+=emissions->nr_samples;
-                        }
-
-                        jointPropSum /= (sqrt(norm_a) * sqrt(norm_b));
+            for (auto c2: curr_unique_alleles) {
+                for (auto n1: next_unique_alleles) {
+                    for (auto n2: next_unique_alleles) {
                         size_t index = ((int)c1 * curr_max_allele * next_max_allele * next_max_allele) +
                                        ((int)c2 * next_max_allele * next_max_allele) +
                                        ((int)n1 * next_max_allele) +
                                        (int)n2;
-
-                        this->probabilities[v][index]= jointPropSum * no_recomb_prob;
+                        if(c1> c2)
+                            swap(c1,c2);
+                        if(n1 > n2)
+                            swap(n1,n2);
+                        size_t index_with_value = ((int)c1 * curr_max_allele * next_max_allele * next_max_allele) +
+                                       ((int)c2 * next_max_allele * next_max_allele) +
+                                       ((int)n1 * next_max_allele) +
+                                       (int)n2;
+                        this->probabilities[v][index] = this->probabilities[v][index_with_value];
+                        this->probabilities[v][index] /= gts_per_state[c1][c2];
                     }
                 }
             }
         }
-	
-
+//        for (auto c1 : curr_unique_alleles) {
+//            for (auto c2 : curr_unique_alleles) {
+//                for (auto n1 : next_unique_alleles) {
+//                    for (auto n2 : next_unique_alleles) {
+//                        long double jointPropSum=0;
+//                        long double norm_a=0.00000000001L;
+//                        long double norm_b=0.00000000001L;
+//                        long double count=0;
+//                        for(auto emissions : allemissions) {
+//                            for (unsigned i = 0; i < emissions->nr_samples; i++) {
+//                                if(emissions->all_zeros[v][i] || emissions->all_zeros[v+1][i])
+//                                    continue;
+//                                long double a=emissions->get_emission_probability(v,i,c1,c2,false);
+//                                long double b=emissions->get_emission_probability(v+1,i,n1,n2,false);
+//
+//                                jointPropSum += (a*b);
+//                                norm_a+= a*a;
+//                                norm_b+= b*b;
+//                            }
+//                            count+=emissions->nr_samples;
+//                        }
+//
+//                        jointPropSum /= (sqrt(norm_a) * sqrt(norm_b));
+//                        size_t index = ((int)c1 * curr_max_allele * next_max_allele * next_max_allele) +
+//                                       ((int)c2 * next_max_allele * next_max_allele) +
+//                                       ((int)n1 * next_max_allele) +
+//                                       (int)n2;
+//
+//                        this->probabilities[v][index]= jointPropSum * no_recomb_prob;
+//                    }
+//                }
+//            }
+//        }
+//
+//
 
 
     }
