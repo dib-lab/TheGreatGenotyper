@@ -270,8 +270,14 @@ populationJointProbability::populationJointProbability(VariantReader* variants, 
                                        ((int)c2 * next_max_allele * next_max_allele) +
                                        ((int)n1 * next_max_allele) +
                                        (int)n2;
+
                         this->probabilities[v][index] = this->probabilities[v][index_with_value];
-                        this->probabilities[v][index] /= gts_per_state[c1][c2];
+                        if(gts_per_state[c1][c2] != 0) {
+                            this->probabilities[v][index] /= gts_per_state[c1][c2];
+                        }
+                        else{
+                            this->probabilities[v][index]=0.0000000001L;
+                        }
                     }
                 }
             }
