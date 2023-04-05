@@ -258,7 +258,7 @@ populationJointProbability::populationJointProbability(VariantReader* variants, 
 
     }
 
-    normalize();
+   // normalize();
 }
 long double populationJointProbability::get(unsigned from_variant, unsigned to_variant,unsigned short path_id1, unsigned short path_id2, unsigned short path_id3, unsigned short path_id4)
 {
