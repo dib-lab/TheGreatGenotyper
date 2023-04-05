@@ -195,6 +195,8 @@ populationJointProbability::populationJointProbability(VariantReader* variants, 
 
         vector<unsigned char> next_unique_alleles;
         (*unique_kmers)[v+1]->get_allele_ids(next_unique_alleles);
+        sort(curr_unique_alleles.begin(),curr_unique_alleles.end());
+        sort(next_unique_alleles.begin(),next_unique_alleles.end());
 
         unsigned char curr_max_allele = (*unique_kmers)[v]->get_max_allele_id()+1;
         unsigned char next_max_allele = (*unique_kmers)[v+1]->get_max_allele_id()+1;
@@ -220,6 +222,7 @@ populationJointProbability::populationJointProbability(VariantReader* variants, 
 
         this->probabilities[v].resize(curr_max_allele* curr_max_allele* next_max_allele* next_max_allele);
         this->probabilities[v].assign(curr_max_allele* curr_max_allele* next_max_allele* next_max_allele,0.0);
+        vector<long double> tmp(curr_max_allele* curr_max_allele* next_max_allele* next_max_allele,0.0);
         for(auto i: curr_unique_alleles)
             for(auto j: curr_unique_alleles)
             {
@@ -247,7 +250,7 @@ populationJointProbability::populationJointProbability(VariantReader* variants, 
                                ((int)next_gt.first * next_max_allele) +
                                (int)next_gt.second;
                 gts_per_state[(int)curr_gt.first][(int)curr_gt.second]+=1;
-                this->probabilities[v][index] +=1;
+                tmp[index] +=1;
             }
         }
 
@@ -275,7 +278,7 @@ populationJointProbability::populationJointProbability(VariantReader* variants, 
                                        ((int)n1 * next_max_allele) +
                                        (int)n2;
 
-                        this->probabilities[v][index] = this->probabilities[v][index_with_value];
+                        this->probabilities[v][index] = tmp[index_with_value];
                         if(gts_per_state[c1][c2] > 0.0L) {
                             this->probabilities[v][index] /= gts_per_state[c1][c2];
                         }
@@ -325,7 +328,7 @@ populationJointProbability::populationJointProbability(VariantReader* variants, 
 
     }
 
-    normalize();
+    //normalize();
 }
 long double populationJointProbability::get(unsigned from_variant, unsigned to_variant,unsigned short path_id1, unsigned short path_id2, unsigned short path_id3, unsigned short path_id4)
 {
