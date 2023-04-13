@@ -153,6 +153,7 @@ int main (int argc, char* argv[])
     string emissionsSaveFilePrefix = "";
     string emissionsPrefix = "";
     size_t kmersize = 31;
+    bool emissionOnly=false;
     string outname = "result";
     string sample_name = "sample";
     size_t nr_jellyfish_threads = 1;
@@ -185,6 +186,7 @@ int main (int argc, char* argv[])
     argument_parser.add_optional_argument('j', "1", "number of threads to use for kmer-counting");
     argument_parser.add_optional_argument('t', "1", "number of threads to use for core algorithm. Largest number of threads possible is the number of chromosomes given in the VCF");
     argument_parser.add_flag_argument('q', "use population transitions instead of LiStephens");
+    argument_parser.add_flag_argument('a', "Genotype using kmers only");
     argument_parser.add_optional_argument('m', "", "Load the tranistions from this file");
     argument_parser.add_optional_argument('n', "", "compute the tranistions and save them to this file");
 
@@ -222,7 +224,7 @@ int main (int argc, char* argv[])
     sample_name = argument_parser.get_argument('s');
     nr_jellyfish_threads = stoi(argument_parser.get_argument('j'));
     nr_core_threads = stoi(argument_parser.get_argument('t'));
-
+    emissionOnly = argument_parser.get_flag('a');
     omp_set_num_threads(nr_core_threads);
     bool genotyping_flag = argument_parser.get_flag('g');
     bool phasing_flag = argument_parser.get_flag('p');
@@ -434,19 +436,24 @@ int main (int argc, char* argv[])
     }
     cerr <<"Finished computing emissions"<<endl;
 
-//    for(unsigned i=0; i< databases.size(); i++) {
-//        for (unsigned sampleID = 0; sampleID < databases[i]->getNumSamples(); sampleID++) {
-//            // write VCF
-//            // output phasing results
-//            for(auto chrom : chromosomes) {
-//                string sampleName = databases[i]->getSampleName(sampleID);
-//                variant_reader.write_genotypes_of(
-//                        chrom, sampleName, allEmissions[chrom][i]->result[sampleID],
-//                        ignore_imputed);
-//            }
-//        }
-//    }
-//    return 0;
+    if(emissionOnly) {
+        for (unsigned i = 0; i < databases.size(); i++) {
+            for (unsigned sampleID = 0; sampleID < databases[i]->getNumSamples(); sampleID++) {
+                // write VCF
+                // output phasing results
+                for (auto chrom: chromosomes) {
+                    string sampleName = databases[i]->getSampleName(sampleID);
+                    variant_reader.write_genotypes_of(
+                            chrom, sampleName, allEmissions[chrom][i]->result[sampleID],
+                            ignore_imputed);
+                }
+            }
+        }
+        time_total = timer.get_total_time();
+        cerr<<"Finished GT using emissions only"<<endl;
+        cerr<<"Total Time = "<< time_total /60.0 << " Minutes" << endl;
+        return 0;
+    }
 
     delete genomic_kmer_counts;
 
