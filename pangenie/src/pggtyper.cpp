@@ -420,10 +420,9 @@ int main (int argc, char* argv[])
             timer.get_interval_time();
             if(emissionsSaveFilePrefix != "") {
                 unique_kmers_list.unique_kmers[chrom]->compute_emissions(databases[i], emissions);
-                emissions->compute_most_likely_genotypes(&unique_kmers_list.unique_kmers[chrom]->uniqKmers);
                 string filename=emissionsSaveFilePrefix+"."+chrom+ "."+to_string(i);
                 emissions->save(filename);
-                emissions->destroy();
+               // emissions->destroy();
             }
             allEmissions[chrom].push_back(emissions);
             time_unique_kmers += timer.get_interval_time();
@@ -437,16 +436,20 @@ int main (int argc, char* argv[])
     cerr <<"Finished computing emissions"<<endl;
 
     if(emissionOnly) {
-        for (unsigned i = 0; i < databases.size(); i++) {
-            for (unsigned sampleID = 0; sampleID < databases[i]->getNumSamples(); sampleID++) {
-                // write VCF
-                // output phasing results
-                for (auto chrom: chromosomes) {
+        for (auto chrom: chromosomes) {
+            for (unsigned i = 0; i < databases.size(); i++) {
+                allEmissions[chrom][i]->compute_most_likely_genotypes(&unique_kmers_list.unique_kmers[chrom]->uniqKmers);
+                for (unsigned sampleID = 0; sampleID < databases[i]->getNumSamples(); sampleID++) {
+                    // write VCF
+                    // output phasing results
+
                     string sampleName = databases[i]->getSampleName(sampleID);
                     variant_reader.write_genotypes_of(
                             chrom, sampleName, allEmissions[chrom][i]->result[sampleID],
                             ignore_imputed);
+
                 }
+                delete allEmissions[chrom][i];
             }
         }
         time_total = timer.get_total_time();
