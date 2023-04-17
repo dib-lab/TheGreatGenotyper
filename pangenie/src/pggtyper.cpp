@@ -471,26 +471,26 @@ int main (int argc, char* argv[])
         if(transitionsLoadFilePrefix != "")
         {
             cerr<<"Loading tranitions from "<<transitionsLoadFilePrefix+"."+chrom<<endl;
-            //transitions = new LiStephens(variants,chrom,1.26,effective_N);
-            vector<EmissionProbabilities*> tmp_emissions(4);
-            for(unsigned i=0;i <4 ;i++)
-            {
-                tmp_emissions[i]=new EmissionProbabilities();
-                string path=transitionsLoadFilePrefix +"."+chrom+"."+to_string(i);
-                tmp_emissions[i]->load(path);
-                tmp_emissions[i]->compute_most_likely_genotypes(&unique_kmers_list.unique_kmers[chrom]->uniqKmers);
-            }
-            transitions= new populationJointProbability(&variant_reader,chrom,tmp_emissions,&unique_kmers_list.unique_kmers[chrom]->uniqKmers);
+            transitions = new LiStephens(&variant_reader,chrom,1.26,effective_N);
+//            vector<EmissionProbabilities*> tmp_emissions(4);
+//            for(unsigned i=0;i <4 ;i++)
+//            {
+//                tmp_emissions[i]=new EmissionProbabilities();
+//                string path=transitionsLoadFilePrefix +"."+chrom+"."+to_string(i);
+//                tmp_emissions[i]->load(path);
+//                tmp_emissions[i]->compute_most_likely_genotypes(&unique_kmers_list.unique_kmers[chrom]->uniqKmers);
+//            }
+//            transitions= new populationJointProbability(&variant_reader,chrom,tmp_emissions,&unique_kmers_list.unique_kmers[chrom]->uniqKmers);
 
-            for(unsigned i=0;i <4 ;i++)
-            {
-                delete tmp_emissions[i];
-            }
+//            for(unsigned i=0;i <4 ;i++)
+//            {
+//                delete tmp_emissions[i];
+//            }
         }
         else {
             cerr<< "Calculating Transition probabilities for "<<chrom<<endl;
-            transitions= new populationJointProbability(&variant_reader,chrom,allEmissions[chrom],&(unique_kmers_list.unique_kmers[chrom]->uniqKmers));
-           // transitions= new LiStephens(variants,chrom,1.26,effective_N);
+           // transitions= new populationJointProbability(&variant_reader,chrom,allEmissions[chrom],&(unique_kmers_list.unique_kmers[chrom]->uniqKmers));
+            transitions= new LiStephens(&variant_reader,chrom,1.26,effective_N);
         }
         if(transitionsSaveFilePrefix != "")
         {
