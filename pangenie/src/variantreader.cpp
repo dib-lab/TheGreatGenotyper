@@ -599,7 +599,7 @@ void VariantReader::write_genotypes_of(string chromosome, string sample_name,con
 				this->genotyping_outfile[sample_index] << genotype_likelihoods.get_genotype_quality(genotype.first, genotype.second) << ":"; // GQ
 			} else {
 				// genotype could not be determined 
-				this->genotyping_outfile[sample_index] << "./.:"; // GT:GQ
+				this->genotyping_outfile[sample_index] << "./.:0:"; // GT:GQ
 			}
 
 			// output genotype likelihoods
