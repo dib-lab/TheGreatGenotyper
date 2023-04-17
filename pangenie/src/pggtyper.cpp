@@ -422,7 +422,7 @@ int main (int argc, char* argv[])
                 unique_kmers_list.unique_kmers[chrom]->compute_emissions(databases[i], emissions);
                 string filename=emissionsSaveFilePrefix+"."+chrom+ "."+to_string(i);
                 emissions->save(filename);
-               // emissions->destroy();
+                emissions->destroy();
             }
             allEmissions[chrom].push_back(emissions);
             time_unique_kmers += timer.get_interval_time();
@@ -438,6 +438,8 @@ int main (int argc, char* argv[])
     if(emissionOnly) {
         for (auto chrom: chromosomes) {
             for (unsigned i = 0; i < databases.size(); i++) {
+                string filename=emissionsSaveFilePrefix+"."+chrom+ "."+to_string(i);
+                allEmissions[chrom][i]->load(filename);
                 allEmissions[chrom][i]->compute_most_likely_genotypes(&unique_kmers_list.unique_kmers[chrom]->uniqKmers);
                 for (unsigned sampleID = 0; sampleID < databases[i]->getNumSamples(); sampleID++) {
                     // write VCF
