@@ -246,8 +246,8 @@ populationJointProbability::populationJointProbability(VariantReader* variants, 
                 if (emissions->all_zeros[v][i] || emissions->all_zeros[v + 1][i])
                     continue;
 
-                pair<unsigned char,unsigned char> curr_gt = emissions->result[i][v].get_likeliest_genotype();
-                pair<unsigned char,unsigned char> next_gt = emissions->result[i][v+1].get_likeliest_genotype();
+                pair<unsigned char,unsigned char> curr_gt = emissions->most_likely_gts[v][i];
+                pair<unsigned char,unsigned char> next_gt = emissions->most_likely_gts[v+1][i];
 
                 bool curr_het= curr_gt.first != curr_gt.second;
                 bool next_het= next_gt.first != next_gt.second;

@@ -129,7 +129,7 @@ void EmissionProbabilities::compute_most_likely_genotypes(std::vector<UniqueKmer
     unsigned nr_variants=getNumVariants();
     most_likely_gts=std::vector<std::vector<std::pair<unsigned char, unsigned char> > >(nr_variants);
     gts_qual=std::vector<std::vector<long double> >(nr_variants);
-    result = vector<vector<GenotypingResult> >(nr_samples,vector<GenotypingResult>(nr_variants));
+    //result = vector<vector<GenotypingResult> >(nr_samples,vector<GenotypingResult>(nr_variants));
 #pragma omp parallel for
     for(unsigned variantID=0; variantID<nr_variants; variantID++) {
         auto uniq=(*uniqKmers)[variantID];
@@ -160,7 +160,7 @@ void EmissionProbabilities::compute_most_likely_genotypes(std::vector<UniqueKmer
 
                     long double curr_emission=get_emission_probability(variantID,sampleID,a1,a2);
                     prob_sum+=curr_emission;
-                    result[sampleID][variantID].add_to_likelihood(a1,a2,curr_emission);
+                   // result[sampleID][variantID].add_to_likelihood(a1,a2,curr_emission);
                     if(prob < curr_emission)
                     {
                         most_likely_gt={a1,a2};
@@ -169,7 +169,7 @@ void EmissionProbabilities::compute_most_likely_genotypes(std::vector<UniqueKmer
                     }
                 }
             }
-            result[sampleID][variantID].normalize();
+           // result[sampleID][variantID].normalize();
           //  cout<<result[sampleID][variantID]<<endl;
 
             most_likely_gts[variantID][sampleID]= most_likely_gt;
