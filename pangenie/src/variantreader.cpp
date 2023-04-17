@@ -589,7 +589,7 @@ void VariantReader::write_genotypes_of(string chromosome, string sample_name,con
 
 			// determine computed genotype
 			pair<int,int> genotype = genotype_likelihoods.get_likeliest_genotype();
-			if (ignore_imputed && (nr_uniq_kmers == 0)) genotype = {-1,-1};
+			if ( (nr_uniq_kmers == 0)) genotype = {-1,-1};
 			if ( (genotype.first != -1) && (genotype.second != -1)) {
 
 				// unique maximum and therefore a likeliest genotype exists
