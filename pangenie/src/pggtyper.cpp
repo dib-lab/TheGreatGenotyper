@@ -538,15 +538,16 @@ int main (int argc, char* argv[])
                 // write VCF
                 // output phasing results
                 string sampleName= databases[i]->getSampleName(sampleID);
-                variant_reader.write_genotypes_of(
-                        chrom, results.result[chrom],
-                        ignore_imputed);
 
-                results.result[sampleName][chrom].clear();
             }
 
 
         }
+        variant_reader.write_genotypes_of(
+                chrom, results.result[chrom],
+                ignore_imputed);
+
+        results.result[chrom].clear();
         for(auto uniq: unique_kmers_list.unique_kmers[chrom]->uniqKmers) {
             delete uniq;
         }
