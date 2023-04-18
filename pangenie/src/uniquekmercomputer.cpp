@@ -195,7 +195,7 @@ void UniqueKmerComputer::compute_emissions(SamplesDatabase* database, EmissionPr
             variant.separate_variants(&singleton_variants);
             vector<VariantStats> singleton_stats;
             variant.variant_statistics(sampleU, singleton_stats);
-            variants->addVariantStat(v, sampleID,this->chromosome, defined_alleles,singleton_stats);
+            variants->addVariantStat(v, sampleName,this->chromosome, defined_alleles,singleton_stats);
             result->compute(sampleU,v,sampleID);
             delete sampleU;
         }

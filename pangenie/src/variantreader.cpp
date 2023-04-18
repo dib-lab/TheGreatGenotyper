@@ -293,9 +293,16 @@ VariantReader::VariantReader(string filename, string reference_filename, size_t 
 	cerr << "Identified " << this->nr_variants << " variants in total from VCF-file." << endl;
 }
 
-void VariantReader::addVariantStat(unsigned int variantID, unsigned int sampleID,std::string chromosome,
+void VariantReader::addVariantStat(unsigned int variantID, std::string sampleName,std::string chromosome,
                                    vector<unsigned char>& defined_alleles,std::vector<VariantStats> & singleton_stats)
 {
+    auto sample_it= std::find(samples.begin(),samples.end(), sampleName);
+    if(sample_it == samples.end())
+    {
+        throw runtime_error("VariantReader::write_genotypes_of: unknown sample.");
+
+    }
+    unsigned  sampleID= sample_it-samples.begin();
     size_t stat_size=(defined_alleles.size()+2)* singleton_stats.size();
     if(variantsStatsPerSample[chromosome][variantID].size() == 0)
     {
