@@ -448,6 +448,7 @@ int main (int argc, char* argv[])
                 }
                 delete allEmissions[chrom][i];
             }
+            bool ignore_imputed=true;
             variant_reader.write_genotypes_of(
                     chrom, res,
                     ignore_imputed);
