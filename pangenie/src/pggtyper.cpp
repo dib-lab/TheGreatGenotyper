@@ -90,25 +90,25 @@ void run_genotyping(string chromosome,unsigned  sampleID,string sampleName, vect
     // store the results
     {
         lock_guard<mutex> lock_result (results->result_mutex);
-        if(results->result.find(sampleName) == results->result.end())
+        if(results->result.find(chromosome) == results->result.end())
         {
-            results->result[sampleName]=map<string, vector<GenotypingResult>>();
+            results->result[chromosome]=map<string, vector<GenotypingResult>>();
         }
         // combine the new results to the already existing ones (if present)
-        if (results->result[sampleName].find(chromosome) == results->result[sampleName].end()) {
-            results->result[sampleName].insert(pair<string, vector<GenotypingResult>> (chromosome, hmm.move_genotyping_result()));
+        if (results->result[chromosome].find(sampleName) == results->result[chromosome].end()) {
+            results->result[chromosome].insert(pair<string, vector<GenotypingResult>> (sampleName, hmm.move_genotyping_result()));
         } else {
             // combine newly computed likelihoods with already exisiting ones
             size_t index = 0;
             vector<GenotypingResult> genotypes = hmm.move_genotyping_result();
             for (auto likelihoods : genotypes) {
-                results->result[sampleName].at(chromosome).at(index).combine(likelihoods);
+                results->result[chromosome].at(sampleName).at(index).combine(likelihoods);
                 index += 1;
             }
         }
         // normalize the likelihoods after they have been combined
-        for (size_t i = 0; i < results->result[sampleName].at(chromosome).size(); ++i) {
-            results->result[sampleName].at(chromosome).at(i).normalize();
+        for (size_t i = 0; i < results->result[chromosome].at(sampleName).size(); ++i) {
+            results->result[chromosome].at(sampleName).at(i).normalize();
         }
 
         if (results->runtimes.find(chromosome) == results->runtimes.end()) {
@@ -330,9 +330,9 @@ int main (int argc, char* argv[])
 
     for (auto s : subsets) {
         for (auto b : s) {
-            cout << b << endl;
+            cerr << b << endl;
         }
-        cout << "-----" << endl;
+        cerr << "-----" << endl;
     }
 
     if (!only_phasing) cerr << "Sampled " << subsets.size() << " subset(s) of paths each of size " << sampling_size << " for genotyping." << endl;
@@ -437,22 +437,20 @@ int main (int argc, char* argv[])
 
     if(emissionOnly) {
         for (auto chrom: chromosomes) {
+            map<string, vector<GenotypingResult>> res;
             for (unsigned i = 0; i < databases.size(); i++) {
                 string filename=emissionsSaveFilePrefix+"."+chrom+ "."+to_string(i);
                 allEmissions[chrom][i]->load(filename);
                 allEmissions[chrom][i]->compute_most_likely_genotypes(&unique_kmers_list.unique_kmers[chrom]->uniqKmers);
                 for (unsigned sampleID = 0; sampleID < databases[i]->getNumSamples(); sampleID++) {
-                    // write VCF
-                    // output phasing results
-
                     string sampleName = databases[i]->getSampleName(sampleID);
-                    variant_reader.write_genotypes_of(
-                            chrom, sampleName, allEmissions[chrom][i]->result[sampleID],
-                            ignore_imputed);
-
+                    res[sampleName]=allEmissions[chrom][i]->result[sampleID];
                 }
                 delete allEmissions[chrom][i];
             }
+            variant_reader.write_genotypes_of(
+                    chrom, res,
+                    ignore_imputed);
         }
         time_total = timer.get_total_time();
         cerr<<"Finished GT using emissions only"<<endl;
@@ -540,7 +538,7 @@ int main (int argc, char* argv[])
                 // output phasing results
                 string sampleName= databases[i]->getSampleName(sampleID);
                 variant_reader.write_genotypes_of(
-                        chrom, sampleName, results.result[sampleName][chrom],
+                        chrom, results.result[chrom],
                         ignore_imputed);
 
                 results.result[sampleName][chrom].clear();
