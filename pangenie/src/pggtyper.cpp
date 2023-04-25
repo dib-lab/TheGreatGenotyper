@@ -532,17 +532,13 @@ int main (int argc, char* argv[])
 
             cerr << "Finished genotyping for chromosome: " << chrom << endl;
 
-            cerr << "writing results for chromosome: " << chrom << endl;
-            timer.get_interval_time();
-            for (unsigned sampleID = 0; sampleID < databases[i]->getNumSamples(); sampleID++) {
-                // write VCF
-                // output phasing results
-                string sampleName= databases[i]->getSampleName(sampleID);
 
-            }
+
 
 
         }
+        cerr << "writing results for chromosome: " << chrom << endl;
+        timer.get_interval_time();
         variant_reader.write_genotypes_of(
                 chrom, results.result[chrom],
                 ignore_imputed);

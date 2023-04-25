@@ -309,9 +309,9 @@ void VariantReader::addVariantStat(unsigned int variantID, std::string sampleNam
         size_t size= stat_size* this->samples.size();
         variantsStatsPerSample[chromosome][variantID].resize(size);
     }
+	size_t index= stat_size* sampleID;
 // UK
     for (size_t j = 0; j < singleton_stats.size(); ++j){
-        size_t index= stat_size* sampleID;
         variantsStatsPerSample[chromosome][variantID][index++]=singleton_stats.at(j).nr_unique_kmers;
         variantsStatsPerSample[chromosome][variantID][index++]=singleton_stats[j].coverage;
         for (unsigned int a = 0; a < defined_alleles.size(); ++a) {
