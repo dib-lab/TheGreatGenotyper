@@ -188,6 +188,8 @@ class Config {
         RELAX_BRWT,
         QUERY,
         SERVER_QUERY,
+        ADDCOUNT,
+
     };
     IdentityType identity = NO_IDENTITY;
 
