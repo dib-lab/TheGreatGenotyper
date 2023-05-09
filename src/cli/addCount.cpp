@@ -18,6 +18,7 @@
 #include <iostream>
 #include "common/vector_map.hpp"
 #include "seq_io/kmc_parser.hpp"
+#include <stdio.h>
 
 
 namespace mtg {
@@ -26,12 +27,40 @@ namespace cli {
 using mtg::common::logger;
 using mtg::seq_io::FastaWriter;
 using mtg::seq_io::ExtendedFastaWriter;
-
-
+    enum DNA_MAP {A, C, T, G};
+#define BITMASK(nbits) ((nbits) == 64 ? 0xffffffffffffffff : (1ULL << (nbits)) \
+												- 1ULL)
+    uint64_t str_to_int(std::string_view str)
+    {
+        uint64_t strint = 0;
+        for (auto it = str.begin(); it != str.end(); it++) {
+            uint8_t curr = 0;
+            switch (*it) {
+                case 'A': { curr = DNA_MAP::A; break; }
+                case 'T': { curr = DNA_MAP::T; break; }
+                case 'C': { curr = DNA_MAP::C; break; }
+                case 'G': { curr = DNA_MAP::G; break; }
+            }
+            strint = strint | curr;
+            strint = strint << 2;
+        }
+        return strint >> 2;
+    }
+uint64_t hash(std::string_view &kmer) {
+    uint64_t key=str_to_int(kmer);
+    uint64_t mask= BITMASK(2 * kmer.size());
+        key = (~key + (key << 21)) & mask; // key = (key << 21) - key - 1;
+        key = key ^ key >> 24;
+        key = ((key + (key << 3)) + (key << 8)) & mask; // key * 265
+        key = key ^ key >> 14;
+        key = ((key + (key << 2)) + (key << 4)) & mask; // key * 21
+        key = key ^ key >> 28;
+        key = (key + (key << 31)) & mask;
+        return key;
+    }
 int addCount(Config *config) {
     assert(config);
     assert(config->outfbase.size());
-    std::cout<<"Hello"<<std::endl;
     logger->trace("Startint Add Count");
     const auto &files = config->fnames;
 
@@ -41,13 +70,13 @@ int addCount(Config *config) {
     string kmc_prefix=files[1];
 
     // read the kmers in map
-    VectorMap<std::string_view, size_t> kmer_counts;
-
+    VectorMap<uint64_t, size_t> kmer_counts;
+    unsigned int kSize=0;
     seq_io::read_kmers(kmc_prefix, [&](std::string_view kmer, uint64_t count) {
-        kmer_counts[kmer]=count;
+        kmer_counts[hash(kmer)]=count;
+        kSize=kmer.size();
     }, true);
-    unsigned int kSize=kmer_counts.begin()->first.size();
-
+    std::cout<<"Finished loading kmers"<<endl;
     ExtendedFastaWriter<uint32_t> writer(config->outfbase,
                                          "kmer_counts",
                                          kSize);
@@ -60,7 +89,8 @@ int addCount(Config *config) {
                                          counts.resize(seq.size()-kSize+1);
                                          for(unsigned i=0;i<seq.size()-kSize+1;i++)
                                          {
-                                             counts[i]=kmer_counts[seq.substr(i,kSize)];
+                                             string_view kmer=seq.substr(i,kSize);
+                                             counts[i]=kmer_counts[hash(kmer)];
                                          }
                                          writer.write(seq,counts);
                                      },
