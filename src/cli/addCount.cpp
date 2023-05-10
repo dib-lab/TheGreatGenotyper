@@ -75,7 +75,7 @@ int addCount(Config *config) {
     seq_io::read_kmers(kmc_prefix, [&](std::string_view kmer, uint64_t count) {
         kmer_counts[hash(kmer)]=count;
         kSize=kmer.size();
-    }, true);
+    }, false);
     std::cout<<"Finished loading kmers"<<endl;
     ExtendedFastaWriter<uint32_t> writer(config->outfbase,
                                          "kmer_counts",
