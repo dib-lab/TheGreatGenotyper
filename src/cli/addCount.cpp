@@ -70,7 +70,7 @@ int addCount(Config *config) {
     string kmc_prefix=files[1];
 
     // read the kmers in map
-    VectorMap<uint64_t, size_t> kmer_counts;
+    VectorMap<uint64_t, uint8_t> kmer_counts;
     unsigned int kSize=0;
     seq_io::read_kmers(kmc_prefix, [&](std::string_view kmer, uint64_t count) {
         kmer_counts[hash(kmer)]=count;
