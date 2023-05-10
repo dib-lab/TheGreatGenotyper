@@ -19,6 +19,9 @@
 #include "common/vector_map.hpp"
 #include "seq_io/kmc_parser.hpp"
 #include <stdio.h>
+#include "parallel_hashmap/phmap.h"
+
+
 
 
 namespace mtg {
@@ -27,6 +30,9 @@ namespace cli {
 using mtg::common::logger;
 using mtg::seq_io::FastaWriter;
 using mtg::seq_io::ExtendedFastaWriter;
+
+    using phmap::flat_hash_map;
+
     enum DNA_MAP {A, C, T, G};
 #define BITMASK(nbits) ((nbits) == 64 ? 0xffffffffffffffff : (1ULL << (nbits)) \
 												- 1ULL)
@@ -70,7 +76,7 @@ int addCount(Config *config) {
     string kmc_prefix=files[1];
 
     // read the kmers in map
-    VectorMap<uint64_t, uint8_t> kmer_counts;
+    flat_hash_map<uint64_t, uint8_t> kmer_counts;
     unsigned int kSize=0;
     seq_io::read_kmers(kmc_prefix, [&](std::string_view kmer, uint64_t count) {
         kmer_counts[hash(kmer)]=count;
