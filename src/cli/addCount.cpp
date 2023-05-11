@@ -18,6 +18,8 @@
 #include <iostream>
 #include "common/vector_map.hpp"
 #include "seq_io/kmc_parser.hpp"
+#include "common/utils/string_utils.hpp"
+#include "histogram.hpp"
 
 
 namespace mtg {
@@ -31,43 +33,129 @@ using mtg::seq_io::ExtendedFastaWriter;
 int addCount(Config *config) {
     assert(config);
     assert(config->outfbase.size());
-    std::cout<<"Hello"<<std::endl;
-    logger->trace("Startint Add Count");
+    logger->trace("Starting Add Count");
     const auto &files = config->fnames;
-
-    assert(files.size() == 2);
+    uint32_t max_count = 1000;
+    assert(files.size() == 1);
 
     string fasta_file=files[0];
-    string kmc_prefix=files[1];
 
-    // read the kmers in map
-    VectorMap<std::string_view, size_t> kmer_counts;
-
-    seq_io::read_kmers(kmc_prefix, [&](std::string_view kmer, uint64_t count) {
-        kmer_counts[kmer]=count;
-    }, true);
-    unsigned int kSize=kmer_counts.begin()->first.size();
+    u_int32_t kSize=config->k;
 
     ExtendedFastaWriter<uint32_t> writer(config->outfbase,
                                          "kmer_counts",
-                                         kSize);
+                                         kSize );
     vector<uint32_t> counts;
     counts.reserve(1000000);
+    Histogram histogram(max_count);
     //read the fasta
     seq_io::read_fasta_file_critical(fasta_file,
                                      [&](seq_io::kseq_t *stream) {
                                          string seq= stream->seq.s;
                                          counts.resize(seq.size()-kSize+1);
-                                         for(unsigned i=0;i<seq.size()-kSize+1;i++)
+                                         string header= stream->comment.s;
+
+                                         auto tokens=utils::split_string(header," ",true);
+                                         unsigned i=0;
+                                         for(;i < tokens.size();i++)
                                          {
-                                             counts[i]=kmer_counts[seq.substr(i,kSize)];
+                                            // std::cout<<t<<std::endl;
+                                             if(utils::starts_with(tokens[i],"ab:Z:"))
+                                             {
+
+                                                // std::cout<<stream->name.s<<" : ";
+                                                 break;
+                                             }
                                          }
+
+                                         for(unsigned j=0;j<seq.size()-kSize+1;j++)
+                                         {
+                                             if(j==0)
+                                             {
+                                                 counts[j]=std::atoi(tokens[i].substr(5,tokens[i].size()-5).c_str());
+                                                 i++;
+                                             }
+                                             else
+                                             {
+                                                 counts[j] = std::atoi(tokens[i++].c_str());
+                                             }
+                                             histogram.add_value(counts[j]);
+                                            // std::cout<<counts[j]<<" ";
+
+                                         }
+                                         //std::cout<<std::endl;
                                          writer.write(seq,counts);
                                      },
                                      false);
 
     //write the sequencues with extended
+    string outputfile=config->outfbase+".hist";
+    bool largest_peak = true;
+    histogram.write_to_file(outputfile);
 
+    // smooth the histogram
+    histogram.smooth_histogram();
+    // find peaks
+    vector<size_t> peak_ids;
+    vector<size_t> peak_values;
+    histogram.find_peaks(peak_ids, peak_values);
+
+    // identify the largest and second largest (if it exists)
+    if (peak_ids.size() == 0) {
+        cerr << "computeHistogram: no peak found in kmer-count histogram." << endl;
+        return -1;
+    }
+    size_t kmer_coverage_estimate = -1;
+    if (peak_ids.size() < 2) {
+        cerr << "Histogram peak: " << peak_ids[0] << " (" << peak_values[0] << ")"
+             << endl;
+        kmer_coverage_estimate = peak_ids[0];
+    } else {
+        size_t largest, second, largest_id, second_id;
+        if (peak_values[0] < peak_values[1]) {
+            largest = peak_values[1];
+            largest_id = peak_ids[1];
+            second = peak_values[0];
+            second_id = peak_ids[0];
+        } else {
+            largest = peak_values[0];
+            largest_id = peak_ids[0];
+            second = peak_values[1];
+            second_id = peak_ids[1];
+        }
+        for (size_t i = 0; i < peak_values.size(); ++i) {
+            if (peak_values[i] > largest) {
+                second = largest;
+                second_id = largest_id;
+                largest = peak_values[i];
+            } else if ((peak_values[i] > second) && (peak_values[i] != largest)) {
+                second = peak_values[i];
+                second_id = peak_ids[i];
+            }
+        }
+        cerr << "Histogram peaks: " << largest_id << " (" << largest << "), "
+             << second_id << " (" << second << ")" << endl;
+        if (largest_peak) {
+            kmer_coverage_estimate = largest_id;
+        } else {
+            kmer_coverage_estimate = second_id;
+        }
+    }
+
+    // add expected abundance counts to end of hist file
+    ofstream histofile;
+    histofile.open(outputfile, ios::app);
+    if (!histofile.good()) {
+        stringstream ss;
+        ss << "computeHistogram: File " << outputfile
+           << " cannot be created. Note that the filename must not contain non-existing directories."
+           << endl;
+        return -1;
+    }
+
+    histofile << "parameters\t" << kmer_coverage_estimate / 2.0 << '\t'
+              << kmer_coverage_estimate << endl;
+    histofile.close();
 
     return 0;
 
