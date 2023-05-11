@@ -53,7 +53,10 @@ while True:
 
         if status not in ["UNKNOWN"] and scratchFolder != "":
             logging.info(f + " "+status)
-            cleanCommand= "ssh %s rm -rf %s"%(server, scratchFolder)
+            queue="high2"
+            if "bm" in server:
+                queue="bmh"
+            cleanCommand= "srun -p %s -w %s -t 1:00:00 -c 1  --mem=1G  rm -rf %s"%(queue,server, scratchFolder)
             logging.info(cleanCommand)
             os.system(cleanCommand)
         if status in ["COMPLETED","PREEMPTED","FAILED","TIMEOUT"]:

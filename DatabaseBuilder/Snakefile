@@ -7,7 +7,7 @@ kSize=config["kSize"]
 urlsFile=config["downloadUrls"]
 batchSize=config["batchSize"]
 
-kmcMinCount=5
+kmcMinCount=3
 if "kmcMinCount" in config:
    kmcMinCount= config["kmcMinCount"]
 
@@ -83,6 +83,11 @@ for acc, data in downloadData.items():
     	kmcfileType[sample] = "-fq"
     	fileName= outputFolder+"fasta/"+acc+".fastq.gz"
 	urls[sample].append(fileName)
+    elif data["downloadMethod"] == "aws":
+    	kmcfileType[sample] = "-fbam"
+    	fileName= outputFolder+"fasta/"+sample+".cram"
+	urls[sample].append(fileName)
+
 
 # for l in open(urlsFile):
 #     sample,url=l.strip().split(",")
