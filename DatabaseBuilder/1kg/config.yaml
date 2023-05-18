@@ -1,0 +1,8 @@
+outputFolder:  /group/ctbrowngrp/mshokrof/1KG/AFR_1/
+tempFolder: /scratch/mshokrof/
+kSize: 31
+downloadUrls: AFR_1.json  
+batchSize: 16
+
+globus_ebi_id: fd9c190c-b824-11e9-98d7-0a63aa6b37da
+globus_client_id: e88f4558-edcb-11ed-9bb3-c9bb788c490e

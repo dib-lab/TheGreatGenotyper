@@ -1,0 +1,33 @@
+cluster:
+  mkdir -p logs/{rule}/ &&
+  sbatch
+    --cpus-per-task={threads}
+    --mem={resources.mem_mb}
+    --time={resources.time}
+    --job-name=smk-{rule}
+    --ntasks={resources.nodes}
+    --nodes={resources.nodes}
+    --output=logs/{rule}/%j.%N.out
+    --error=logs/{rule}/%j.%N.err
+    --partition={resources.partition}
+    --parsable
+default-resources:
+  - mem_mb=2000
+  - time=240
+  - partition=bml
+  - threads=1
+  - nodes=1
+jobs: 400
+latency-wait: 120
+local-cores: 10
+restart-times: 1
+max-jobs-per-second: 100
+max-status-checks-per-second: 20
+keep-going: True
+rerun-incomplete: True
+printshellcmds: True
+scheduler: greedy
+use-conda: True
+conda-prefix: /home/mshokrof/miniconda3
+conda-frontend: mamba
+cluster-status: ~/.config/snakemake/slurm/slurm-status.py
