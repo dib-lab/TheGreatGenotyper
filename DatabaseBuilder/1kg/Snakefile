@@ -277,14 +277,14 @@ rule kmc:
 	 histogram=outputFolder+"histograms/{experiment}.histo"
     conda:
          "env.yaml"
-    threads: 16
+    threads: 8
     priority: 1
     resources:
-        mem_mb=17000,
-        cores=16,
+        mem_mb=16000,
+        cores=8,
 	parallel_kmc=1,
 	nodes = 1,
-        time = 60 * 5,
+        time = lambda wildcards,attempt: attempt * 60 * 4,
         partition =  lambda wildcards: getMeduimPartition(f"{wildcards.experiment}"),
         tmp= lambda wildcards: "%skmc_%s/"%(tmpFolder,f"{wildcards.experiment}")		
     log: outputFolder +"kmc/{experiment}.log"
@@ -295,17 +295,17 @@ rule kmc:
 	trap cleanup EXIT
 	trap cleanup USR1
 
-	cp /group/ctbrowngrp/mshokrof/GRCh38_full_analysis_set_plus_decoy_hla.fa* {resources.tmp}
+#	cp /group/ctbrowngrp/mshokrof/GRCh38_full_analysis_set_plus_decoy_hla.fa* {resources.tmp}
 #	cp {input} {resources.tmp}cram.cram
 
-	samtools view -@ {threads} -b -T {resources.tmp}GRCh38_full_analysis_set_plus_decoy_hla.fa {input} |samtools fastq |seqtk seq -a > {resources.tmp}fastq.fq
+	samtools view -@ {threads} -b -T /mnt/gs21/scratch/mansourt/SV/GRCh38_full_analysis_set_plus_decoy_hla.fa {input} |samtools fastq |seqtk seq -a > {resources.tmp}fastq.fq
 	
-	rm  {resources.tmp}GRCh38_full_analysis_set_plus_decoy_hla.fa*
+#	rm  {resources.tmp}GRCh38_full_analysis_set_plus_decoy_hla.fa*
 	
 
-	kmc -hp -ci{kmcMinCount} -t{threads} -k{kSize} -m16 -sm  -fm {resources.tmp}fastq.fq {params.outPrefix} {resources.tmp} 
+	kmc -hp -ci{kmcMinCount} -t{threads} -k{kSize} -m15 -sm  -fm {resources.tmp}fastq.fq {params.outPrefix} {resources.tmp} 
 
-        ../computeHistogram -i {params.outPrefix} -m 1000 -o {output.histogram} 
+        /mnt/gs21/scratch/mansourt/TheGreatGenotyper/build/DatabaseBuilder/computeHistogram -i {params.outPrefix} -m 1000 -o {output.histogram} 
 	rm -rf {resources.tmp}
         """
  
@@ -553,12 +553,12 @@ rule kmc_to_graph:
          outputFolder= outputFolder+"graphs/"
     conda:
          "env.yaml"
-    threads: 16
+    threads: 8
     priority: 1
     resources:
-        mem_mb=30720,
-        cores=16,
-        mem_gb=30,
+        mem_mb=24576,
+        cores=8,
+        mem_gb=24,
 	nodes = 1,
         time = lambda wildcards, attempt: 60 * 4 * attempt,
         partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.sample}"),
@@ -571,9 +571,9 @@ rule kmc_to_graph:
 	    trap cleanup EXIT
 	    trap cleanup USR1
 
-	    cp {input.prefix} {input.suffix} {resources.tmp}
+#	    cp {input.prefix} {input.suffix} {resources.tmp}
 
-	    metagraph build  \
+	    /mnt/gs21/scratch/mansourt/TheGreatGenotyper/build2/metagraph build  \
             -k {kSize} \
             --mode canonical \
             --count-kmers --count-width 16 \
@@ -581,7 +581,7 @@ rule kmc_to_graph:
             --disk-swap  {resources.tmp}\
             -p {threads} \
             -o  {resources.tmp}graph \
-            {resources.tmp}{wildcards.sample}.kmc_suf  &> {log}
+            {input.suffix}  &> {log}
 	    
 	    mv {resources.tmp}graph.dbg {params.outputFolder}{wildcards.sample}.dbg
 	    mv {resources.tmp}graph.dbg.weights {params.outputFolder}{wildcards.sample}.dbg.weights
@@ -603,14 +603,14 @@ rule clean:
          outputPrefix=outputFolder+"unitigs/smooth_{smooth_value}/{sample}"
     conda:
          "env.yaml"
-    threads: 16
+    threads: 8
     priority: 1
     resources:
         mem_mb=20000,
-        cores=16,
+        cores=8,
         mem_gb=18,
 	nodes = 1,
-        time = lambda wildcards, attempt: 60 * 4 * attempt,
+        time = lambda wildcards, attempt: 60 * 1 * attempt,
         partition = lambda wildcards , attempt: getLowPartition(f"{wildcards.sample}", attempt),
         tmp= lambda wildcards: "%sclean_smooth%s_%s/"%(tmpFolder,f"{wildcards.smooth_value}",f"{wildcards.sample}")
     log: outputFolder+"unitigs/smooth_{smooth_value}/{sample}.log"
@@ -621,9 +621,9 @@ rule clean:
 	    trap cleanup EXIT
 	    trap cleanup USR1
 
-	    cp {input.graph} {input.weights} {resources.tmp}
+#	    cp {input.graph} {input.weights} {resources.tmp}
 
-            metagraph clean  \
+            /mnt/gs21/scratch/mansourt/TheGreatGenotyper/build2/metagraph clean  \
             --to-fasta --primary-kmers \
             --smoothing-window 1 \
 	    --prune-tips 0 \
@@ -631,7 +631,7 @@ rule clean:
             --smoothing-window {wildcards.smooth_value} \
             -p {threads} \
             -o {resources.tmp}{wildcards.sample} \
-            {resources.tmp}{wildcards.sample}.dbg  &> {log} 
+            {input.graph}  &> {log} 
 
 	    mv {resources.tmp}{wildcards.sample}.fasta.gz {output.unitigs}
 	    mv {resources.tmp}{wildcards.sample}.kmer_counts.gz {output.counts}
@@ -711,7 +711,7 @@ rule metagraph_buildSmoothMainGraph:
        	"""
 	    mkdir  -p {tmpFolder}$$/
 
-            metagraph build  \
+            /mnt/gs21/scratch/mansourt/TheGreatGenotyper/build/metagraph build  \
             -k {kSize} \
             --mode canonical  \
             --mem-cap-gb {resources.mem_gb} \
