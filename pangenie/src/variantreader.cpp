@@ -501,7 +501,7 @@ void VariantReader::open_phasing_outfile(string filename) {
 
 }
 
-void VariantReader::write_genotypes_of(string chromosome,  std::map<std::string, std::vector<GenotypingResult>> & genotyping_result, bool ignore_imputed) {
+void VariantReader::write_genotypes_of(string chromosome,  std::map<std::string, std::vector<GenotypingResult>> & genotyping_result, bool popFilter, bool ignore_imputed) {
     std::streambuf * buf;
     if(genotyping_outfile_open)
     {
@@ -590,8 +590,35 @@ void VariantReader::write_genotypes_of(string chromosome,  std::map<std::string,
             if (!this->variant_ids[v.get_chromosome()][counter].empty()) info << ";ID=" << get_ids(v.get_chromosome(), alt_alleles, counter, false);
             genotyping_outfile << info.str() << "\t"; // INFO
             genotyping_outfile << "GT:GQ:GL:KC:UK:AK" << "\t"; // FORMAT
+            long double minQual=0.0L;
 
-            // keep only likelihoods for genotypes with defined alleles
+            if(popFilter) {
+                vector<long double> quals(samples.size());
+                for (unsigned sample_index = 0; sample_index < samples.size(); sample_index++) {
+                    GenotypingResult genotype_likelihoods = singleton_likelihoods[sample_index].at(j);
+                    if (nr_missing > 0)
+                        genotype_likelihoods = singleton_likelihoods[sample_index].at(j).get_specific_likelihoods(
+                                defined_alleles);
+
+                    size_t stat_size = (defined_alleles.size() + 2) * singleton_variants.size();
+                    size_t indexBase = stat_size * sample_index + (defined_alleles.size() + 2) * j;
+                    unsigned short nr_uniq_kmers = variantsStatsPerSample[chromosome][i][indexBase];
+
+
+                    // determine computed genotype
+                    pair<int, int> genotype = genotype_likelihoods.get_likeliest_genotype();
+                    if (ignore_imputed && (nr_uniq_kmers == 0)) genotype = {-1, -1};
+                    if ((genotype.first != -1) && (genotype.second != -1)) {
+                        quals[sample_index] = genotype_likelihoods.get_genotype_quality(genotype.first,
+                                                                                        genotype.second);
+                    } else {
+                        quals[sample_index] = 0;
+                    }
+
+                }
+                sort(quals.begin(), quals.end());
+                minQual = quals[quals.size() / 2];
+            }
 			for(unsigned sample_index=0; sample_index< samples.size();sample_index++) {
                 GenotypingResult genotype_likelihoods = singleton_likelihoods[sample_index].at(j);
                 if (nr_missing > 0)
@@ -605,14 +632,14 @@ void VariantReader::write_genotypes_of(string chromosome,  std::map<std::string,
                 // determine computed genotype
                 pair<int, int> genotype = genotype_likelihoods.get_likeliest_genotype();
                 if (ignore_imputed && (nr_uniq_kmers == 0)) genotype = {-1, -1};
-                if ((genotype.first != -1) && (genotype.second != -1)) {
+                long double qual=genotype_likelihoods.get_genotype_quality(genotype.first, genotype.second);
+                if ((genotype.first != -1) && (genotype.second != -1) && qual >= minQual) {
 
                     // unique maximum and therefore a likeliest genotype exists
                     genotyping_outfile << genotype.first << "/" << genotype.second << ":"; // GT
 
                     // output genotype quality
-                    genotyping_outfile
-                            << genotype_likelihoods.get_genotype_quality(genotype.first, genotype.second) << ":"; // GQ
+                    genotyping_outfile << qual << ":"; // GQ
                 } else {
                     // genotype could not be determined
                     genotyping_outfile << "./.:0:"; // GT:GQ
