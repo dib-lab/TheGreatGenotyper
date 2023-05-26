@@ -51,7 +51,7 @@ public:
 	const std::vector<Variant>& get_variants_on_chromosome(std::string chromosome) const;
 	void open_genotyping_outfile(std::string outfile_name);
 	void open_phasing_outfile(std::string outfile_name);
-	void write_genotypes_of(std::string chromosome,   std::map<std::string, std::vector<GenotypingResult>> & genotyping_result, bool popFilter,bool ignore_imputed = false);
+	void write_genotypes_of(std::string chromosome,   std::map<std::string, std::vector<GenotypingResult>> & genotyping_result, bool popFilter,bool extraInfo,bool ignore_imputed = false);
 	void write_phasing_of(std::string chromosome, const std::vector<GenotypingResult>& genotyping_result, std::vector<UniqueKmers*>* unique_kmers, bool ignore_imputed = false);
 	void close_genotyping_outfile();
 	void close_phasing_outfile();

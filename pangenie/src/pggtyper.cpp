@@ -170,6 +170,7 @@ int main (int argc, char* argv[])
     uint64_t hash_size = 3000000000;
     bool log_scale=false;
     bool populationFilter=true;
+    bool extraInfo=false;
 
     // parse the command line arguments
     CommandLineParser argument_parser;
@@ -177,6 +178,7 @@ int main (int argc, char* argv[])
     argument_parser.add_mandatory_argument('i', "Metagraph graph database folders");
    // argument_parser.add_mandatory_argument('a', "Metagraph annotations containig kmer counts");
     argument_parser.add_flag_argument('f', "Disable Population Filter");
+    argument_parser.add_flag_argument('w', "turn on extra information about genotypes");
     argument_parser.add_flag_argument('l', "the counts in the index are log scale.");
 
     argument_parser.add_mandatory_argument('r', "reference genome in FASTA format. NOTE: INPUT FASTA FILE MUST NOT BE COMPRESSED.");
@@ -230,7 +232,7 @@ int main (int argc, char* argv[])
     bool genotyping_flag = argument_parser.get_flag('g');
     bool phasing_flag = argument_parser.get_flag('p');
     bool popFilter_flag = argument_parser.get_flag('f');
-
+    bool extraInfo_flag = argument_parser.get_flag('w');
 
     if (genotyping_flag && phasing_flag) {
         only_genotyping = false;
@@ -242,6 +244,9 @@ int main (int argc, char* argv[])
     }
     if(popFilter_flag){
         populationFilter=false;
+    }
+    if(extraInfo_flag){
+        extraInfo=true;
     }
 
 //	effective_N = stold(argument_parser.get_argument('n'));
@@ -454,10 +459,13 @@ int main (int argc, char* argv[])
                 }
                 delete allEmissions[chrom][i];
             }
+
+            delete unique_kmers_list.unique_kmers[chrom];
             bool ignore_imputed=true;
             variant_reader.write_genotypes_of(
                     chrom, res,
                     populationFilter,
+                    extraInfo,
                     ignore_imputed);
         }
         time_total = timer.get_total_time();
@@ -549,6 +557,7 @@ int main (int argc, char* argv[])
         variant_reader.write_genotypes_of(
                 chrom, results.result[chrom],
                 populationFilter,
+                extraInfo,
                 ignore_imputed);
 
         results.result[chrom].clear();

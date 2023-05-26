@@ -501,7 +501,7 @@ void VariantReader::open_phasing_outfile(string filename) {
 
 }
 
-void VariantReader::write_genotypes_of(string chromosome,  std::map<std::string, std::vector<GenotypingResult>> & genotyping_result, bool popFilter, bool ignore_imputed) {
+void VariantReader::write_genotypes_of(string chromosome,  std::map<std::string, std::vector<GenotypingResult>> & genotyping_result, bool popFilter,bool extraInfo, bool ignore_imputed) {
     std::streambuf * buf;
     if(genotyping_outfile_open)
     {
@@ -589,7 +589,10 @@ void VariantReader::write_genotypes_of(string chromosome,  std::map<std::string,
             // if IDs were given in input, write them to output as well
             if (!this->variant_ids[v.get_chromosome()][counter].empty()) info << ";ID=" << get_ids(v.get_chromosome(), alt_alleles, counter, false);
             genotyping_outfile << info.str() << "\t"; // INFO
-            genotyping_outfile << "GT:GQ:GL:KC:UK:AK" << "\t"; // FORMAT
+            if(extraInfo)
+                genotyping_outfile << "GT:GQ:GL:KC:UK:AK" << "\t"; // FORMAT
+            else
+                genotyping_outfile << "GT:GQ" << "\t";
             long double minQual=0.0L;
 
             if(popFilter) {
@@ -622,7 +625,8 @@ void VariantReader::write_genotypes_of(string chromosome,  std::map<std::string,
 			for(unsigned sample_index=0; sample_index< samples.size();sample_index++) {
                 GenotypingResult genotype_likelihoods = singleton_likelihoods[sample_index].at(j);
                 if (nr_missing > 0)
-                    genotype_likelihoods = singleton_likelihoods[sample_index].at(j).get_specific_likelihoods(defined_alleles);
+                    genotype_likelihoods = singleton_likelihoods[sample_index].at(j).get_specific_likelihoods(
+                            defined_alleles);
                 nr_alleles = defined_alleles.size();
                 size_t stat_size = (defined_alleles.size() + 2) * singleton_variants.size();
                 size_t indexBase = stat_size * sample_index + (defined_alleles.size() + 2) * j;
@@ -631,46 +635,55 @@ void VariantReader::write_genotypes_of(string chromosome,  std::map<std::string,
 
                 // determine computed genotype
                 pair<int, int> genotype = genotype_likelihoods.get_likeliest_genotype();
-                if (ignore_imputed && (nr_uniq_kmers == 0)) genotype = {-1, -1};
-                long double qual=genotype_likelihoods.get_genotype_quality(genotype.first, genotype.second);
-                if ((genotype.first != -1) && (genotype.second != -1) && qual >= minQual) {
+                long double qual = genotype_likelihoods.get_genotype_quality(genotype.first, genotype.second);
+                if (ignore_imputed && (nr_uniq_kmers == 0)) {
+                    genotype = {-1, -1};
+                    qual=0;
+                }
+                if(qual < minQual)
+                    genotype = {-1, -1};
+
+                if ((genotype.first != -1) && (genotype.second != -1) ) {
 
                     // unique maximum and therefore a likeliest genotype exists
-                    genotyping_outfile << genotype.first << "/" << genotype.second << ":"; // GT
-
+                    genotyping_outfile << genotype.first << "/" << genotype.second; // GT
                     // output genotype quality
-                    genotyping_outfile << qual << ":"; // GQ
+                     // GQ
                 } else {
                     // genotype could not be determined
-                    genotyping_outfile << "./.:0:"; // GT:GQ
+                    genotyping_outfile << "./."; // GT:GQ
                 }
+                genotyping_outfile << ":"<< qual;
+                if (extraInfo) {
 
-                // output genotype likelihoods
-                vector<long double> likelihoods = genotype_likelihoods.get_all_likelihoods(nr_alleles);
-                if (likelihoods.size() < 3) {
+                    // output genotype likelihoods
+                    vector<long double> likelihoods = genotype_likelihoods.get_all_likelihoods(nr_alleles);
+                    if (likelihoods.size() < 3) {
+                        ostringstream oss;
+                        oss << "VariantReader::write_genotypes_of: too few likelihoods (" << likelihoods.size()
+                            << ") computed for variant at position " << v.get_start_position() << endl;
+                        throw runtime_error(oss.str());
+                    }
+
                     ostringstream oss;
-                    oss << "VariantReader::write_genotypes_of: too few likelihoods (" << likelihoods.size()
-                        << ") computed for variant at position " << v.get_start_position() << endl;
-                    throw runtime_error(oss.str());
+                    oss << log10(likelihoods[0]);
+                    for (size_t k = 1; k < likelihoods.size(); ++k) {
+                        oss << "," << setprecision(4) << log10(likelihoods[k]);
+                    }
+                    genotyping_outfile << ":" << oss.str(); // GL
+                    genotyping_outfile << ":" << variantsStatsPerSample[chromosome][i][indexBase + 1]; //KC
+                    genotyping_outfile << ":" << nr_uniq_kmers; // UK
+                    ostringstream oss2;
+                    for (unsigned int a = 0; a < nr_alleles; ++a) {
+                        if (a > 0) oss2 << ",";
+                        oss2 << variantsStatsPerSample[chromosome][i][indexBase + 2 + a];
+                    }
+                    genotyping_outfile << ":" << oss2.str();//AK
                 }
-
-                ostringstream oss;
-                oss << log10(likelihoods[0]);
-                for (size_t k = 1; k < likelihoods.size(); ++k) {
-                    oss << "," << setprecision(4) << log10(likelihoods[k]);
-                }
-                genotyping_outfile << oss.str(); // GL
-                genotyping_outfile << ":" << variantsStatsPerSample[chromosome][i][indexBase + 1]; //KC
-                genotyping_outfile << ":" << nr_uniq_kmers; // UK
-                ostringstream oss2;
-                for (unsigned int a = 0; a < nr_alleles; ++a) {
-                    if (a > 0) oss2 << ",";
-                    oss2 << variantsStatsPerSample[chromosome][i][indexBase + 2 + a];
-                }
-                genotyping_outfile << ":" << oss2.str();//AK
-                if(sample_index != samples.size()-1)
-                    genotyping_outfile <<"\t";
+                if (sample_index != samples.size() - 1)
+                    genotyping_outfile << "\t";
             }
+
             genotyping_outfile <<"\n";
             //cout tab
 			counter += 1;
