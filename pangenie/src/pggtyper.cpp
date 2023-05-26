@@ -467,6 +467,7 @@ int main (int argc, char* argv[])
                     populationFilter,
                     extraInfo,
                     ignore_imputed);
+            cerr<<"Finished writing "<<chrom <<endl;
         }
         time_total = timer.get_total_time();
         cerr<<"Finished GT using emissions only"<<endl;
