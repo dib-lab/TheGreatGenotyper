@@ -77,7 +77,7 @@ while True:
                              scratchFolder]
             
             logging.info(cleanCommand)
-            timeout=15
+            timeout=200
             try:
                 # Run the command in a subprocess with a timeout
                 process = subprocess.Popen(cleanCommandArr)
@@ -91,7 +91,8 @@ while True:
                 if process.returncode == 0:
                     if status in ["COMPLETED","PREEMPTED","FAILED","TIMEOUT","CANCELLED"]:
                         outFile=".".join(f.split(".")[:-1])+".out"
-                        mvCommand= "mv %s %s %s%s"%(f,outFile,outputFolder,status)
+                        mvCommand= "mv %s %s%s"%(f,outputFolder,status)
+#                        mvCommand= "mv %s %s %s%s"%(f,outFile,outputFolder,status)
                         logging.info(mvCommand)
                         os.system(mvCommand)
                 else:
