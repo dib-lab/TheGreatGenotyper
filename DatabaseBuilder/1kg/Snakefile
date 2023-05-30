@@ -135,7 +135,7 @@ def touchIfNotThere(path):
 
 downloadDependency={ "1":{}, "2":{} }
 greenLights= {}
-numberParallelSamples=min(15,len(illuminaSamples))
+numberParallelSamples=min(50,len(illuminaSamples))
 
 
 for i in range(0,numberParallelSamples):
