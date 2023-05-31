@@ -165,6 +165,17 @@ long double LiStephens::get(unsigned from_variant, unsigned to_variant,unsigned 
 
 }
 
+
+long double LiStephens::get(unsigned from_variant, unsigned to_variant,unsigned nr_switches){
+    if(to_variant < from_variant) {
+        swap(from_variant, to_variant);
+    }
+
+    return this->probabilities[from_variant][nr_switches];
+
+}
+
+
 populationJointProbability::populationJointProbability(VariantReader* variants, std::string chromsome,std::vector<UniqueKmers*>* unique_kmers)
         : unique_kmers(unique_kmers)
 {

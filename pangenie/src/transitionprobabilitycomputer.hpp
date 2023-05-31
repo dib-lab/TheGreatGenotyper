@@ -24,6 +24,7 @@ public:
     TransitionProbability(){}
     TransitionProbability(VariantReader* variants,std::string chromsome);
     virtual long double get(unsigned from_variant, unsigned to_variant,unsigned short path_id1, unsigned short path_id2, unsigned short path_id3, unsigned short path_id4)=0;
+    virtual long double get(unsigned from_variant, unsigned to_variant,unsigned nr_switches)=0;
     void save(std::string filename);
     void load(std::string filename);
 protected:
@@ -37,7 +38,7 @@ class LiStephens: public TransitionProbability{
 public:
     LiStephens(VariantReader* variants,std::string chromsome,double recomb_rate, long double effective_N = 25000.0L);
     long double get(unsigned from_variant, unsigned to_variant,unsigned short path_id1, unsigned short path_id2, unsigned short path_id3, unsigned short path_id4);
-
+    long double get(unsigned from_variant, unsigned to_variant,unsigned nr_switches);
 };
 
 class populationJointProbability: public TransitionProbability{
