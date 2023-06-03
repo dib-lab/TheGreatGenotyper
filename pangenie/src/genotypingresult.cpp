@@ -178,4 +178,9 @@ void GenotypingResult::normalize () {
 	if (normalization_sum > 0) {
 		this->divide_likelihoods_by(normalization_sum);
 	}
+    else{
+        for (auto it = this->genotype_to_likelihood.begin(); it != this->genotype_to_likelihood.end(); ++it) {
+            it->second = 1;
+        }
+    }
 }
