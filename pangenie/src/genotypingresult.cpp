@@ -90,7 +90,7 @@ size_t GenotypingResult::get_genotype_quality (unsigned char allele1, unsigned c
 		sum += l.second;
 	}
 
-	if (abs(sum-1) > 0.0000000001) {
+	if (sum>0 && abs(sum-1) > 0.0000000001 ) {
         cerr<<"qualities ";
         for (const auto& l : this->genotype_to_likelihood) {
              cerr<<l.second<<" ";
@@ -175,7 +175,7 @@ void GenotypingResult::normalize () {
 		normalization_sum += it->second;
 	}
 
-	if (normalization_sum > 0) {
+	if (normalization_sum > 0.0L) {
 		this->divide_likelihoods_by(normalization_sum);
 	}
     else{
