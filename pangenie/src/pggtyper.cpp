@@ -432,6 +432,7 @@ int main (int argc, char* argv[])
             if(emissionsSaveFilePrefix != "") {
                 unique_kmers_list.unique_kmers[chrom]->compute_emissions(databases[i], emissions);
                 string filename=emissionsSaveFilePrefix+"."+chrom+ "."+to_string(i);
+                cerr << "saving emissions to  "<< filename << endl;
                 emissions->save(filename);
                 emissions->destroy();
             }
