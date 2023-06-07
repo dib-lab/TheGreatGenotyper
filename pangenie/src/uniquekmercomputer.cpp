@@ -148,10 +148,10 @@ void UniqueKmerComputer::compute_emissions(SamplesDatabase* database, EmissionPr
             seqs[a]=allele.to_string();
             defined_alleles.push_back(a);
         }
-
+        cerr<<"point 1"<<endl;
         vector<unordered_map<string,uint32_t>> kmerCounts;
         database->getKmerCounts(seqs,kmerCounts);
-
+        cerr<<"point 2"<<endl;
         for(unsigned sampleID=0; sampleID< numSamples ; sampleID++) {
             UniqueKmers* sampleU= new UniqueKmers(*(uniqKmers[v]));
             string sampleName=database->getSampleName(sampleID);
@@ -191,6 +191,7 @@ void UniqueKmerComputer::compute_emissions(SamplesDatabase* database, EmissionPr
                     //	cerr<<"KMERFN"<<"\t"<<kmer.first<<"\t"<<read_kmercount<<"\n";
                 }
             }
+            cerr<<"point 4"<<endl;
             vector<Variant> singleton_variants;
             variant.separate_variants(&singleton_variants);
             vector<VariantStats> singleton_stats;
@@ -198,8 +199,10 @@ void UniqueKmerComputer::compute_emissions(SamplesDatabase* database, EmissionPr
             variants->addVariantStat(v, sampleName,this->chromosome, defined_alleles,singleton_stats);
             result->compute(sampleU,v,sampleID);
             delete sampleU;
+            cerr<<"point 5"<<endl;
         }
     }
+    cerr<<"point 6"<<endl;
 }
 
 void UniqueKmerComputer::compute_empty(vector<UniqueKmers*>* result) const {
