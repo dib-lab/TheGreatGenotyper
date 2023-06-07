@@ -148,13 +148,13 @@ void UniqueKmerComputer::compute_emissions(SamplesDatabase* database, EmissionPr
             DnaSequence allele = variant.get_allele_sequence(a);
             seqs[a]=allele.to_string();
             defined_alleles.push_back(a);
-            cerr<<seqs[a]<<endl;
+        //    cerr<<seqs[a]<<endl;
         }
-        cerr<<"point 1"<<endl;
+        //cerr<<"point 1"<<endl;
         vector<unordered_map<string,uint32_t>> kmerCounts;
         database->getKmerCounts(seqs,kmerCounts);
-        cerr<<"point 2"<<endl;
-        cerr<<"kmer counts size "<<kmerCounts.size()<<endl;
+        //cerr<<"point 2"<<endl;
+        //cerr<<"kmer counts size "<<kmerCounts.size()<<endl;
 
         for(unsigned sampleID=0; sampleID< numSamples ; sampleID++) {
             UniqueKmers* sampleU= new UniqueKmers(*(uniqKmers[v]));
@@ -196,7 +196,7 @@ void UniqueKmerComputer::compute_emissions(SamplesDatabase* database, EmissionPr
                     //	cerr<<"KMERFN"<<"\t"<<kmer.first<<"\t"<<read_kmercount<<"\n";
                 }
             }
-            cerr<<"point 4"<<endl;
+          //  cerr<<"point 4"<<endl;
             vector<Variant> singleton_variants;
             variant.separate_variants(&singleton_variants);
             vector<VariantStats> singleton_stats;
@@ -204,7 +204,7 @@ void UniqueKmerComputer::compute_emissions(SamplesDatabase* database, EmissionPr
             variants->addVariantStat(v, sampleName,this->chromosome, defined_alleles,singleton_stats);
             result->compute(sampleU,v,sampleID);
             delete sampleU;
-            cerr<<"point 5"<<endl;
+            //cerr<<"point 5"<<endl;
         }
     }
     cerr<<"point 6"<<endl;

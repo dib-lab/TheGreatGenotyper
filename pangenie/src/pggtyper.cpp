@@ -434,7 +434,9 @@ int main (int argc, char* argv[])
                 string filename=emissionsSaveFilePrefix+"."+chrom+ "."+to_string(i);
                 cerr << "saving emissions to  "<< filename << endl;
                 emissions->save(filename);
+                cerr << "done saving emissions to  "<< filename << endl;
                 emissions->destroy();
+                cerr << "destroying  "<< filename << endl;
             }
             allEmissions[chrom].push_back(emissions);
             time_unique_kmers += timer.get_interval_time();
