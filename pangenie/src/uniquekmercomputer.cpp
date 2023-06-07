@@ -127,6 +127,7 @@ void UniqueKmerComputer::compute_emissions(SamplesDatabase* database, EmissionPr
     vector<string> seqs;
     seqs.resize(100);
     cerr<<"Enter"<<endl;
+    cerr<<"number of samples "<< numSamples<<endl;
 //#pragma omp parallel for shared(result,uniqKmers) firstprivate(localCoverage,numSamples,seqs)
     for (size_t v = 0; v < nr_variants; ++v) {
         // set parameters of distributions
@@ -147,11 +148,14 @@ void UniqueKmerComputer::compute_emissions(SamplesDatabase* database, EmissionPr
             DnaSequence allele = variant.get_allele_sequence(a);
             seqs[a]=allele.to_string();
             defined_alleles.push_back(a);
+            cerr<<seqs[a]<<endl;
         }
         cerr<<"point 1"<<endl;
         vector<unordered_map<string,uint32_t>> kmerCounts;
         database->getKmerCounts(seqs,kmerCounts);
         cerr<<"point 2"<<endl;
+        cerr<<"kmer counts size "<<kmerCounts.size()<<endl;
+
         for(unsigned sampleID=0; sampleID< numSamples ; sampleID++) {
             UniqueKmers* sampleU= new UniqueKmers(*(uniqKmers[v]));
             string sampleName=database->getSampleName(sampleID);
@@ -166,10 +170,11 @@ void UniqueKmerComputer::compute_emissions(SamplesDatabase* database, EmissionPr
             for (auto &kmer : sampleU->occurences) {
                 if (nr_kmers_used > 300)
                     break;
-
-                size_t read_kmercount =
-                        kmerCounts[sampleID][kmer.first.to_str()];
-
+                auto it =kmerCounts[sampleID].find(kmer.first.to_str());
+                size_t read_kmercount =0;
+                if(it != kmerCounts[sampleID].end() ) {
+                    read_kmercount =it->second;
+                }
                 if (read_kmercount >
                     (2 * sampleKmerCoverage)) {
                     continue;
