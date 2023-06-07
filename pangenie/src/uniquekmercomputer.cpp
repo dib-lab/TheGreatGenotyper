@@ -43,8 +43,7 @@ UniqueKmerComputer::UniqueKmerComputer (KmerCounter* genomic_kmers,  VariantRead
 void UniqueKmerComputer::compute_unique_kmers() {
 	size_t nr_variants = this->variants->size_of(this->chromosome);
     uniqKmers.resize(nr_variants);
-    cerr<<"In Debugging mode"<<endl;
-//#pragma omp parallel for shared(uniqKmers)
+#pragma omp parallel for shared(uniqKmers)
     for (size_t v = 0; v < nr_variants; ++v) {
         // set parameters of distributions
         size_t kmer_size = this->variants->get_kmer_size();
@@ -52,7 +51,6 @@ void UniqueKmerComputer::compute_unique_kmers() {
 
 
         const Variant& variant = this->variants->get_variant(this->chromosome, v);
-        cerr<<variant.get_start_position()<<"\n";
 
         UniqueKmers* u = new UniqueKmers(variant.get_start_position(),variant.get_phase_status());
         size_t nr_alleles = variant.nr_of_alleles();
@@ -128,7 +126,8 @@ void UniqueKmerComputer::compute_emissions(SamplesDatabase* database, EmissionPr
     vector<double> localCoverage(numSamples);
     vector<string> seqs;
     seqs.resize(100);
-#pragma omp parallel for shared(result,uniqKmers) firstprivate(localCoverage,numSamples,seqs)
+    cerr<<"Enter"<<endl;
+//#pragma omp parallel for shared(result,uniqKmers) firstprivate(localCoverage,numSamples,seqs)
     for (size_t v = 0; v < nr_variants; ++v) {
         // set parameters of distributions
         size_t kmer_size = this->variants->get_kmer_size();
