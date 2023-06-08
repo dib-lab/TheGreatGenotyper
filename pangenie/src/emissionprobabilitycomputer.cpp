@@ -65,7 +65,7 @@ EmissionProbabilities::EmissionProbabilities()
 EmissionProbabilities::EmissionProbabilities(SamplesDatabase* samples,unsigned  nr_variants)
 {
 
-    this->state_to_prob = std::vector<std::vector<long double> > (nr_variants);
+    this->state_to_prob = std::vector<std::vector<long double> > (nr_variants,std::vector<long double>());
     this->numAllelesPerVariant = std::vector<unsigned short> (nr_variants);
     nr_samples= samples->getNumSamples();
     all_zeros=std::vector<std::vector<bool> >(nr_variants,std::vector<bool>(nr_samples,true));

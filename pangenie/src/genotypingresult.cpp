@@ -171,9 +171,13 @@ void GenotypingResult::combine(GenotypingResult& likelihoods) {
 void GenotypingResult::normalize () {
 	// sum up probabilities
 	long double normalization_sum = 0.0L;
+    cerr<<"Normalize : ";
 	for (auto it = this->genotype_to_likelihood.begin(); it != this->genotype_to_likelihood.end(); ++it) {
 		normalization_sum += it->second;
+        cerr<<it->second<<" ";
 	}
+    cerr<<" sum = "<<normalization_sum<<"\n";
+
 
 	if (normalization_sum > 0.0L) {
 		this->divide_likelihoods_by(normalization_sum);
@@ -183,4 +187,13 @@ void GenotypingResult::normalize () {
             it->second = 1;
         }
     }
+    normalization_sum = 0.0L;
+    cerr<<"Normalized : ";
+    for (auto it = this->genotype_to_likelihood.begin(); it != this->genotype_to_likelihood.end(); ++it) {
+        normalization_sum += it->second;
+        cerr<<it->second<<" ";
+    }
+    cerr<<" sum = "<<normalization_sum<<"\n";
+
+
 }
