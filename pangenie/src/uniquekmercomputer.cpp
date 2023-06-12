@@ -139,6 +139,7 @@ void UniqueKmerComputer::compute_emissions(SamplesDatabase* database, EmissionPr
         size_t nr_alleles = variant.nr_of_alleles();
         seqs.resize(nr_alleles);
         vector<unsigned char> defined_alleles;
+        cerr<<variant.get_start_position()<<"-"<<variant.get_end_position()<<endl;
         for (unsigned char a = 0; a < nr_alleles; ++a) {
             // consider all alleles not undefined
             if (variant.is_undefined_allele(a)) {
@@ -148,7 +149,6 @@ void UniqueKmerComputer::compute_emissions(SamplesDatabase* database, EmissionPr
             DnaSequence allele = variant.get_allele_sequence(a);
             seqs[a]=allele.to_string();
             defined_alleles.push_back(a);
-        //    cerr<<seqs[a]<<endl;
         }
         //cerr<<"point 1"<<endl;
         vector<unordered_map<string,uint32_t>> kmerCounts;
