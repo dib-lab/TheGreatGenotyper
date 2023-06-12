@@ -172,12 +172,13 @@ void UniqueKmerComputer::compute_emissions(SamplesDatabase* database, EmissionPr
             for (auto &kmer : sampleU->occurences) {
                 if (nr_kmers_used > 300)
                     break;
-                cerr<<kmer.first.to_str()<<endl;
+
                 auto it =kmerCounts[sampleID].find(kmer.first.to_str());
                 size_t read_kmercount =0;
                 if(it != kmerCounts[sampleID].end() ) {
                     read_kmercount =it->second;
                 }
+                cerr<<kmer.first.to_str()<<" "<<read_kmercount<<endl;
                 if (read_kmercount >
                     (2 * sampleKmerCoverage)) {
                     continue;
@@ -190,7 +191,7 @@ void UniqueKmerComputer::compute_emissions(SamplesDatabase* database, EmissionPr
                 long double p_cn0 = cn.get_probability_of(0);
                 long double p_cn1 = cn.get_probability_of(1);
                 long double p_cn2 = cn.get_probability_of(2);
-
+                cerr<<p_cn0<<","<<p_cn1<<","<<p_cn2<<endl;
                 // skip kmers with only 0 probabilities
                 if ((p_cn0 > 0) || (p_cn1 > 0) || (p_cn2 > 0)) {
                     nr_kmers_used += 1;
