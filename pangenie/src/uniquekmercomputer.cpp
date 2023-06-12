@@ -164,6 +164,7 @@ void UniqueKmerComputer::compute_emissions(SamplesDatabase* database, EmissionPr
 
             unsigned sampleKmerCoverage=database->getKmerCoverage(sampleID);
             sampleU->set_coverage(localCoverage[sampleID]);
+            cerr<<"Local Coverage "<<localCoverage[sampleID]<<endl;
             // if(debug) cerr<<"Local Coverage "<<localCoverage[sampleID]<<"\n";
             //		  debug=false;
             ProbabilityTable* probabilities=database->getSampleProbability(sampleID);
@@ -171,6 +172,7 @@ void UniqueKmerComputer::compute_emissions(SamplesDatabase* database, EmissionPr
             for (auto &kmer : sampleU->occurences) {
                 if (nr_kmers_used > 300)
                     break;
+                cerr<<kmer.first.to_str()<<endl;
                 auto it =kmerCounts[sampleID].find(kmer.first.to_str());
                 size_t read_kmercount =0;
                 if(it != kmerCounts[sampleID].end() ) {
