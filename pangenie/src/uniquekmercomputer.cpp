@@ -172,7 +172,7 @@ void UniqueKmerComputer::compute_emissions(SamplesDatabase* database, EmissionPr
             for (auto &kmer : sampleU->occurences) {
                 if (nr_kmers_used > 300)
                     break;
-
+                cerr<<kmerCounts.size()<<endl;
                 auto it =kmerCounts[sampleID].find(kmer.first.to_str());
                 size_t read_kmercount =0;
                 if(it != kmerCounts[sampleID].end() ) {
