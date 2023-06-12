@@ -35,7 +35,7 @@ public:
   void load_graph();
   void delete_graph();
   ProbabilityTable* getSampleProbability(unsigned sampleIndex);
-  void getKmerCounts(vector<string>& seqs,vector<unordered_map<string,uint32_t>> & kmerCounts);
+  void getKmerCounts(vector<string>& seqs,vector<unordered_map<string,uint32_t>> * kmerCounts);
 private:
   bool log_scale;
   size_t kSize;

@@ -151,8 +151,8 @@ void UniqueKmerComputer::compute_emissions(SamplesDatabase* database, EmissionPr
             defined_alleles.push_back(a);
         }
         //cerr<<"point 1"<<endl;
-        vector<unordered_map<string,uint32_t>> kmerCounts;
-        database->getKmerCounts(seqs,kmerCounts);
+        vector<unordered_map<string,uint32_t>> kmerCounts(numSamples);
+        database->getKmerCounts(seqs,&kmerCounts);
         //cerr<<"point 2"<<endl;
         //cerr<<"kmer counts size "<<kmerCounts.size()<<endl;
 
@@ -253,9 +253,9 @@ void UniqueKmerComputer::compute_local_coverage(SamplesDatabase* database,string
         vector<string> seqs;
         seqs.push_back(left_overhang.to_string());
         seqs.push_back(right_overhang.to_string());
-        vector<unordered_map<string,uint32_t>> kmerCounts;
+        vector<unordered_map<string,uint32_t>> kmerCounts(numSamples);
 
-        database->getKmerCounts(seqs,kmerCounts);
+        database->getKmerCounts(seqs,&kmerCounts);
 
         for(unsigned sampleID=0; sampleID<numSamples ;sampleID++) {
 

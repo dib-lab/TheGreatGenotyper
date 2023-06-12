@@ -72,9 +72,9 @@ ProbabilityTable* SamplesDatabase::getSampleProbability(unsigned sampleIndex)
 {
   return &(samples[sampleIndex].probs);
 }
-void SamplesDatabase::getKmerCounts(vector<string>& seqs,vector<unordered_map<string,uint32_t>> &kmerCounts)
+void SamplesDatabase::getKmerCounts(vector<string>& seqs,vector<unordered_map<string,uint32_t>> *kmerCounts)
 {
-  kmerCounts.resize(samples.size());
+//  kmerCounts.resize(samples.size());
   float discovery_fraction=0.1;
   float  presence_fraction=0.0;
   for(auto sequence: seqs)
@@ -101,19 +101,18 @@ void SamplesDatabase::getKmerCounts(vector<string>& seqs,vector<unordered_map<st
         {
           throw std::logic_error("number of kmers doesnt match query result");
         }
-	auto it=metaLabel_to_Index.find(label);
-	if(it == metaLabel_to_Index.end())
-	{
-	  throw std::logic_error("Sample "+label+" doesnt exist in graph description");
-	}
+	    auto it=metaLabel_to_Index.find(label);
+	    if(it == metaLabel_to_Index.end())
+        {
+	        throw std::logic_error("Sample "+label+" doesnt exist in graph description");
+	    }
         uint32_t sampleIndex= it->second;
         for(unsigned i = 0; i< numKmers; i++)
         {
             if(log_scale)
-                kmerCounts[sampleIndex][kmers[i]]= (1 << counts[i]);
+                kmerCounts->at(sampleIndex)[kmers[i]]= (1 << counts[i]);
             else
-                kmerCounts[sampleIndex][kmers[i]] = counts[i];
-
+                kmerCounts->at(sampleIndex)[kmers[i]] = counts[i];
         }
 
     }
