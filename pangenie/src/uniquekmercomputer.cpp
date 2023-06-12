@@ -157,6 +157,7 @@ void UniqueKmerComputer::compute_emissions(SamplesDatabase* database, EmissionPr
         //cerr<<"kmer counts size "<<kmerCounts.size()<<endl;
 
         for(unsigned sampleID=0; sampleID< numSamples ; sampleID++) {
+            cerr<<sampleID<<endl;
             UniqueKmers* sampleU= new UniqueKmers(*(uniqKmers[v]));
             string sampleName=database->getSampleName(sampleID);
             //bool debug= (sampleName=="SRR17029944");
