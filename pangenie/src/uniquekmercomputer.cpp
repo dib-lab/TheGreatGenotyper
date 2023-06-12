@@ -176,7 +176,9 @@ void UniqueKmerComputer::compute_emissions(SamplesDatabase* database, EmissionPr
                 auto it =kmerCounts[sampleID].find(kmer.first.to_str());
                 size_t read_kmercount =0;
                 if(it != kmerCounts[sampleID].end() ) {
+                    cout<<"Here"<<endl;
                     read_kmercount =it->second;
+                    cerr<<kmer.first.to_str()<<" "<<read_kmercount<<endl;
                 }
                 cerr<<kmer.first.to_str()<<" "<<read_kmercount<<endl;
                 if (read_kmercount >
