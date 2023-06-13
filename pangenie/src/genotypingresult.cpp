@@ -179,8 +179,9 @@ void GenotypingResult::normalize () {
 		this->divide_likelihoods_by(normalization_sum);
 	}
     else{
+        long double v=1.0/(long double)this->genotype_to_likelihood.size();
         for (auto it = this->genotype_to_likelihood.begin(); it != this->genotype_to_likelihood.end(); ++it) {
-            it->second = 1;
+            it->second = v;
         }
     }
 }
