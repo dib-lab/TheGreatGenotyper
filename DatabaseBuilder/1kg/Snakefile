@@ -256,7 +256,7 @@ def getFile(name):
        raise Exception("No file description form sample %s in sub_samble.csv or "%(name,urlsFile))
 
 	
-localrules: all, createGraphDescriptor, prepareAnnnotationColumns, DownloadGlobus,giveGreenLight, markSampleFinished
+localrules: all, createGraphDescriptor, prepareAnnnotationColumns,giveGreenLight, markSampleFinished
 
 
 rule all:
@@ -335,25 +335,25 @@ rule markSampleFinished:
 
 
 # dependency here is to guide snakemake download files for the same sample together, and dont overload the disk space. Also, I instructing snakemake not start downloading a new sample until kmc finish counting the previously downloaded samples 
-rule DownloadGlobus:
-    input:
-         flag1=ancient(outputFolder+"globus/{file}.greenLight.1"),
-#	 flag2=ancient(outputFolder+"globus/{file}.greenLight.2")
-    params:
-        urls=lambda wildcards: urlsByFileName[f"{wildcards.file}"]
-    output:
-          temp(outputFolder+"fastq/{file}")
-    threads: 1
-    priority: 1
-    retries: 5
-    resources:
-        mem_mb=1024,cores=1,parallel_download=1
-    log: outputFolder+"fastq/{file}.log"
-    shell:
-       	"""
-		id=$(globus transfer -s size --notify off {globus_ebi_id}:{params.urls} {globus_client_id}:{output}  |grep "Task ID" | sed -e 's/Task ID: //' )
-		globus task wait $id
-        """
+# rule DownloadGlobus:
+#     input:
+#          flag1=ancient(outputFolder+"globus/{file}.greenLight.1"),
+# #	 flag2=ancient(outputFolder+"globus/{file}.greenLight.2")
+#     params:
+#         urls=lambda wildcards: urlsByFileName[f"{wildcards.file}"]
+#     output:
+#           temp(outputFolder+"fastq/{file}")
+#     threads: 1
+#     priority: 1
+#     retries: 5
+#     resources:
+#         mem_mb=1024,cores=1,parallel_download=1
+#     log: outputFolder+"fastq/{file}.log"
+#     shell:
+#        	"""
+# 		id=$(globus transfer -s size --notify off {globus_ebi_id}:{params.urls} {globus_client_id}:{output}  |grep "Task ID" | sed -e 's/Task ID: //' )
+# 		globus task wait $id
+#         """
 
 def getURL(wildcards,attempt):
     if attempt == 1:
