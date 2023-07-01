@@ -335,25 +335,37 @@ rule markSampleFinished:
 
 
 # dependency here is to guide snakemake download files for the same sample together, and dont overload the disk space. Also, I instructing snakemake not start downloading a new sample until kmc finish counting the previously downloaded samples 
-# rule DownloadGlobus:
-#     input:
-#          flag1=ancient(outputFolder+"globus/{file}.greenLight.1"),
-# #	 flag2=ancient(outputFolder+"globus/{file}.greenLight.2")
-#     params:
-#         urls=lambda wildcards: urlsByFileName[f"{wildcards.file}"]
-#     output:
-#           temp(outputFolder+"fastq/{file}")
-#     threads: 1
-#     priority: 1
-#     retries: 5
-#     resources:
-#         mem_mb=1024,cores=1,parallel_download=1
-#     log: outputFolder+"fastq/{file}.log"
-#     shell:
-#        	"""
-# 		id=$(globus transfer -s size --notify off {globus_ebi_id}:{params.urls} {globus_client_id}:{output}  |grep "Task ID" | sed -e 's/Task ID: //' )
-# 		globus task wait $id
-#         """
+rule DownloadGlobus:
+    input:
+         flag1=ancient(outputFolder+"globus/{file}.greenLight.1"),
+#	 flag2=ancient(outputFolder+"globus/{file}.greenLight.2")
+#    params:
+#        urls=lambda wildcards,attempt: getURL(wildcards,attempt)
+    output:
+          temp(outputFolder+"cram/{file}")
+    threads: 1
+    priority: 5
+    retries: 5
+    conda:
+         "env.yaml"
+    resources:
+        mem_mb=1024,
+	cores=1,
+	parallel_download=1,
+        nodes = 1,
+        time = 60 * 8,
+        partition = lambda wildcards: getHighPartition(f"{wildcards.file}"),
+        tmp= lambda wildcards: "%sgetfasta_%s/"%(tmpFolder,f"{wildcards.file}"),
+        urls_s3=lambda wildcards: urlsByFileName[f"{wildcards.file}"] ,
+        urls_ftp=lambda wildcards: ftpurlsByFileName[f"{wildcards.file}"] ,
+        urls_globus=lambda wildcards: globusurlsByFileName[f"{wildcards.file}"] ,
+	attempt= lambda wildcards,attempt: attempt
+    log: outputFolder+"cram/{file}.log"
+    shell:
+       	"""
+		id=$(globus transfer -s size --notify off {globus_ebi_id}:{resources.urls_globus} {globus_client_id}:{output}  |grep "Task ID" | sed -e 's/Task ID: //' )
+		globus task wait $id
+        """
 
 def getURL(wildcards,attempt):
     if attempt == 1:

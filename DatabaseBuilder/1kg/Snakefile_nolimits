@@ -362,8 +362,8 @@ def getURL(wildcards,attempt):
        return ftpurlsByFileName[f"{wildcards.file}"]	
 
 rule DownloadAWS:
-    input:
-         flag1=ancient(outputFolder+"globus/{file}.greenLight.1"),
+#    input:
+#         flag1=ancient(outputFolder+"globus/{file}.greenLight.1"),
 #	 flag2=ancient(outputFolder+"globus/{file}.greenLight.2")
 #    params:
 #        urls=lambda wildcards,attempt: getURL(wildcards,attempt)

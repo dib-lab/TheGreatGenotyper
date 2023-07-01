@@ -57,6 +57,7 @@ for s in tmp:
 urlsByFileName={}
 ftpurlsByFileName={}
 globusurlsByFileName={}
+sraIDByFileName={}
 
 import json
 
@@ -94,6 +95,10 @@ for acc, data in downloadData.items():
 	urlsByFileName[file]=f["aws"]
 	ftpurlsByFileName[file]=f["ftp"]
 	globusurlsByFileName[file]=f["globus"]
+	sraIDByFileName[file]=f["SRA"]
+
+
+
 
 
 # for l in open(urlsFile):
@@ -298,14 +303,17 @@ rule kmc:
 #	cp /group/ctbrowngrp/mshokrof/GRCh38_full_analysis_set_plus_decoy_hla.fa* {resources.tmp}
 #	cp {input} {resources.tmp}cram.cram
 
-	samtools view -@ {threads} -b -T /mnt/gs21/scratch/mansourt/SV/GRCh38_full_analysis_set_plus_decoy_hla.fa {input} |samtools fastq |seqtk seq -a > {resources.tmp}fastq.fq
-	
+#	samtools view -@ {threads} -b -T /mnt/gs21/scratch/mansourt/SV/GRCh38_full_analysis_set_plus_decoy_hla.fa {input} |samtools fastq |seqtk seq -a > {resources.tmp}fastq.fq
+
+
+	fasterq-dump   --stdout --skip-technical --fasta-unsorted --threads {threads} -t  {resources.tmp} {input} > {resources.tmp}fastq.fq
 #	rm  {resources.tmp}GRCh38_full_analysis_set_plus_decoy_hla.fa*
 	
 
 	kmc -hp -ci{kmcMinCount} -t{threads} -k{kSize} -m15 -sm  -fm {resources.tmp}fastq.fq {params.outPrefix} {resources.tmp} 
 
         /mnt/gs21/scratch/mansourt/TheGreatGenotyper/build/DatabaseBuilder/computeHistogram -i {params.outPrefix} -m 1000 -o {output.histogram} 
+       
 	rm -rf {resources.tmp}
         """
  
@@ -339,19 +347,31 @@ rule markSampleFinished:
 #     input:
 #          flag1=ancient(outputFolder+"globus/{file}.greenLight.1"),
 # #	 flag2=ancient(outputFolder+"globus/{file}.greenLight.2")
-#     params:
-#         urls=lambda wildcards: urlsByFileName[f"{wildcards.file}"]
+# #    params:
+# #        urls=lambda wildcards,attempt: getURL(wildcards,attempt)
 #     output:
-#           temp(outputFolder+"fastq/{file}")
+#           temp(outputFolder+"cram/{file}")
 #     threads: 1
-#     priority: 1
+#     priority: 5
 #     retries: 5
+#     conda:
+#          "env.yaml"
 #     resources:
-#         mem_mb=1024,cores=1,parallel_download=1
-#     log: outputFolder+"fastq/{file}.log"
+#         mem_mb=1024,
+# 	cores=1,
+# 	parallel_download=1,
+#         nodes = 1,
+#         time = 60 * 8,
+#         partition = lambda wildcards: getHighPartition(f"{wildcards.file}"),
+#         tmp= lambda wildcards: "%sgetfasta_%s/"%(tmpFolder,f"{wildcards.file}"),
+#         urls_s3=lambda wildcards: urlsByFileName[f"{wildcards.file}"] ,
+#         urls_ftp=lambda wildcards: ftpurlsByFileName[f"{wildcards.file}"] ,
+#         urls_globus=lambda wildcards: globusurlsByFileName[f"{wildcards.file}"] ,
+# 	attempt= lambda wildcards,attempt: attempt
+#     log: outputFolder+"cram/{file}.log"
 #     shell:
 #        	"""
-# 		id=$(globus transfer -s size --notify off {globus_ebi_id}:{params.urls} {globus_client_id}:{output}  |grep "Task ID" | sed -e 's/Task ID: //' )
+# 		id=$(globus transfer -s size --notify off {globus_ebi_id}:{resources.urls_globus} {globus_client_id}:{output}  |grep "Task ID" | sed -e 's/Task ID: //' )
 # 		globus task wait $id
 #         """
 
@@ -385,13 +405,14 @@ rule DownloadAWS:
         urls_s3=lambda wildcards: urlsByFileName[f"{wildcards.file}"] ,
         urls_ftp=lambda wildcards: ftpurlsByFileName[f"{wildcards.file}"] ,
         urls_globus=lambda wildcards: globusurlsByFileName[f"{wildcards.file}"] ,
+	sra_id=lambda wildcards: sraIDByFileName[f"{wildcards.file}"] ,
 	attempt= lambda wildcards,attempt: attempt
     log: outputFolder+"cram/{file}.log"
     shell:
        	"""
 	# if [ "{resources.attempt}" = 1 ]
 	# then
-	  aws s3 cp --quiet  --no-sign-request {resources.urls_s3} {output} &> {log}
+	  aws s3 cp --quiet  --no-sign-request  s3://sra-pub-run-odp/sra/{resources.sra_id}/{resources.sra_id} {output} &> {log}
 	# else
 	#   id=$(globus transfer -s size --notify off {globus_ebi_id}:{resources.urls_globus} {globus_client_id}:~/out.cram  |grep "Task ID" | sed -e 's/Task ID: //' )
 	#   globus task wait $id
