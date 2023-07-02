@@ -186,7 +186,7 @@ You need to install :
 
 The notebook needs two input files: vcf file("test_output/test.phased.tagged.vcf.bgz") and [samples description](https://farm.cse.ucdavis.edu/~mshokrof/SGDP/samples.csv).
 
-<img src="test_SGDP_PCA.png" alt="alt text" />
+<img src="pca_and_map.png" alt="alt text" />
 
 
 [![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)](#contributors)
