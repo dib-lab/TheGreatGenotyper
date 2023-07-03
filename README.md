@@ -96,16 +96,17 @@ Download index(50G) for Simons Genome Diversity population([SGDP](https://www.na
 ```
 mkdir -p index/SGDP/
 cd index/SGDP/
-wget https://farm.cse.ucdavis.edu/~mshokrof/SGDP/graph.dbg
-wget https://farm.cse.ucdavis.edu/~mshokrof/SGDP/graph.desc.tsv
-wget https://farm.cse.ucdavis.edu/~mshokrof/SGDP/annotation.relaxed.row_diff_int_brwt.annodbg
-wget https://farm.cse.ucdavis.edu/~mshokrof/SGDP/samples.csv
+wget https://farm.cse.ucdavis.edu/~mshokrof/indexes/SGDP/graph.dbg
+wget https://farm.cse.ucdavis.edu/~mshokrof/indexes/SGDP/graph.desc.tsv
+wget https://farm.cse.ucdavis.edu/~mshokrof/indexes/SGDP/annotation.relaxed.row_diff_int_brwt.annodbg
+wget https://farm.cse.ucdavis.edu/~mshokrof/indexes/SGDP/samples.csv
 cd -
 echo "index/SGDP/" > indexes
 ```
  To use this script with the HGDP dataset as well: Download the HGDP indexes from https://farm.cse.ucdavis.edu/~mshokrof/indexes/ and add the folder name to the 'indexes' file.
 
- You can find the metadata for the samples in the index at 
+ You can find the metadata for the samples in the index at [index_metadata.csv](https://github.com/dib-lab/TheGreatGenotyper/blob/development/index_metadata.csv)
+
 
 ### Running
 <img src="algorithm.drawio.export.png" alt="alt text" />
