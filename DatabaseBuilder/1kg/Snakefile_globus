@@ -1,0 +1,925 @@
+pepfile: "project_config.yaml"
+configfile: "config.yaml" 
+
+tmpFolder=config["tempFolder"]
+outputFolder=config["outputFolder"]
+kSize=config["kSize"]
+urlsFile=config["downloadUrls"]
+batchSize=config["batchSize"]
+
+kmcMinCount=3
+if "kmcMinCount" in config:
+   kmcMinCount= config["kmcMinCount"]
+
+metagraph_smooth_value=10000000
+
+globus_ebi_id= ""
+globus_client_id= ""
+
+if "globus_client_id" in config:
+   globus_ebi_id= config["globus_ebi_id"]
+   globus_client_id= config["globus_client_id"]
+   
+
+import random
+
+def getHighPartition(sample):
+    partitions=["high2","bmh"]
+    p=hash(sample)%len(partitions)
+    return partitions[p]
+
+def getMeduimPartition(sample):
+    partitions=["med2"]
+    p=hash(sample)%len(partitions)
+    return partitions[p]
+
+def getLowPartition(sample,attempt):
+    if attempt>1:
+       return getMeduimPartition(sample)
+    partitions=["bml"]
+    p=hash(sample)%len(partitions)
+    return partitions[p]
+
+
+
+
+tmp=list(filter(lambda x:x.library=="short",pep.samples))
+illuminaSamples=[s.sample_name for s in tmp]
+
+
+urls={}
+kmcfileType= {}
+for s in tmp:
+    if hasattr(s, 'file'): urls[s.sample_name]=s.file
+    kmcfileType[s.sample_name] = "-fq"
+
+
+urlsByFileName={}
+ftpurlsByFileName={}
+globusurlsByFileName={}
+
+import json
+
+
+downloadData={}
+
+
+
+if urlsFile != None:
+   with open(urlsFile, "r") as read_content:
+   	 downloadData = json.load(read_content)
+
+
+for acc, data in downloadData.items():
+    sample=data["BioSample"]
+    if sample not in urls:
+       urls[sample]=[]
+    if data["downloadMethod"] == "globus":
+       kmcfileType[sample] = "-fq"
+       for f in data["fastq"]:
+       	   file=f["filename"]
+	   fileName=outputFolder+"fastq/"+file
+	   urls[sample].append(fileName)
+           urlsByFileName[file]=f["globus"]
+    elif data["downloadMethod"] == "sra":
+    	kmcfileType[sample] = "-fq"
+    	fileName= outputFolder+"fasta/"+acc+".fastq.gz"
+	urls[sample].append(fileName)
+    elif data["downloadMethod"] == "aws":
+    	f=data["bam"][0] 
+    	kmcfileType[sample] = "-fbam"
+	file=f["filename"]
+    	fileName= outputFolder+"cram/"+file
+	urls[sample].append(fileName)
+	urlsByFileName[file]=f["aws"]
+	ftpurlsByFileName[file]=f["ftp"]
+	globusurlsByFileName[file]=f["globus"]
+
+
+# for l in open(urlsFile):
+#     sample,url=l.strip().split(",")
+#     if sample not in urls:
+#        urls[sample]=[]
+       
+#     file=url.split("/")[-1]
+#     if "ftp" in url:
+#        downloadTool='fastq/'
+#     else:
+#        downloadTool='sra/'  	
+#     fileName=outputFolder+downloadTool+file
+#     urls[sample].append(fileName)
+#     urlsByFileName[file]=url
+
+
+from os.path import exists
+from pathlib import Path
+from os import makedirs
+
+
+if not exists(outputFolder+"globus"):
+   os.makedirs(outputFolder+"globus")
+
+
+#samples_to_be_processed=[]
+# for sample in illuminaSamples:
+#     unitigFile="%sunitigs/smooth_%d/%s.fasta.gz"%(outputFolder,metagraph_smooth_value,sample)
+#     unitigFile2="%sunitigs/smooth_%d/%s.fasta.gz"%(outputFolder,1,sample)
+#     if not exists(unitigFile) or not exists(unitigFile2):
+#        samples_to_be_processed.append(sample)
+
+
+def touchIfNotThere(path):
+    if not exists(path):
+       Path(path).touch()
+
+
+downloadDependency={ "1":{}, "2":{} }
+greenLights= {}
+numberParallelSamples=min(50,len(illuminaSamples))
+
+
+for i in range(0,numberParallelSamples):
+    sample = illuminaSamples[i]
+    if sample not in urls:
+       continue
+    fileNames = urls[sample]
+    for f in fileNames:
+        fileName= f.split("/")[-1]
+	#fileName= f.split("/")[-1].split(".")[0].split("_")[0]
+	flag=outputFolder+"globus/%s.greenLight.1"%(fileName)
+	#give green flag to download those files
+	touchIfNotThere(flag)
+	downloadDependency["1"][fileName]=flag
+	if i==0:
+            flag=outputFolder+"globus/%s.greenLight.2"%(fileName)
+       	    touchIfNotThere(flag)
+	    downloadDependency["2"][fileName]=flag
+
+
+def isProcessed(sample):
+    check_pathes=[
+	"%skmc/%s.kmc_pre" % (outputFolder, sample),
+	"%sgraphs/%s.dbg" % (outputFolder, sample),
+	"%sunitigs/smooth_1/%s.fasta.gz" % (outputFolder, sample)]
+    for path in check_pathes:
+    	if exists(path):
+       	   return True
+    return False
+    
+
+
+for i in range(numberParallelSamples, len(illuminaSamples)):
+    sample = illuminaSamples[i]
+    if sample not in urls:
+       continue
+    fileNames = urls[sample]
+    parent = illuminaSamples[ i- numberParallelSamples ]
+    flag =  "%skmc/%s.kmc_pre" % (outputFolder, parent)
+    processed= isProcessed(parent)
+    for f in fileNames:
+    	fileName= f.split("/")[-1]
+	downloadDependency["1"][fileName]=flag
+	if processed:
+       	   flag =  "%sglobus/%s.greenLight.1" % (outputFolder, fileName)
+	   touchIfNotThere(flag)
+
+for i in range(1,len(illuminaSamples)):
+    sample = illuminaSamples[i]
+    parent = illuminaSamples[ i- 1 ]
+    fileNames = urls[sample]
+    flag =  "%sglobus/%s.finished" % (outputFolder, parent)
+    processed= isProcessed(parent)
+    for f in fileNames:
+    	fileName= f.split("/")[-1]
+	downloadDependency["2"][fileName]=flag
+	if processed:
+           flag =  "%sglobus/%s.greenLight.2" % (outputFolder, fileName)
+	   touchIfNotThere(flag)
+	   
+	
+###in case we  killed the snakemake and we want to resume so I am creating make sure the flags are created for downloaded samples
+for i in range(0,len(illuminaSamples)):
+    sample = illuminaSamples[i]
+    flag="%sglobus/%s.finished" % (outputFolder, sample)
+    if exists(flag):
+       continue
+    check_pathes=[
+	"%skmc/%s.kmc_pre" % (outputFolder, sample),
+	"%sgraphs/%s.dbg" % (outputFolder, sample),
+	"%sunitigs/smooth_1/%s.fasta.gz" % (outputFolder, sample)]
+	
+    for path in check_pathes:
+    	if exists(path):
+       	   touchIfNotThere(flag)
+	
+
+
+kmcs=expand("{out}kmc/{experiment}.kmc_pre",out=outputFolder,experiment=illuminaSamples)
+metagraphUnitigsNoSmooth=expand(outputFolder+"unitigs/smooth_1/{sample}.fasta.gz",sample=illuminaSamples)
+
+metagraphUnitigs=expand(outputFolder+"unitigs/smooth_{smooth_value}/{sample}.fasta.gz",sample=illuminaSamples,smooth_value="{smooth_value}")
+
+contigs2=expand(outputFolder+"unitigs/smooth_10000000/{sample}.fasta.gz",sample=illuminaSamples)
+# process=[]
+# for f in contigs2+ metagraphUnitigsNoSmooth:
+#     if not exists(f):
+#        process.append(f)
+
+
+annodbg=expand(outputFolder+"smooth_{smooth_value}/columns/{sample}.fasta.gz.column.annodbg",sample=illuminaSamples,smooth_value="{smooth_value}")
+annodbgCounts=expand(outputFolder+"smooth_{smooth_value}/columns/{sample}.fasta.gz.column.annodbg.counts",sample=illuminaSamples,smooth_value="{smooth_value}")
+
+histograms=expand(outputFolder+"histograms/{sample}.histo",sample=illuminaSamples)
+
+
+batches=[]
+for i in range(0,len(illuminaSamples),batchSize):
+    start=i
+    end=i+batchSize
+    end=min(end,len(illuminaSamples))
+    batches.append({
+    "unitigs" : metagraphUnitigs[start:end],
+    "columns" : annodbg[start:end],
+    "counts"  : annodbgCounts[start:end]
+    })
+
+batchFlags= expand(outputFolder+"smooth_{smooth_value}/columns/{batchID}/done",batchID= [str(i) for i in range(len(batches))] ,smooth_value="{smooth_value}")
+
+
+def getFile(name):
+    sample=list(filter(lambda x:x.sample_name==name,pep.samples))
+    if len(sample) >0 and hasattr(sample[0], 'file'):
+       return sample[0].file
+    elif name in urls:
+       return urls[name]
+    else:
+       raise Exception("No file description form sample %s in sub_samble.csv or "%(name,urlsFile))
+
+	
+localrules: all, createGraphDescriptor, prepareAnnnotationColumns,giveGreenLight, markSampleFinished
+
+
+rule all:
+    input:
+        outputFolder+"smooth_1/annotation.relaxed.row_diff_int_brwt.annodbg",
+	outputFolder+"smooth_1/graph.desc.tsv",
+	outputFolder+"smooth_1/graph.dbg",
+#        contigs2,
+# 	metagraphUnitigsNoSmooth
+
+rule kmc:
+    input: ancient(lambda wildcards: getFile(f"{wildcards.experiment}"))         
+    params:
+        outPrefix=outputFolder +"kmc/{experiment}"
+    output:
+         pre=temp(outputFolder +"kmc/{experiment}.kmc_pre"),
+	 suf=temp(outputFolder +"kmc/{experiment}.kmc_suf"),
+	 histogram=outputFolder+"histograms/{experiment}.histo"
+    conda:
+         "env.yaml"
+    threads: 8
+    priority: 1
+    resources:
+        mem_mb=16000,
+        cores=8,
+	parallel_kmc=1,
+	nodes = 1,
+        time = lambda wildcards,attempt: attempt * 60 * 4,
+        partition =  lambda wildcards: getMeduimPartition(f"{wildcards.experiment}"),
+        tmp= lambda wildcards: "%skmc_%s/"%(tmpFolder,f"{wildcards.experiment}")		
+    log: outputFolder +"kmc/{experiment}.log"
+    shell:
+       	"""
+	mkdir -p {resources.tmp} 
+	function cleanup() {{ rm -rf {resources.tmp}; }}
+	trap cleanup EXIT
+	trap cleanup USR1
+
+#	cp /group/ctbrowngrp/mshokrof/GRCh38_full_analysis_set_plus_decoy_hla.fa* {resources.tmp}
+#	cp {input} {resources.tmp}cram.cram
+
+	samtools view -@ {threads} -b -T /mnt/gs21/scratch/mansourt/SV/GRCh38_full_analysis_set_plus_decoy_hla.fa {input} |samtools fastq |seqtk seq -a > {resources.tmp}fastq.fq
+	
+#	rm  {resources.tmp}GRCh38_full_analysis_set_plus_decoy_hla.fa*
+	
+
+	kmc -hp -ci{kmcMinCount} -t{threads} -k{kSize} -m15 -sm  -fm {resources.tmp}fastq.fq {params.outPrefix} {resources.tmp} 
+
+        /mnt/gs21/scratch/mansourt/TheGreatGenotyper/build/DatabaseBuilder/computeHistogram -i {params.outPrefix} -m 1000 -o {output.histogram} 
+	rm -rf {resources.tmp}
+        """
+ 
+
+
+rule giveGreenLight:
+    input:
+         lambda wildcards: ancient(downloadDependency[f"{wildcards.id}"][f"{wildcards.file}"])
+    output:
+         outputFolder+"globus/{file}.greenLight.{id}"
+    shell:
+       	"""
+		touch {output}
+        """
+
+rule markSampleFinished:
+    input: ancient(lambda wildcards: getFile(f"{wildcards.experiment}"))         
+    output:
+         outputFolder+"globus/{experiment}.finished"
+    shell:
+       	"""
+		touch {output}
+        """
+	 
+
+
+
+
+# dependency here is to guide snakemake download files for the same sample together, and dont overload the disk space. Also, I instructing snakemake not start downloading a new sample until kmc finish counting the previously downloaded samples 
+rule DownloadGlobus:
+    input:
+         flag1=ancient(outputFolder+"globus/{file}.greenLight.1"),
+#	 flag2=ancient(outputFolder+"globus/{file}.greenLight.2")
+#    params:
+#        urls=lambda wildcards,attempt: getURL(wildcards,attempt)
+    output:
+          temp(outputFolder+"cram/{file}")
+    threads: 1
+    priority: 5
+    retries: 5
+    conda:
+         "env.yaml"
+    resources:
+        mem_mb=1024,
+	cores=1,
+	parallel_download=1,
+        nodes = 1,
+        time = 60 * 8,
+        partition = lambda wildcards: getHighPartition(f"{wildcards.file}"),
+        tmp= lambda wildcards: "%sgetfasta_%s/"%(tmpFolder,f"{wildcards.file}"),
+        urls_s3=lambda wildcards: urlsByFileName[f"{wildcards.file}"] ,
+        urls_ftp=lambda wildcards: ftpurlsByFileName[f"{wildcards.file}"] ,
+        urls_globus=lambda wildcards: globusurlsByFileName[f"{wildcards.file}"] ,
+	attempt= lambda wildcards,attempt: attempt
+    log: outputFolder+"cram/{file}.log"
+    shell:
+       	"""
+		id=$(globus transfer -s size --notify off {globus_ebi_id}:{resources.urls_globus} {globus_client_id}:{output}  |grep "Task ID" | sed -e 's/Task ID: //' )
+		globus task wait $id
+        """
+
+def getURL(wildcards,attempt):
+    if attempt == 1:
+       return urlsByFileName[wildcards.file]
+    else:
+       return ftpurlsByFileName[f"{wildcards.file}"]	
+
+rule DownloadAWS:
+    input:
+         flag1=ancient(outputFolder+"globus/{file}.greenLight.1"),
+#	 flag2=ancient(outputFolder+"globus/{file}.greenLight.2")
+#    params:
+#        urls=lambda wildcards,attempt: getURL(wildcards,attempt)
+    output:
+          temp(outputFolder+"cram/{file}")
+    threads: 1
+    priority: 5
+    retries: 5
+    conda:
+         "env.yaml"
+    resources:
+        mem_mb=1024,
+	cores=1,
+	parallel_download=1,
+        nodes = 1,
+        time = 60 * 8,
+        partition = lambda wildcards: getHighPartition(f"{wildcards.file}"),
+        tmp= lambda wildcards: "%sgetfasta_%s/"%(tmpFolder,f"{wildcards.file}"),
+        urls_s3=lambda wildcards: urlsByFileName[f"{wildcards.file}"] ,
+        urls_ftp=lambda wildcards: ftpurlsByFileName[f"{wildcards.file}"] ,
+        urls_globus=lambda wildcards: globusurlsByFileName[f"{wildcards.file}"] ,
+	attempt= lambda wildcards,attempt: attempt
+    log: outputFolder+"cram/{file}.log"
+    shell:
+       	"""
+	# if [ "{resources.attempt}" = 1 ]
+	# then
+	  aws s3 cp --quiet  --no-sign-request {resources.urls_s3} {output} &> {log}
+	# else
+	#   id=$(globus transfer -s size --notify off {globus_ebi_id}:{resources.urls_globus} {globus_client_id}:~/out.cram  |grep "Task ID" | sed -e 's/Task ID: //' )
+	#   globus task wait $id
+	#   mv ~/out.cram {output}
+        # fi
+		
+        """
+
+
+
+
+# rule get_fastq_pe_gz:
+#     input:
+#          flag1=ancient(outputFolder+"globus/{accession}_1.fastq.gz.greenLight.1"),
+# 	 flag2=ancient(outputFolder+"globus/{accession}_1.fastq.gz.greenLight.2"),
+#          flag3=ancient(outputFolder+"globus/{accession}_2.fastq.gz.greenLight.1"),
+# 	 flag4=ancient(outputFolder+"globus/{accession}_2.fastq.gz.greenLight.2"),
+#     output:
+#         # the wildcard name must be accession, pointing to an SRA number
+#         temp(outputFolder+"sra/{accession}_1.fastq.gz"),
+#         temp(outputFolder+"sra/{accession}_2.fastq.gz")
+#     log:
+#         outputFolder+"sra/{accession}.log"
+#     params:
+#         extra="--skip-technical"
+#     threads: 6  # defaults to 6
+#     wrapper:
+#         "v1.14.1/bio/sra-tools/fasterq-dump"
+	
+
+
+rule get_fasta:
+    input:
+         flag1=ancient(outputFolder+"globus/{accession}.fastq.gz.greenLight.1"),
+#	 flag2=ancient(outputFolder+"globus/{accession}.fastq.gz.greenLight.2")
+    output:
+         fasta=temp(outputFolder+"fasta/{accession}.fastq.gz"),
+    log:
+        outputFolder+"fasta/{accession}.log"
+    params:
+        extra="--skip-technical"
+    threads: 6  # defaults to 6
+    priority: 5
+    retries: 5
+    resources:
+        mem_mb=1024,
+	cores=6,
+	parallel_sra=1,
+        nodes = 1,
+        time = 60 * 8,
+        partition = lambda wildcards: getHighPartition(f"{wildcards.accession}"),
+        tmp= lambda wildcards: "%sgetfasta_%s/"%(tmpFolder,f"{wildcards.accession}")	
+    conda:
+        "fasterqdumb.yaml"
+    shell:
+        """
+	mkdir -p {resources.tmp}
+
+	function cleanup() {{ rm -rf {resources.tmp} ; }}
+	trap cleanup EXIT
+	trap cleanup USR1
+
+	aws s3 cp --quiet  --no-sign-request s3://sra-pub-run-odp/sra/{wildcards.accession}/{wildcards.accession} {resources.tmp} 	
+	fasterq-dump   --stdout --skip-technical --fasta-unsorted --threads 2 -t {resources.tmp} {resources.tmp}{wildcards.accession}  |seqtk seq -F '#' - | pigz -1 -p4  > {resources.tmp}output.fastq.gz
+	mv {resources.tmp}output.fastq.gz {output.fasta} 
+	ls -lsah {output.fasta}
+ 	rm -rf {resources.tmp}
+	"""
+	
+
+
+rule DownloadAspera:
+    params:
+        urls=lambda wildcards: urlsByFileName[f"{wildcards.file}"]
+    output:
+         outputFolder+"aspera/{file}"
+    conda:
+         "env.yaml"
+    threads: 1
+    priority: 10
+    retries: 5
+    resources:
+        mem_mb=1024,cores=1
+    log: outputFolder+"fastq/{file}.log"
+    shell:
+       	"""
+	ascp -QT -l 300m -P33001 -i $CONDA_PREFIX/etc/asperaweb_id_dsa.openssh {params.urls} {output} &> {log} 
+        """
+
+ 
+
+# rule kmcDownload:
+#     params:
+#         urls=lambda wildcards: getUrls(f"{wildcards.experiment}"),
+#         outPrefix=outputFolder +"kmc/{experiment}"
+#     output:
+#          pre=temp(outputFolder +"kmc/{experiment}.kmc_pre"),
+# 	 suf=temp(outputFolder +"kmc/{experiment}.kmc_suf")
+#     conda:
+#          "env.yaml"
+#     threads: 16
+#     resources:
+#         mem_mb=17000,cores=16
+#     log: outputFolder +"kmc/{experiment}.log"
+#     shell:
+#        	"""
+#       	mkdir -p {tmpFolder}$$/
+
+
+# 	parallel -j1  --gnu "axel --output={tmpFolder}$$/{wildcards.experiment}_{{#}}.fastq.gz {{}}" ::: {params.urls}
+
+# 	ls {tmpFolder}$$/*.fastq.gz  > {tmpFolder}$$/input.lst
+
+# 	kmc -ci{kmcMinCount} -t{threads} -k{kSize} -m16  @{tmpFolder}$$/input.lst {params.outPrefix} {tmpFolder}$$/ &> {log}
+
+# 	rm -rf {tmpFolder}$$/
+#         """
+
+
+
+
+rule createGraphDescriptor:
+    input:
+         histograms = histograms,
+	 unitigs= metagraphUnitigs,
+         graph=outputFolder+"smooth_{smooth_value}/graph.dbg"
+    params:
+         labels =  illuminaSamples
+    output:
+         description=outputFolder+"smooth_{smooth_value}/graph.desc.tsv"
+    conda:
+         "env.yaml"
+    threads: 1
+    resources:
+        mem_mb=3000,cores=1,mem_gb=2
+    log: outputFolder+"smooth_{smooth_value}/graph.desc.tsv.log"
+    shell:
+       	"""
+        echo {params.labels} | tr -s ' ' $'\n' > tmp1
+        parallel --gnu -j1 -k "grep  'parameters' {{}} | cut -f3" ::: {input.histograms} > tmp2
+	echo {input.unitigs}| tr -s ' ' $'\n' > tmp3
+        paste -d'\t' tmp1 tmp2 tmp3 > {output.description}
+	"""
+
+
+
+pruneTips= int(kSize)*2
+
+
+#ruleorder: smooth_count >  kmc_to_clean_fasta
+
+
+rule kmc_to_graph:
+    input: prefix=ancient(outputFolder+"kmc/{sample}.kmc_pre"), suffix=ancient(outputFolder+"kmc/{sample}.kmc_suf")
+    output:
+         graph= temp(outputFolder+"graphs/{sample}.dbg"),
+         weights= temp(outputFolder+"graphs/{sample}.dbg.weights"),	 
+    params:
+         outputFolder= outputFolder+"graphs/"
+    conda:
+         "env.yaml"
+    threads: 8
+    priority: 1
+    resources:
+        mem_mb=24576,
+        cores=8,
+        mem_gb=24,
+	nodes = 1,
+        time = lambda wildcards, attempt: 60 * 4 * attempt,
+        partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.sample}"),
+	tmp= lambda wildcards: "%sgraph_%s/"%(tmpFolder,f"{wildcards.sample}")
+    log: outputFolder+"graphs/{sample}.log"
+    shell:
+       	"""	    
+	    mkdir  -p {resources.tmp}
+	    function cleanup() {{ rm -rf {resources.tmp}; }}
+	    trap cleanup EXIT
+	    trap cleanup USR1
+
+#	    cp {input.prefix} {input.suffix} {resources.tmp}
+
+	    /mnt/gs21/scratch/mansourt/TheGreatGenotyper/build2/metagraph build  \
+            -k {kSize} \
+            --mode canonical \
+            --count-kmers --count-width 16 \
+            --mem-cap-gb 20 \
+            --disk-swap  {resources.tmp}\
+            -p {threads} \
+            -o  {resources.tmp}graph \
+            {input.suffix}  &> {log}
+	    
+	    mv {resources.tmp}graph.dbg {params.outputFolder}{wildcards.sample}.dbg
+	    mv {resources.tmp}graph.dbg.weights {params.outputFolder}{wildcards.sample}.dbg.weights
+	    #ls -lsah {output.graph} >> {log}
+            rm -rf {resources.tmp}
+        """
+
+
+
+ 
+rule clean:
+    input:
+         graph= ancient(outputFolder+"graphs/{sample}.dbg"),
+         weights= ancient(outputFolder+"graphs/{sample}.dbg.weights")
+    output:
+         unitigs= outputFolder+"unitigs/smooth_{smooth_value}/{sample}.fasta.gz",
+         counts= outputFolder+"unitigs/smooth_{smooth_value}/{sample}.kmer_counts.gz",
+    params:
+         outputPrefix=outputFolder+"unitigs/smooth_{smooth_value}/{sample}"
+    conda:
+         "env.yaml"
+    threads: 8
+    priority: 1
+    resources:
+        mem_mb=20000,
+        cores=8,
+        mem_gb=18,
+	nodes = 1,
+        time = lambda wildcards, attempt: 60 * 1 * attempt,
+        partition = lambda wildcards , attempt: getLowPartition(f"{wildcards.sample}", attempt),
+        tmp= lambda wildcards: "%sclean_smooth%s_%s/"%(tmpFolder,f"{wildcards.smooth_value}",f"{wildcards.sample}")
+    log: outputFolder+"unitigs/smooth_{smooth_value}/{sample}.log"
+    shell:
+       	"""
+            mkdir  -p {resources.tmp}
+	    function cleanup() {{ rm -rf {resources.tmp}; }}
+	    trap cleanup EXIT
+	    trap cleanup USR1
+
+#	    cp {input.graph} {input.weights} {resources.tmp}
+
+            /mnt/gs21/scratch/mansourt/TheGreatGenotyper/build2/metagraph clean  \
+            --to-fasta --primary-kmers \
+            --smoothing-window 1 \
+	    --prune-tips 0 \
+	    --prune-unitigs 1 \
+            --smoothing-window {wildcards.smooth_value} \
+            -p {threads} \
+            -o {resources.tmp}{wildcards.sample} \
+            {input.graph}  &> {log} 
+
+	    mv {resources.tmp}{wildcards.sample}.fasta.gz {output.unitigs}
+	    mv {resources.tmp}{wildcards.sample}.kmer_counts.gz {output.counts}
+ 	    rm -rf {resources.tmp}
+        """
+
+
+
+
+
+
+# rule metagraph_buildMainGraph:
+#     input: ancient(metagraphUnitigs)
+#     output:
+#          graph=outputFolder+"graph.dbg"
+#     params:
+#          outputPrefix=outputFolder+"graph"
+#     conda:
+#          "env.yaml"
+#     threads: 32
+#     resources:
+#         mem_mb=12000,cores=32,mem_gb=10
+#     log: outputFolder+"buildMainGraphlog"
+#     shell:
+#        	"""
+# 	    mkdir  -p {tmpFolder}$$/
+
+#             metagraph build  \
+#             -k {kSize} \
+#             --mode canonical  \
+#             --mem-cap-gb {resources.mem_gb} \
+#             --disk-swap {tmpFolder}$$/  \
+#             -p {threads} \
+#             -o {tmpFolder}$$/graph_canonical \
+#             {input} &> {log}
+
+#             metagraph transform  \
+#             --to-fasta --primary-kmers \
+# 	    -p {threads} \
+#             -o  {tmpFolder}$$/graph_primary \
+#             {tmpFolder}$$/graph_canonical.dbg &>> {log}
+
+#             rm {tmpFolder}$$/graph_canonical.dbg
+
+
+#             metagraph build  \
+#             -k {kSize} \
+#             --mode primary \
+#             --mem-cap-gb {resources.mem_gb} \
+#             --disk-swap {tmpFolder}$$/ \
+#             -p {threads} \
+#             -o {params.outputPrefix} \
+#             {tmpFolder}$$/graph_primary.fasta.gz  &>> {log}
+	    
+# 	    rm -rf {tmpFolder}$$/
+#         """
+
+rule metagraph_buildSmoothMainGraph:
+    input: ancient(expand(outputFolder+"unitigs/smooth_{smooth_value}/{sample}.fasta.gz",smooth_value="{smooth_value}",sample=illuminaSamples))
+    output:
+         graph=outputFolder+"smooth_{smooth_value}/graph.dbg"
+    params:
+         outputPrefix=outputFolder+"smooth_{smooth_value}/graph.dbg"
+    conda:
+         "env.yaml"
+    threads: 32
+    resources:
+        mem_mb=220000,
+        cores=32,
+        mem_gb=200,
+	nodes = 1,
+        time = lambda wildcards, attempt: 60 * 100 * attempt,
+        partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.smooth_value}"),
+        tmp= lambda wildcards: "%smaingraph_smooth%s/"%(tmpFolder,f"{wildcards.smooth_value}")
+    log: outputFolder+"smooth_{smooth_value}/buildMainGraphlog"
+    shell:
+       	"""
+	    mkdir  -p {tmpFolder}$$/
+
+            /mnt/gs21/scratch/mansourt/TheGreatGenotyper/build/metagraph build  \
+            -k {kSize} \
+            --mode canonical  \
+            --mem-cap-gb {resources.mem_gb} \
+            --disk-swap {tmpFolder}$$/  \
+            -p {threads} \
+            -o {tmpFolder}$$/graph_canonical \
+            {input} &> {log}
+
+            metagraph transform  \
+            --to-fasta --primary-kmers \
+	    -p {threads} \
+            -o  {tmpFolder}$$/graph_primary \
+            {tmpFolder}$$/graph_canonical.dbg &>> {log}
+
+            rm {tmpFolder}$$/graph_canonical.dbg
+
+
+            metagraph build  \
+            -k {kSize} \
+            --mode primary \
+            --mem-cap-gb {resources.mem_gb} \
+            --disk-swap {tmpFolder}$$/ \
+            -p {threads} \
+            -o {params.outputPrefix} \
+            {tmpFolder}$$/graph_primary.fasta.gz  &>> {log}
+	    
+	    rm -rf {tmpFolder}$$/
+        """
+
+
+
+ 
+rule compressGraph:
+    input: "{prefix}graph.dbg"
+    output:
+         graph="{prefix}graph.small.dbg"
+    params:
+         outputPrefix="{prefix}graph.small"
+    conda:
+         "env.yaml"
+    threads: 32
+    resources:
+        mem_mb=12000,cores=32,mem_gb=10
+    log: "{prefix}graph.small.log"
+    shell:
+       	"""
+	metagraph transform  \
+            --state small \
+            -o {params.outputPrefix} \
+            -p {threads} \
+	    {input} &> {log}
+	"""
+
+
+
+rule createAnnotationColumns:
+    input:
+         unitigs=lambda wildcards: batches[int(f"{wildcards.batchID}")]["unitigs"],
+         graph=outputFolder+"smooth_{smooth_value}/graph.dbg"
+    output:
+         batchFlag = outputFolder+"smooth_{smooth_value}/columns/{batchID}/done",
+    params:
+         outputPrefix=outputFolder+"smooth_{smooth_value}/columns/{batchID}/"
+    conda:
+         "env.yaml"
+    threads: 32
+    resources:
+        mem_mb= lambda wildcards, attempt: 51240 * attempt ,
+        cores=32,
+        mem_gb=10,
+	nodes = 1,
+        time = lambda wildcards, attempt: 60 * 72 * attempt,
+        partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.batchID}"),
+        tmp= lambda wildcards: "%screateAnnotation_smooth%s_batch%s/"%(tmpFolder,f"{wildcards.smooth_value}",f"{wildcards.batchID}")
+    log: outputFolder+"smooth_{smooth_value}/columns/{batchID}.done.log"
+    shell:
+       	"""
+	metagraph annotate  \
+                -i {input.graph} \
+                --anno-filename \
+                --separately \
+                --count-kmers --count-width 16 \
+                -o {params.outputPrefix} \
+		--threads-each 16 \
+                -p 2 \
+                {input.unitigs} &> {log}
+
+	touch {output.batchFlag}
+	"""
+
+
+
+rule prepareAnnnotationColumns:
+    input:
+         flags=batchFlags
+    output:
+         columns=temp(expand(outputFolder+"smooth_{smooth_value}/columns/{sample}.fasta.gz.column.annodbg",smooth_value="{smooth_value}",sample=illuminaSamples)),
+         columnsCounts=temp(expand(outputFolder+"smooth_{smooth_value}/columns/{sample}.fasta.gz.column.annodbg.counts",smooth_value="{smooth_value}",sample=illuminaSamples))	 
+    params:
+         outputPrefix=outputFolder+"smooth_{smooth_value}/columns/"
+    conda:
+         "env.yaml"
+    threads: 1
+    resources:
+        mem_mb=2048,cores=1,mem_gb=2
+    log: outputFolder+"smooth_{smooth_value}/prepareoptimizeAnnotationColumns.log"
+    shell:
+       	"""
+	ls {input.flags} | parallel --gnu -j1 "mv {{//}}/*  {params.outputPrefix}"
+	
+	"""
+
+
+
+
+
+rule optimizeAnnotationColumns:
+    input:
+         columns=expand(outputFolder+"smooth_{smooth_value}/columns/{sample}.fasta.gz.column.annodbg",smooth_value="{smooth_value}",sample=illuminaSamples),
+         columnsCounts=expand(outputFolder+"smooth_{smooth_value}/columns/{sample}.fasta.gz.column.annodbg.counts",smooth_value="{smooth_value}",sample=illuminaSamples),
+         graph=outputFolder+"smooth_{smooth_value}/graph.dbg"
+    output:
+         outputFolder+"smooth_{smooth_value}/annotation.relaxed.row_diff_int_brwt.annodbg"
+    params:
+         rowDiffPrefix = outputFolder + "smooth_{smooth_value}/rowDiff/",
+	 outputPrefix  = outputFolder + "smooth_{smooth_value}/annotation",
+	 outputFolder  = outputFolder + "smooth_{smooth_value}/"
+    conda:
+         "env.yaml"
+    threads: 32
+    resources:
+        mem_mb=110000,
+        cores=32,
+        mem_gb=100,
+	nodes = 1,
+        time = lambda wildcards, attempt: 60 * 48 * attempt,
+        partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.smooth_value}"),
+        tmp= lambda wildcards: "%soptomize_smooth%s/"%(tmpFolder,f"{wildcards.smooth_value}")
+    log: outputFolder+"smooth_{smooth_value}/optimizeAnnotationColumns.log"
+    shell:
+       	"""
+	mkdir  -p {tmpFolder}$$/
+	mkdir -p {params.rowDiffPrefix}
+
+	metagraph transform_anno  \
+            --anno-type row_diff --count-kmers \
+            --row-diff-stage 0 \
+            --mem-cap-gb {resources.mem_gb} \
+            --disk-swap {tmpFolder}$$ \
+            -i {input.graph} \
+            -o {params.rowDiffPrefix}out \
+            -p {threads} \
+	    {input.columns} &> {log}
+ 	echo "stage 0 finished" >> {log}
+   
+	metagraph transform_anno  \
+            --anno-type row_diff --count-kmers \
+            --row-diff-stage 1 \
+            --mem-cap-gb {resources.mem_gb} \
+            --disk-swap {tmpFolder}$$ \
+            -i {input.graph} \
+            -o {params.rowDiffPrefix}out \
+            -p {threads} \
+	    {input.columns} &>> {log}
+ 	echo "stage 1 finished" >> {log}
+
+        metagraph transform_anno  \
+            --anno-type row_diff --count-kmers \
+            --row-diff-stage 2 \
+            --mem-cap-gb {resources.mem_gb} \
+            --disk-swap {tmpFolder}$$ \
+            -i {input.graph} \
+            -o {params.rowDiffPrefix}out \
+            -p {threads} \
+	    {input.columns} &>> {log}
+	echo "stage 2 finished" >> {log}
+
+        find {params.rowDiffPrefix} -name \"*.column.annodbg\" \
+         | metagraph transform_anno  \
+            --anno-type row_diff_int_brwt \
+            --greedy --fast --subsample {wildcards.smooth_value} \
+            -i {input.graph} \
+            -o {params.outputPrefix} \
+            -p {threads} --parallel-nodes 10  &>> {log}
+	echo "transform to brwt  finished" >> {log}
+
+        metagraph relax_brwt  \
+            -p {threads} \
+            --relax-arity 32 \
+            -o {params.outputPrefix}.relaxed \
+            {params.outputPrefix}.row_diff_int_brwt.annodbg  &>> {log}
+	echo "relax finished" >> {log}
+	    rm -rf {tmpFolder}$$/
+	    rm {params.outputFolder}annotation.row_diff_int_brwt.annodbg
+	    rm  -rf {params.rowDiffPrefix}
+	    rm {input.graph}.*
+	"""
+
+

@@ -31,6 +31,8 @@ std::vector<unsigned char> construct_index(std::vector<T>& alleles, bool referen
 	return index;
 }
 
+
+
 class VariantReader {
 public:
 	VariantReader (std::string filename, std::string reference_filename, size_t kmer_size, bool add_reference, std::vector<std::string> sample );
@@ -49,7 +51,7 @@ public:
 	const std::vector<Variant>& get_variants_on_chromosome(std::string chromosome) const;
 	void open_genotyping_outfile(std::string outfile_name);
 	void open_phasing_outfile(std::string outfile_name);
-	void write_genotypes_of(std::string chromosome, const std::vector<GenotypingResult>& genotyping_result, std::vector<UniqueKmers*>* unique_kmers, bool ignore_imputed = false);
+	void write_genotypes_of(std::string chromosome,   std::map<std::string, std::vector<GenotypingResult>> & genotyping_result, bool popFilter,bool extraInfo,bool ignore_imputed = false);
 	void write_phasing_of(std::string chromosome, const std::vector<GenotypingResult>& genotyping_result, std::vector<UniqueKmers*>* unique_kmers, bool ignore_imputed = false);
 	void close_genotyping_outfile();
 	void close_phasing_outfile();
@@ -57,7 +59,8 @@ public:
 	size_t nr_of_paths() const;
 	void get_left_overhang(std::string chromosome, size_t index, size_t length, DnaSequence& result) const;
 	void get_right_overhang(std::string chromosome, size_t index, size_t length, DnaSequence& result) const;
-        void setSampleName(std::string sampleName);
+    void setSampleName(std::string sampleName);
+    void addVariantStat(unsigned int variantID, std::string sampleName,std::string chromosome,std::vector<unsigned char>& defined_alleles ,std::vector<VariantStats> & stat);
 private:
 	FastaReader fasta_reader;
 	size_t kmer_size;
@@ -66,12 +69,14 @@ private:
     std::vector<std::string> chromsomes;
 	bool add_reference;
 	std::vector<std::string> samples;
-	std::ofstream genotyping_outfile;
+    std::ofstream genotyping_ofstream;
 	std::ofstream phasing_outfile;
 	bool genotyping_outfile_open;
 	bool phasing_outfile_open;
 	static std::map< std::string, std::vector<Variant> > variants_per_chromosome;
 	static std::map< std::string, std::vector<std::vector<std::string>>> variant_ids;
+//  std::map<std::string, std::map<std::string, std::vector<std::vector<VariantStats> >  > > variantsStatsPerSample;
+    std::map<std::string, std::vector<std::vector<unsigned short>> > variantsStatsPerSample;
 	void add_variant_cluster(std::string& chromosome, std::vector<Variant>* cluster);
 	void insert_ids(std::string& chromosome, std::vector<DnaSequence>& alleles, std::vector<std::string>& variant_ids, bool reference_added);
 	std::string get_ids(std::string chromosome, std::vector<std::string>& alleles, size_t variant_index, bool reference_added);

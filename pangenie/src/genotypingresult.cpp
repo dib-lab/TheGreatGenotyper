@@ -90,7 +90,12 @@ size_t GenotypingResult::get_genotype_quality (unsigned char allele1, unsigned c
 		sum += l.second;
 	}
 
-	if (abs(sum-1) > 0.0000000001) {
+	if (sum>0 && abs(sum-1) > 0.0000000001 ) {
+        cerr<<"qualities ";
+        for (const auto& l : this->genotype_to_likelihood) {
+             cerr<<l.second<<" ";
+        }
+        cerr<<endl;
 		throw runtime_error("GenotypingResult::get_genotype_quality: genotype quality can only be computed from normalized likelihoods.");
 	}
 	
@@ -170,7 +175,12 @@ void GenotypingResult::normalize () {
 		normalization_sum += it->second;
 	}
 
-	if (normalization_sum > 0) {
+	if (normalization_sum > 0.0L) {
 		this->divide_likelihoods_by(normalization_sum);
 	}
+    else{
+        for (auto it = this->genotype_to_likelihood.begin(); it != this->genotype_to_likelihood.end(); ++it) {
+            it->second = 1;
+        }
+    }
 }

@@ -8,6 +8,7 @@
 #include "variant.hpp"
 #include "genotypingresult.hpp"
 #include "probabilitytable.hpp"
+#include "emissionprobabilitycomputer.hpp"
 
 /** Respresents the genotyping HMM. **/
 
@@ -22,7 +23,7 @@ public:
 	* @param effective_N effective population size
 	* @param only_paths only use these paths and ignore others that might be in unique_kmers.
 	**/
-	HMM(std::vector<UniqueKmers*>* unique_kmers, ProbabilityTable* probabilities, bool run_genotyping, bool run_phasing, double recombrate = 1.26, bool uniform = false, long double effective_N = 25000.0L, std::vector<unsigned short>* only_paths = nullptr, bool normalize = true);
+	HMM(std::vector<UniqueKmers*>* unique_kmers,TransitionProbability* transitions, EmissionProbabilities* emission, unsigned  sampleID,bool run_genotyping, bool run_phasing, std::vector<unsigned short>* only_paths = nullptr, bool normalize = true);
 	std::vector<GenotypingResult> get_genotyping_result() const;
 	/** moves the GenotypingResults to the caller such that they will no longer be stored in the class. Use with care! **/
 	std::vector<GenotypingResult> move_genotyping_result();
@@ -35,12 +36,11 @@ private:
 	std::vector<long double>* previous_backward_column;
 	std::vector< std::vector<long double>* > viterbi_columns;
 	std::vector<UniqueKmers*>* unique_kmers;
-	ProbabilityTable* probabilities;
+    TransitionProbability* transitions;
+    EmissionProbabilities* emissions;
 	std::vector< std::vector<size_t>* > viterbi_backtrace_columns;
 	std::vector< GenotypingResult > genotyping_result;
-	double recombrate;
-	bool uniform;
-	long double effective_N;
+    unsigned sampleID;
 	void compute_forward_prob();
 	void compute_backward_prob();
 	void compute_viterbi_path();

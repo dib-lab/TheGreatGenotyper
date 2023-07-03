@@ -1,6 +1,6 @@
 #ifndef UNIQUEKMERS_HPP
 #define UNIQUEKMERS_HPP
-
+#include <jellyfish/mer_dna.hpp>
 #include <vector>
 #include <string>
 #include <map>
@@ -19,7 +19,7 @@ public:
 	* @param variant_id variant identifier
 	* @param variant_position genomic variant position
 	**/
-	UniqueKmers(size_t variant_position);
+	UniqueKmers(size_t variant_position,bool phased=false);
         UniqueKmers(const UniqueKmers& p1);
         size_t get_variant_position();
 	/** insert empty allele (no kmers) **/
@@ -42,6 +42,8 @@ public:
 	void get_path_ids(std::vector<unsigned short>& paths, std::vector<unsigned char>& alleles, std::vector<unsigned short>* only_include = nullptr);
 	/** get all unique alleles covered at this position **/
 	void get_allele_ids(std::vector<unsigned char>& a);
+    /** get phase status of the variant **/
+    bool get_phase_status() const;
 	/** get only those unique alleles which are not undefined **/
 	void get_defined_allele_ids(std::vector<unsigned char>& a);
 	friend std::ostream& operator<< (std::ostream& stream, const UniqueKmers& uk);
@@ -55,16 +57,19 @@ public:
 	bool is_undefined_allele (unsigned char allele_id) const;
 	/** set allele to undefined **/
 	void set_undefined_allele (unsigned char allele_id);
-
+    unsigned short get_max_allele_id();
+    std::map <jellyfish::mer_dna, std::vector<unsigned char>> occurences;
 private:
 	size_t variant_pos;
 	size_t current_index;
+    bool phased;
 	std::vector<unsigned short> kmer_to_count;
 	// stores kmers of each allele and whether the allele is undefined
 	std::map<unsigned char, std::pair<KmerPath, bool>> alleles;
 	std::map<unsigned short, unsigned char> path_to_allele;
 	unsigned short local_coverage;
+    int max_allele_id;
 	friend class EmissionProbabilityComputer;
-	
+    friend class EmissionProbabilities;
 };
 # endif // UNIQUEKMERS_HPP

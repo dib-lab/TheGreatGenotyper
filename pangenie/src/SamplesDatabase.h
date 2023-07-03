@@ -32,6 +32,8 @@ public:
   size_t getNumSamples();
   string getSampleName(unsigned sampleIndex);
   vector<string> getSamplesName();
+  void load_graph();
+  void delete_graph();
   ProbabilityTable* getSampleProbability(unsigned sampleIndex);
   void getKmerCounts(vector<string>& seqs,vector<unordered_map<string,uint32_t>> & kmerCounts);
 private:
@@ -42,7 +44,8 @@ private:
   std::unique_ptr<mtg::graph::AnnotatedDBG> anno_graph;
   vector<SampleDescriptor> samples;
   unordered_map<string,uint32_t> metaLabel_to_Index;
-
+  string graph_path;
+  string anno_path;
 };
 
 #endif // THEGREATGENOTYPER_SAMPLESDATABASE_H

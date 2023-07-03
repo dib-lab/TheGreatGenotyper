@@ -15,6 +15,7 @@
 #include "cli/server.hpp"
 #include "cli/transform_graph.hpp"
 #include "cli/transform_annotation.hpp"
+#include "cli/addCount.hpp"
 
 using namespace mtg;
 using mtg::common::logger;
@@ -22,6 +23,7 @@ using mtg::cli::Config;
 
 
 int main(int argc, char *argv[]) {
+    logger->trace("Metagraph started");
     auto config = std::make_unique<Config>(argc, argv);
 
     logger->set_level(common::get_verbose()
@@ -85,6 +87,9 @@ int main(int argc, char *argv[]) {
 
         case Config::ALIGN:
             return cli::align_to_graph(config.get());
+
+        case Config::ADDCOUNT:
+            return cli::addCount(config.get());
 
         case Config::NO_IDENTITY:
             assert(false);

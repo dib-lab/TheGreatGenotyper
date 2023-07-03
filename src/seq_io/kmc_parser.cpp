@@ -37,6 +37,7 @@ void read_kmers(const std::string &kmc_filename,
         kmc_base_filename = utils::remove_suffix(kmc_base_filename, suffix);
     }
 
+
     CKMCFile kmc_database;
     if (!kmc_database.OpenForListing(kmc_base_filename))
         throw std::runtime_error("Error: Can't open KMC database " + kmc_base_filename);

@@ -49,15 +49,15 @@ DnaSequence construct_right_flank(vector<DnaSequence>& alleles, size_t position,
 	return flank;
 }
 
-Variant::Variant(string left_flank, string right_flank, string chromosome, size_t start_position, size_t end_position, vector<string> alleles, vector<unsigned char> paths, string variant_id)
+Variant::Variant(string left_flank, string right_flank, string chromosome, size_t start_position, size_t end_position, vector<string> alleles, vector<unsigned char> paths, string variant_id,bool phased)
 	:left_flank(left_flank),
 	 right_flank(right_flank),
 	 chromosome(chromosome),
 	 start_position(start_position),
 	 variant_ids({variant_id}),
 	 paths(paths),
-	 flanks_added(false)
-
+	 flanks_added(false),
+     phased(phased)
 {
 	if (alleles.size() > 255) {
 		throw runtime_error("Variant::Variant: number of alleles per variant exceeds 256. Current implementation does not support higher numbers.");
@@ -76,14 +76,15 @@ Variant::Variant(string left_flank, string right_flank, string chromosome, size_
 	this->set_values(end_position);
 }
 
-Variant::Variant(DnaSequence& left_flank, DnaSequence& right_flank, string chromosome, size_t start_position, size_t end_position, vector<DnaSequence>& alleles, vector<unsigned char>& paths, string variant_id)
+Variant::Variant(DnaSequence& left_flank, DnaSequence& right_flank, string chromosome, size_t start_position, size_t end_position, vector<DnaSequence>& alleles, vector<unsigned char>& paths, string variant_id,bool phased)
 	:left_flank(left_flank),
 	 right_flank(right_flank),
 	 chromosome(chromosome),
 	 start_position(start_position),
 	 variant_ids({variant_id}),
 	 paths(paths),
-	 flanks_added(false)
+	 flanks_added(false),
+     phased(phased)
 {
 	if (alleles.size() > 255) {
 		throw runtime_error("Variant::Variant: number of alleles per variant exceeds 256. Current implementation does not support higher numbers.");
@@ -203,6 +204,9 @@ DnaSequence Variant::get_allele_sequence(size_t index) const {
 size_t Variant::get_start_position() const {
 	return this->start_position;
 }
+bool Variant::get_phase_status() const {
+    return this->phased;
+}
 
 size_t Variant::get_end_position() const {
 	size_t end_position = this->start_position;
@@ -303,6 +307,8 @@ void Variant::combine_variants (Variant const &v2){
 	this->uncovered_alleles.insert(this->uncovered_alleles.end(), v2.uncovered_alleles.begin(), v2.uncovered_alleles.end());
 	this->paths = new_paths;
 	this->variant_ids.insert(this->variant_ids.end(), v2.variant_ids.begin(), v2.variant_ids.end());
+    if(!v2.phased)
+        this->phased=false;
 }
 
 void Variant::separate_variants (vector<Variant>* resulting_variants, const GenotypingResult* input_genotyping, vector<GenotypingResult>* resulting_genotyping) const {
