@@ -108,7 +108,7 @@ echo "index/SGDP/" > indexes
  You can find the metadata for the samples in the index at 
 
 ### Running
-<img src="test_SGDP_PCA.png" alt="alt text" />
+<img src="algorithm.drawio.export.png" alt="alt text" />
 The figure provides an overview of the various workflows utilized in the Great Genotyper. This includes three distinct workflows to create reference panels, each illustrated with a different color of the arrow: The Red workflow creates a high-quality reference panel from phased variants, the green workflow creates the panel from variants without phasing information, and the blue workflow enhances the green panel by phasing the input variants then following the red workflow. Each of these workflows utilizes three specific processes: Unique k-mer Extractor, Extract Phasing Information, and High-Quality Genotype. These procedures are based on a scaled-up version of the Pangenie model, which enables the simultaneous processing of thousands of samples. “Population Genotype correction and phasing” scrutinize genotypes by evaluating the genotyping quality across all samples. Once completed, the removed genotypes are re-estimated using a statistical imputation process, implemented by Beagle. Beagle also uses the results from the population genotype to phase all variants, thereby generating a reference panel based on the input variants. Lastly, “Fast genotyping” produces initial genotypes  for all the samples in the population database by comparing the k-mer counts of unique k-mers to the average sample coverage.
 
 
