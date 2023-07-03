@@ -1,0 +1,1093 @@
+Sample name,Biosample ID,Universal_ID,Population elastic IDs,Population name,Population description,Superpopulation name,Color
+HG00360,SAME124539,FIN,FIN;FinnishSGDP,Finnish,Finnish in Finland,West Eurasia,#ffffbf
+HG00174,SAME124958,FIN,FIN;FinnishSGDP,Finnish,Finnish in Finland,West Eurasia,#ffffbf
+HG01503,SAME124944,IBS,IBS,Iberian,Iberian populations in Spain,West Eurasia,#ffffbf
+HG02783,SAME1839162,PJL,PJL;PunjabiSGDP,Punjabi,"Punjabi in Lahore, Pakistan",South Asia,#fc8d59
+HG02790,SAME1840345,PJL,PJL;PunjabiSGDP,Punjabi,"Punjabi in Lahore, Pakistan",South Asia,#fc8d59
+HG02574,SAME1839652,GWD,GWD,Gambian Mandinka,"Gambian in Western Division, The Gambia - Mandinka",Africa,#e6f598
+HG02943,SAME1839085,ESN,ESN;EsanSGDP,Esan,Esan in Nigeria,Africa,#e6f598
+HG03078,SAME1839047,MSL,MSL;MendeSGDP,Mende,Mende in Sierra Leone,Africa,#e6f598
+HG03085,SAME1840328,MSL,MSL;MendeSGDP,Mende,Mende in Sierra Leone,Africa,#e6f598
+HG03100,SAME1840003,ESN,ESN;EsanSGDP,Esan,Esan in Nigeria,Africa,#e6f598
+NA18940,SAME124310,JPT,JapaneseHGDP;JapaneseSGDP;JPT,Japanese,Japanese in Japan,East Asia,#d53e4f
+NA19044,SAME125244,LWK,LuhyaSGDP;LWK,Luhya,Luhya in Kenya,Africa,#e6f598
+HGDP00543,,Papuan,PapuanHighlandsHGDP;PapuanSGDP;PapuanSepikHGDP,Papuan Highlands,Papuan Highlands in New Guinea,Oceania,#3288bd
+HGDP00550,,Papuan,PapuanHighlandsHGDP;PapuanSGDP;PapuanSepikHGDP,Papuan Highlands,Papuan Highlands in New Guinea,Oceania,#3288bd
+HGDP00555,,Papuan,PapuanHighlandsHGDP;PapuanSGDP;PapuanSepikHGDP,Papuan Highlands,Papuan Highlands in New Guinea,Oceania,#3288bd
+HG00190,SAME123856,FIN,FIN;FinnishSGDP,Finnish,Finnish in Finland,West Eurasia,#ffffbf
+HGDP00547,,Papuan,PapuanHighlandsHGDP;PapuanSGDP;PapuanSepikHGDP,Papuan Highlands,Papuan Highlands in New Guinea,Oceania,#3288bd
+HG00128,SAME122868,GBR,GBR;EnglishSGDP,British,British in England and Scotland,West Eurasia,#ffffbf
+HG00126,SAME122872,GBR,GBR;EnglishSGDP,British,British in England and Scotland,West Eurasia,#ffffbf
+Armenian222,SAMEA3302672,Armenian,ArmenianSGDP,Armenian,Armenian in Armenia,West Eurasia,#ffffbf
+Ul31,SAMEA3302862,Ulchi,UlchiSGDP,Ulchi,Ulchi in Russia,East Asia,#d53e4f
+HGDP01344,SAMEA3302776,Naxi,NaxiHGDP;NaxiSGDP,Naxi,Naxi in China,East Asia,#d53e4f
+Mansi79,SAMEA3302762,Mansi,MansiSGDP,Mansi,Mansi in Russia,East Asia,#d53e4f
+HGDP01274,SAMEA3302836,Mozabite,MozabiteSGDP;MozabiteHGDP,Mozabite,Mozabite in Algeria,Middle East,#fee08b
+HGDP01306,SAMEA3302611,Uygur,UygurHGDP;UygurSGDP,Uygur,Uygur in China,East Asia,#d53e4f
+HGDP01402,SAMEA3302656,Adygei,AdygeiHGDP;AdygeiSGDP,Adygei,"Adygei in Caucasus, Russia",West Eurasia,#ffffbf
+Est375,SAMEA3302735,Estonian,EstonianSGDP,Estonian,Estonian in Estonia,West Eurasia,#ffffbf
+NorthOssetia5,SAMEA3302698,Ossetian_North,NorthOssetianSGDP,North Ossetian,North Ossetian in Russia,West Eurasia,#ffffbf
+iran11,SAMEA3302612,Iranian,IranianSGDP,Iranian,Iranian in Iran,Middle East,#fee08b
+HGDP00461,SAMEA3302673,Biaka,BiakaHGDP;BiakaSGDP,Biaka,Biaka in Central Africa Republic,Africa,#e6f598
+BulgarianB4,SAMEA3302718,Bulgarian,BulgarianSGDP,Bulgarian,Bulgarian in Bulgaria,West Eurasia,#ffffbf
+IHW9193,SAMEA3302681,Australian,AustralianSGDP,Australian,Australian in Australia,Oceania,#3288bd
+HGDP01286,SAMEA3302736,Mandenka,MandenkaHGDP;MandenkaSGDP,Mandenka,Mandenka in Senegal,Africa,#e6f598
+NA11200,SAMEA3302848,Quechua,QuechuaSGDP,Quechua,Quechua in Peru,America,#99d594
+TGBS21,SAMEA3302784,Chane,ChaneSGDP,Chane,Chane in Argentina,America,#99d594
+Ul5,SAMEA3302703,Ulchi,UlchiSGDP,Ulchi,Ulchi in Russia,East Asia,#d53e4f
+Nlk18,SAMEA3302752,Even,EvenSGDP,Even,Even in Russia,East Asia,#d53e4f
+HGDP01015,SAMEA3302902,Karitiana,KaritianaHGDP;KaritianaSGDP,Karitiana,Karitiana in Brazil,America,#99d594
+HGDP00928,SAMEA3302835,YRI,YRI;YorubaHGDP;YorubaSGDP,Yoruba,"Yoruba in Ibadan, Nigeria",Africa,#e6f598
+HG01504,SAME124945,IBS,IBS,Iberian,Iberian populations in Spain,West Eurasia,#ffffbf
+HGDP01250,SAMEA3302755,Xibo,XiboHGDP;XiboSGDP,Xibo,Xibo in China,East Asia,#d53e4f
+HGDP00846,SAMEA3302865,Surui,SuruiHGDP;SuruiSGDP,Surui,Surui in Brazil,America,#99d594
+HG01600,SAME123456,KHV,KHV;KinhSGDP,Kinh Vietnamese,"Kinh in Ho Chi Minh City, Vietnam",East Asia,#d53e4f
+TZ-11,SAMEA3302625,Crete,CreteSGDP,Crete,Crete in Greece,West Eurasia,#ffffbf
+I3,SAMEA3302742,Irula,IrulaSGDP,Irula,Irula in India,South Asia,#fc8d59
+R6,SAMEA3302767,Relli,RelliSGDP,Relli,Relli in India,South Asia,#fc8d59
+HGDP00597,SAMEA3302870,Druze,DruzeHGDP;DruzeSGDP,Druze,"Druze in Carmel, Israel",Middle East,#fee08b
+Ale22,SAMEA3302773,Aleut,AleutSGDP,Aleut,Aleut in Russia,East Asia,#d53e4f
+mixe0007,SAMEA3302697,MXL,MXL;MixeSGDP;MixtecSGDP,Mexican Ancestry,"Mexican Ancestry in Los Angeles, California",America,#99d594
+NA17385,SAMEA3302908,Hawaiian,HawaiianSGDP,Hawaiian,Hawaiian in USA,Oceania,#3288bd
+Tuba19,SAMEA3302764,Tubalar,TubalarSGDP,Tubalar,Tubalar in Russia,East Asia,#d53e4f
+HGDP00702,SAMEA3302619,Piapoco,PiapocoSGDP,Piapoco,Piapoco in Colombia,America,#99d594
+NA15763,SAMEA3302859,Icelandic,IcelandicSGDP,Icelandic,Icelandic in Iceland,West Eurasia,#ffffbf
+ND19394,SAMEA3302778,Korean,KoreanSGDP,Korean,Korean in Korea,East Asia,#d53e4f
+HGDP00554,SAMEA3302746,Papuan,PapuanHighlandsHGDP;PapuanSGDP;PapuanSepikHGDP,Papuan Highlands,Papuan Highlands in New Guinea,Oceania,#3288bd
+HGDP01414,SAMEA3302710,Bantu,BantuHereroSGDP;BantuKenyaHGDP;BantuSouthAfricaHGDP;BantuKenyaSGDP;BantuTswanaSGDP,Bantu Herero,Bantu Herero in Botswana Or Namibia,Africa,#e6f598
+K1,SAMEA3302633,Kapu,KapuSGDP,Kapu,Kapu in India,South Asia,#fc8d59
+HGDP00548,SAMEA3302704,Papuan,PapuanHighlandsHGDP;PapuanSGDP;PapuanSepikHGDP,Papuan Highlands,Papuan Highlands in New Guinea,Oceania,#3288bd
+HGDP00857,SAMEA3302904,Maya,MayaHGDP;MayanSGDP,Maya,Maya in Mexico,America,#99d594
+HGDP00125,SAMEA3302731,Hazara,HazaraHGDP;HazaraSGDP,Hazara,Hazara in Pakistan,South Asia,#fc8d59
+Y4,SAMEA3302740,Yadava,YadavaSGDP,Yadava,Yadava in India,South Asia,#fc8d59
+HGDP01320,SAMEA3302832,Lahu,LahuHGDP;LahuSGDP,Lahu,Lahu in China,East Asia,#d53e4f
+altai363p,SAMEA3302753,Altaian,AltaianSGDP,Altaian,Altaian in Russia,East Asia,#d53e4f
+BulgarianC1,SAMEA3302842,Bulgarian,BulgarianSGDP,Bulgarian,Bulgarian in Bulgaria,West Eurasia,#ffffbf
+ND15865,SAMEA3302699,Polish,PolishSGDP,Polish,Polish in Poland,West Eurasia,#ffffbf
+NA15202,SAMEA3302649,Hungarian,HungarianSGDP,Hungarian,Hungarian in Hungary,West Eurasia,#ffffbf
+HGDP01211,SAMEA3302614,Oroqen,OroqenHGDP;OroqenSGDP,Oroqen,Oroqen in China,East Asia,#d53e4f
+HGDP00656,SAMEA3302636,Bougainville,BougainvilleHGDP;BougainvilleSGDP,Bougainville,Bougainville in Bougainville,Oceania,#3288bd
+Peru60,SAMEA3302709,Quechua,QuechuaSGDP,Quechua,Quechua in Peru,America,#99d594
+HGDP00783,SAMEA3302770,CHB,CHB;HanHGDP;HanSGDP;NorthernHanHGDP,Han Chinese,"Han Chinese in Beijing, China",East Asia,#d53e4f
+NA00726,SAMEA3302891,Korean,KoreanSGDP,Korean,Korean in Korea,East Asia,#d53e4f
+HGDP01034,SAMEA3302849,Bantu,BantuHereroSGDP;BantuKenyaHGDP;BantuSouthAfricaHGDP;BantuKenyaSGDP;BantuTswanaSGDP,Bantu Herero,Bantu Herero in Botswana Or Namibia,Africa,#e6f598
+mixe0002,SAMEA3302796,MXL,MXL;MixeSGDP;MixtecSGDP,Mexican Ancestry,"Mexican Ancestry in Los Angeles, California",America,#99d594
+zapo0098,SAMEA3302744,Zapotec,ZapotecSGDP,Zapotec,Zapotec in Mexico,America,#99d594
+NA17377,SAMEA3302732,Greek,GreekSGDP,Greek,Greek in Greece,West Eurasia,#ffffbf
+HGDP00428,SAMEA3302798,Burusho,BurushoHGDP;BurushoSGDP,Burusho,Burusho in Pakistan,South Asia,#fc8d59
+HGDP00903,SAMEA3302766,Russian,RussianHGDP;RussianSGDP,Russian,Russian in Russia,West Eurasia,#ffffbf
+DNK11,SAMEA3302792,Dinka,DinkaSGDP,Dinka,Dinka in Sudan,Africa,#e6f598
+IHW9118,SAMEA3302719,Australian,AustralianSGDP,Australian,Australian in Australia,Oceania,#3288bd
+Jordan603,SAMEA3302675,Jordanian,JordanianSGDP,Jordanian,Jordanian in Jordan,Middle East,#fee08b
+HGDP01228,SAMEA3302653,Mongola,MongolaSGDP;MongolianHGDP,Mongola,Mongola in China,East Asia,#d53e4f
+HGDP00749,SAMEA3302867,JPT,JapaneseHGDP;JapaneseSGDP;JPT,Japanese,Japanese in Japan,East Asia,#d53e4f
+HGDP01297,SAMEA3302818,Uygur,UygurHGDP;UygurSGDP,Uygur,Uygur in China,East Asia,#d53e4f
+HGDP01355,SAMEA3302824,Tu,TuHGDP;TuSGDP,Tu,Tu in China,East Asia,#d53e4f
+HGDP01312,SAMEA3302864,Dai,DaiHGDP;DaiSGDP,Dai,Dai in China,East Asia,#d53e4f
+tdj409_shugnan,SAMEA3302901,Tajik,TajikSGDP,Tajik,Tajik in Tajikistan,West Eurasia,#ffffbf
+abh107,SAMEA3302655,Abkhasian,AbkhasianSGDP,Abkhasian,Abkhasian in Abkhazia or Russia,West Eurasia,#ffffbf
+HGDP01076,SAMEA3302876,Sardinian,SardinianHGDP;SardinianSGDP,Sardinian,Sardinian in Italy,West Eurasia,#ffffbf
+HGDP00991,SAMEA3302858,Juhoan,JuhoanNorthSGDP,Ju|'hoan North,Ju|'hoan North in Namibia,Africa,#e6f598
+HGDP00775,SAMEA3302877,CHB,CHB;HanHGDP;HanSGDP;NorthernHanHGDP,Han Chinese,"Han Chinese in Beijing, China",East Asia,#d53e4f
+HGDP01153,SAMEA3449876,Bergamo,BergamoSGDP;BergamoItalianHGDP,Bergamo,Bergamo in Italy(Bergamo),West Eurasia,#ffffbf
+HGDP00713,SAMEA3302791,Cambodian,CambodianHGDP;CambodianSGDP,Cambodian,Cambodian in Cambodia,East Asia,#d53e4f
+HGDP00915,SAMEA3302850,Mandenka,MandenkaHGDP;MandenkaSGDP,Mandenka,Mandenka in Senegal,Africa,#e6f598
+HGDP00852,SAMEA3302830,Surui,SuruiHGDP;SuruiSGDP,Surui,Surui in Brazil,America,#99d594
+HGDP01172,SAMEA3302855,Bergamo,BergamoSGDP;BergamoItalianHGDP,Bergamo,Bergamo in Italy(Bergamo),West Eurasia,#ffffbf
+NA13616,SAMEA3302623,Ami,AmiSGDP,Ami,Ami in Taiwan,East Asia,#d53e4f
+HGDP00650,SAMEA3302695,Bedouin,BedouinBSGDP;BedouinHGDP,Bedouin B,Bedouin B in Israel(Negev),Middle East,#fee08b
+B17,SAMEA3302645,Brahmin,BrahminSGDP,Brahmin,Brahmin in India,South Asia,#fc8d59
+HGDP01242,SAMEA3302845,Hezhen,HezhenHGDP;HezhenSGDP,Hezhen,Hezhen in China,East Asia,#d53e4f
+lez42,SAMEA3302843,Lezgin,LezginSGDP,Lezgin,Lezgin in Russia,West Eurasia,#ffffbf
+HGDP00338,SAMEA3302795,Burusho,BurushoHGDP;BurushoSGDP,Burusho,Burusho in Pakistan,South Asia,#fc8d59
+HGDP01223,SAMEA3302743,Mongola,MongolaSGDP;MongolianHGDP,Mongola,Mongola in China,East Asia,#d53e4f
+HGDP00530,SAMEA3302635,French,FrenchHGDP;FrenchSGDP,French,French in France,West Eurasia,#ffffbf
+KD4,SAMEA3302861,Khonda_Dora,KhondaDoraSGDP,Khonda Dora,Khonda Dora in India,South Asia,#fc8d59
+HGDP00124,SAMEA3302749,Hazara,HazaraHGDP;HazaraSGDP,Hazara,Hazara in Pakistan,South Asia,#fc8d59
+NA13604,SAMEA3302745,Atayal,AtayalSGDP,Atayal,Atayal in Taiwan,East Asia,#d53e4f
+HGDP01191,SAMEA3302846,Miao,MiaoHGDP;MiaoSGDP,Miao,Miao in China,East Asia,#d53e4f
+HGDP00737,SAMEA3302897,Palestinian,PalestinianHGDP;PalestinianSGDP,Palestinian,"Palestinian in Central, Israel",Middle East,#fee08b
+HGDP01350,SAMEA3302909,Tu,TuHGDP;TuSGDP,Tu,Tu in China,East Asia,#d53e4f
+Esk29,SAMEA3302660,Eskimo_Chaplin,EskimoChaplinSGDP,Eskimo Chaplin,Eskimo Chaplin in Russia,East Asia,#d53e4f
+Ayodo_430C,SAMEA3302868,Luo,LuoSGDP,Luo,Luo in Kenya,Africa,#e6f598
+HGDP00725,SAMEA3302646,Palestinian,PalestinianHGDP;PalestinianSGDP,Palestinian,"Palestinian in Central, Israel",Middle East,#fee08b
+HGDP00706,SAMEA3302669,Piapoco,PiapocoSGDP,Piapoco,Piapoco in Colombia,America,#99d594
+Ale14,SAMEA3302889,Tlingit,TlingitSGDP,Tlingit,Tlingit in Russia,East Asia,#d53e4f
+mixa0099,SAMEA3302618,MXL,MXL;MixeSGDP;MixtecSGDP,Mexican Ancestry,"Mexican Ancestry in Los Angeles, California",America,#99d594
+HGDP01401,SAMEA3302728,Adygei,AdygeiHGDP;AdygeiSGDP,Adygei,"Adygei in Caucasus, Russia",West Eurasia,#ffffbf
+HGDP01095,SAMEA3302878,Tujia,TujiaHGDP;TujiaSGDP,Tujia,Tujia in China,East Asia,#d53e4f
+Nlk1,SAMEA3302715,Even,EvenSGDP,Even,Even in Russia,East Asia,#d53e4f
+HGDP00232,SAMEA3302639,Pathan,PathanHGDP;PathanSGDP,Pathan,Pathan in Pakistan,South Asia,#fc8d59
+IraqiJew4291,SAMEA3302705,Iraqi,IraqiJewSGDP,Iraqi Jew,Iraqi Jew in Iraq,Middle East,#fee08b
+HG02494,SAME1839698,PJL,PJL;PunjabiSGDP,Punjabi,"Punjabi in Lahore, Pakistan",South Asia,#fc8d59
+HG03007,SAME1840245,BEB,BEB;BengaliSGDP,Bengali,Bengali in Bangladesh,South Asia,#fc8d59
+HG01846,SAME123558,KHV,KHV;KinhSGDP,Kinh Vietnamese,"Kinh in Ho Chi Minh City, Vietnam",East Asia,#d53e4f
+HG02724,SAME1839740,PJL,PJL;PunjabiSGDP,Punjabi,"Punjabi in Lahore, Pakistan",South Asia,#fc8d59
+HG02464,SAME1839978,GWD,GWD,Gambian Mandinka,"Gambian in Western Division, The Gambia - Mandinka",Africa,#e6f598
+HG03006,SAME1840242,BEB,BEB;BengaliSGDP,Bengali,Bengali in Bangladesh,South Asia,#fc8d59
+NA19023,SAME124854,LWK,LuhyaSGDP;LWK,Luhya,Luhya in Kenya,Africa,#e6f598
+HGDP00549,,Papuan,PapuanHighlandsHGDP;PapuanSGDP;PapuanSepikHGDP,Papuan Highlands,Papuan Highlands in New Guinea,Oceania,#3288bd
+HGDP00551,,Papuan,PapuanHighlandsHGDP;PapuanSGDP;PapuanSepikHGDP,Papuan Highlands,Papuan Highlands in New Guinea,Oceania,#3288bd
+HGDP00556,,Papuan,PapuanHighlandsHGDP;PapuanSGDP;PapuanSepikHGDP,Papuan Highlands,Papuan Highlands in New Guinea,Oceania,#3288bd
+HGDP00546,,Papuan,PapuanHighlandsHGDP;PapuanSGDP;PapuanSepikHGDP,Papuan Highlands,Papuan Highlands in New Guinea,Oceania,#3288bd
+HGDP00553,,Papuan,PapuanHighlandsHGDP;PapuanSGDP;PapuanSepikHGDP,Papuan Highlands,Papuan Highlands in New Guinea,Oceania,#3288bd
+HGDP00541,,Papuan,PapuanHighlandsHGDP;PapuanSGDP;PapuanSepikHGDP,Papuan Highlands,Papuan Highlands in New Guinea,Oceania,#3288bd
+HGDP00936,SAMEA3302730,YRI,YRI;YorubaHGDP;YorubaSGDP,Yoruba,"Yoruba in Ibadan, Nigeria",Africa,#e6f598
+Kor82,SAMEA3302806,Itelman,ItelmanSGDP,Itelman,Itelman in Russia,East Asia,#d53e4f
+CHI-034,SAMEA3302826,Thai,ThaiSGDP,Thai,Thai in Thailand,East Asia,#d53e4f
+NA17386,SAMEA3302905,Maori,MaoriSGDP,Maori,Maori in New Zealand,Oceania,#3288bd
+HGDP01028,SAMEA3302727,Bantu,BantuHereroSGDP;BantuKenyaHGDP;BantuSouthAfricaHGDP;BantuKenyaSGDP;BantuTswanaSGDP,Bantu Herero,Bantu Herero in Botswana Or Namibia,Africa,#e6f598
+HGDP00208,SAMEA3302815,Sindhi,SindhiHGDP;SindhiSGDP,Sindhi,Sindhi in Pakistan,South Asia,#fc8d59
+IraqiJew1771,SAMEA3302747,Iraqi,IraqiJewSGDP,Iraqi Jew,Iraqi Jew in Iraq,Middle East,#fee08b
+Nesk_25,SAMEA3302856,Eskimo_Naukan,EskimoNaukanSGDP,Eskimo Naukan,Eskimo Naukan in Russia,East Asia,#d53e4f
+NA21490,SAMEA3302814,MKK,Masai,Masai,Masai in Kenya,Africa,#e6f598
+HGDP01078,SAMEA3302813,Sardinian,SardinianHGDP;SardinianSGDP,Sardinian,Sardinian in Italy,West Eurasia,#ffffbf
+HGDP01035,SAMEA3302869,Bantu,BantuHereroSGDP;BantuKenyaHGDP;BantuSouthAfricaHGDP;BantuKenyaSGDP;BantuTswanaSGDP,Bantu Herero,Bantu Herero in Botswana Or Namibia,Africa,#e6f598
+SA0722,SAMEA3302800,Khomani_San,KhomaniSanSGDP,Khomani San,Khomani San in South Africa,Africa,#e6f598
+Nlk3,SAMEA3302720,Even,EvenSGDP,Even,Even in Russia,East Asia,#d53e4f
+mg27,SAMEA3302808,Georgian,GeorgianSGDP,Georgian,Georgian in Georgia,West Eurasia,#ffffbf
+ALB212,SAMEA3302780,Albanian,AlbanianSGDP,Albanian,Albanian in Albania,West Eurasia,#ffffbf
+HGDP01333,SAMEA3302817,She,SheHGDP;SheSGDP,She,She in China,East Asia,#d53e4f
+HGDP00157,SAMEA3302616,Makrani,MakraniHGDP;MakraniSGDP,Makrani,Makrani in Pakistan,South Asia,#fc8d59
+HGDP01338,SAMEA3302888,Naxi,NaxiHGDP;NaxiSGDP,Naxi,Naxi in China,East Asia,#d53e4f
+SAH41,SAMEA3302694,Saharawi,SaharawiSGDP,Saharawi,Saharawi in Western Sahara (Morocco),Africa,#e6f598
+HGDP00796,SAMEA3302713,Orcadian,OrcadianHGDP;OrcadianSGDP,Orcadian,Orcadian in Orkney,West Eurasia,#ffffbf
+HGDP01047,SAMEA3302779,Pima,PimaHGDP;PimaSGDP,Pima,Pima in Mexico,America,#99d594
+HGDP00722,SAMEA3302652,Palestinian,PalestinianHGDP;PalestinianSGDP,Palestinian,"Palestinian in Central, Israel",Middle East,#fee08b
+HGDP01314,SAMEA3302827,Dai,DaiHGDP;DaiSGDP,Dai,Dai in China,East Asia,#d53e4f
+HGDP00328,SAMEA3302754,Kalash,KalashHGDP;KalashSGDP,Kalash,Kalash in Pakistan,South Asia,#fc8d59
+NA15203,SAMEA3302678,Hungarian,HungarianSGDP,Hungarian,Hungarian in Hungary,West Eurasia,#ffffbf
+mixa0105,SAMEA3302811,MXL,MXL;MixeSGDP;MixtecSGDP,Mexican Ancestry,"Mexican Ancestry in Los Angeles, California",America,#99d594
+lez49,SAMEA3302664,Lezgin,LezginSGDP,Lezgin,Lezgin in Russia,West Eurasia,#ffffbf
+abh100,SAMEA3302693,Abkhasian,AbkhasianSGDP,Abkhasian,Abkhasian in Abkhazia or Russia,West Eurasia,#ffffbf
+AV-21,SAMEA3302765,Crete,CreteSGDP,Crete,Crete in Greece,West Eurasia,#ffffbf
+iran17,SAMEA3302874,Iranian,IranianSGDP,Iranian,Iranian in Iran,Middle East,#fee08b
+zapo0099,SAMEA3302757,Zapotec,ZapotecSGDP,Zapotec,Zapotec in Mexico,America,#99d594
+Bu5,SAMEA3302692,Burmese,BurmeseSGDP,Burmese,Burmese in Myanmar,East Asia,#d53e4f
+HGDP00195,SAMEA3302685,Sindhi,SindhiHGDP;SindhiSGDP,Sindhi,Sindhi in Pakistan,South Asia,#fc8d59
+HGDP01364,SAMEA3302621,Basque,BasqueHGDP;BasqueSGDP,Basque,Basque in France,West Eurasia,#ffffbf
+HGDP01345,SAMEA3302620,Naxi,NaxiHGDP;NaxiSGDP,Naxi,Naxi in China,East Asia,#d53e4f
+HGDP00474,SAMEA3302769,Mbuti,MbutiSGDP;MbutiHGDP,Mbuti,Mbuti in Congo,Africa,#e6f598
+DNK05,SAMEA3302668,Dinka,DinkaSGDP,Dinka,Dinka in Sudan,Africa,#e6f598
+ch113,SAMEA3302820,Chechen,ChechenSGDP,Chechen,Chechen in Russia,West Eurasia,#ffffbf
+NA11201,SAMEA3302896,Quechua,QuechuaSGDP,Quechua,Quechua in Peru,America,#99d594
+Jordan445,SAMEA3302887,Jordanian,JordanianSGDP,Jordanian,Jordanian in Jordan,Middle East,#fee08b
+SA0342,SAMEA3302708,Khomani_San,KhomaniSanSGDP,Khomani San,Khomani San in South Africa,Africa,#e6f598
+HGDP01030,SAMEA3302630,Bantu,BantuHereroSGDP;BantuKenyaHGDP;BantuSouthAfricaHGDP;BantuKenyaSGDP;BantuTswanaSGDP,Bantu Herero,Bantu Herero in Botswana Or Namibia,Africa,#e6f598
+NA17374,SAMEA3302763,Greek,GreekSGDP,Greek,Greek in Greece,West Eurasia,#ffffbf
+Bishkek28439,SAMEA3302768,Kyrgyz,KyrgyzSGDP,Kyrgyz,Kyrgyz in Kyrgyzystan,East Asia,#d53e4f
+HGDP01198,SAMEA3302777,Miao,MiaoHGDP;MiaoSGDP,Miao,Miao in China,East Asia,#d53e4f
+Kayseri23827,SAMEA3302750,Turkish,TurkishSGDP,Turkish,Turkish in Turkey,West Eurasia,#ffffbf
+HGDP01179,SAMEA3302615,Yi,YiHGDP;YiSGDP,Yi,Yi in China,East Asia,#d53e4f
+HGDP01188,SAMEA3302793,Yi,YiHGDP;YiSGDP,Yi,Yi in China,East Asia,#d53e4f
+Kusunda02,SAMEA3302819,Kusunda,KusundaSGDP,Kusunda,Kusunda in Nepal,South Asia,#fc8d59
+HGDP01203,SAMEA3302893,Oroqen,OroqenHGDP;OroqenSGDP,Oroqen,Oroqen in China,East Asia,#d53e4f
+Sir19,SAMEA3302734,Chukchi,ChukchiSGDP,Chukchi,Chukchi in Russia,East Asia,#d53e4f
+Igor20,SAMEA3302724,Igorot,IgorotSGDP,Igorot,Igorot in Philippines,Oceania,#3288bd
+HGDP00058,SAMEA3449877,Balochi,BalochiHGDP;BalochiSGDP,Balochi,Balochi in Pakistan,South Asia,#fc8d59
+Nesk_22,SAMEA3302831,Eskimo_Naukan,EskimoNaukanSGDP,Eskimo Naukan,Eskimo Naukan in Russia,East Asia,#d53e4f
+HGDP01018,SAMEA3302662,Karitiana,KaritianaHGDP;KaritianaSGDP,Karitiana,Karitiana in Brazil,America,#99d594
+HGDP01246,SAMEA3302648,Xibo,XiboHGDP;XiboSGDP,Xibo,Xibo in China,East Asia,#d53e4f
+HGDP01335,SAMEA3302787,She,SheHGDP;SheSGDP,She,She in China,East Asia,#d53e4f
+HGDP01032,SAMEA3302682,Juhoan,JuhoanNorthSGDP,Ju|'hoan North,Ju|'hoan North in Namibia,Africa,#e6f598
+I1,SAMEA3302610,Irula,IrulaSGDP,Irula,Irula in India,South Asia,#fc8d59
+HGDP00027,SAMEA3302782,Brahui,BrahuiHGDP;BrahuiSGDP,Brahui,Brahui in Pakistan,South Asia,#fc8d59
+HGDP01417,SAMEA3302737,Bantu,BantuHereroSGDP;BantuKenyaHGDP;BantuSouthAfricaHGDP;BantuKenyaSGDP;BantuTswanaSGDP,Bantu Herero,Bantu Herero in Botswana Or Namibia,Africa,#e6f598
+Ayodo_81S,SAMEA3302884,Somali,SomaliSGDP,Somali,Somali in Kenya,Africa,#e6f598
+NA21581,SAMEA3302687,MKK,Masai,Masai,Masai in Kenya,Africa,#e6f598
+Jordan214,SAMEA3302729,Jordanian,JordanianSGDP,Jordanian,Jordanian in Jordan,Middle East,#fee08b
+Mansi41,SAMEA3302654,Mansi,MansiSGDP,Mansi,Mansi in Russia,East Asia,#d53e4f
+HGDP00798,SAMEA3302667,Orcadian,OrcadianHGDP;OrcadianSGDP,Orcadian,Orcadian in Orkney,West Eurasia,#ffffbf
+NorthOssetia12,SAMEA3302797,Ossetian_North,NorthOssetianSGDP,North Ossetian,North Ossetian in Russia,West Eurasia,#ffffbf
+HGDP00616,SAMEA3302823,Bedouin,BedouinBSGDP;BedouinHGDP,Bedouin B,Bedouin B in Israel(Negev),Middle East,#fee08b
+HGDP00887,SAMEA3302786,Russian,RussianHGDP;RussianSGDP,Russian,Russian in Russia,West Eurasia,#ffffbf
+Sir26,SAMEA3302670,Eskim_Sireniki,EskimoSirenikiSGDP,Eskimo Sireniki,Eskimo Sireniki in Russia,East Asia,#d53e4f
+HGDP00286,SAMEA3302761,Kalash,KalashHGDP;KalashSGDP,Kalash,Kalash in Pakistan,South Asia,#fc8d59
+HGDP01323,SAMEA3302882,Lahu,LahuHGDP;LahuSGDP,Lahu,Lahu in China,East Asia,#d53e4f
+Ale32,SAMEA3302853,Tlingit,TlingitSGDP,Tlingit,Tlingit in Russia,East Asia,#d53e4f
+DNK07,SAMEA3302733,Dinka,DinkaSGDP,Dinka,Dinka in Sudan,Africa,#e6f598
+HGDP00457,SAMEA3302816,Biaka,BiakaHGDP;BiakaSGDP,Biaka,Biaka in Central Africa Republic,Africa,#e6f598
+HGDP01044,SAMEA3302627,Pima,PimaHGDP;PimaSGDP,Pima,Pima in Mexico,America,#99d594
+M4,SAMEA3302834,Madiga,MadigaSGDP,Madiga,Madiga in India,South Asia,#fc8d59
+Ayodo_502C,SAMEA3302810,Luo,LuoSGDP,Luo,Luo in Kenya,Africa,#e6f598
+Ale20,SAMEA3302642,Aleut,AleutSGDP,Aleut,Aleut in Russia,East Asia,#d53e4f
+mg31,SAMEA3302838,Georgian,GeorgianSGDP,Georgian,Georgian in Georgia,West Eurasia,#ffffbf
+Utsa21,SAMEA3302875,Saami,SaamiSGDP,Saami,Saami in Finland,West Eurasia,#ffffbf
+HGDP01253,SAMEA3302825,Mozabite,MozabiteSGDP;MozabiteHGDP,Mozabite,Mozabite in Algeria,Middle East,#fee08b
+HGDP00476,SAMEA3302716,Mbuti,MbutiSGDP;MbutiHGDP,Mbuti,Mbuti in Congo,Africa,#e6f598
+HGDP01215,SAMEA3302840,Daur,DaurHGDP;DaurSGDP,Daur,Daur in China,East Asia,#d53e4f
+Kayseri24424,SAMEA3302809,Turkish,TurkishSGDP,Turkish,Turkish in Turkey,West Eurasia,#ffffbf
+Sir40,SAMEA3302641,Eskim_Sireniki,EskimoSirenikiSGDP,Eskimo Sireniki,Eskimo Sireniki in Russia,East Asia,#d53e4f
+Tuba9,SAMEA3302781,Tubalar,TubalarSGDP,Tubalar,Tubalar in Russia,East Asia,#d53e4f
+Y8,SAMEA3302725,Yadava,YadavaSGDP,Yadava,Yadava in India,South Asia,#fc8d59
+HGDP00717,SAMEA3302689,Cambodian,CambodianHGDP;CambodianSGDP,Cambodian,Cambodian in Cambodia,East Asia,#d53e4f
+Dus16,SAMEA3302759,Dusun,DusunSGDP,Dusun,Dusun in Brunei,Oceania,#3288bd
+HGDP00540,,Papuan,PapuanHighlandsHGDP;PapuanSGDP;PapuanSepikHGDP,Papuan Highlands,Papuan Highlands in New Guinea,Oceania,#3288bd
+tdj430_shugnan,SAMEA3302691,Tajik,TajikSGDP,Tajik,Tajik in Tajikistan,West Eurasia,#ffffbf
+HGDP00545,,Papuan,PapuanHighlandsHGDP;PapuanSGDP;PapuanSepikHGDP,Papuan Highlands,Papuan Highlands in New Guinea,Oceania,#3288bd
+SAH31,SAMEA3302857,Saharawi,SaharawiSGDP,Saharawi,Saharawi in Western Sahara (Morocco),Africa,#e6f598
+B11,SAMEA3302829,Brahmin,BrahminSGDP,Brahmin,Brahmin in India,South Asia,#fc8d59
+YemeniteJew4695,SAMEA3302634,Yemenite_Jew,YemeniteJewSGDP,Yemenite Jew,Yemenite Jew in Yemen,Middle East,#fee08b
+CHI-007,SAMEA3302663,Thai,ThaiSGDP,Thai,Thai in Thailand,East Asia,#d53e4f
+HGDP00449,SAMEA3302659,Mbuti,MbutiSGDP;MbutiHGDP,Mbuti,Mbuti in Congo,Africa,#e6f598
+HGDP00019,SAMEA3302677,Brahui,BrahuiHGDP;BrahuiSGDP,Brahui,Brahui in Pakistan,South Asia,#fc8d59
+Igor21,SAMEA3302696,Igorot,IgorotSGDP,Igorot,Igorot in Philippines,Oceania,#3288bd
+Utsa22,SAMEA3302851,Saami,SaamiSGDP,Saami,Saami in Finland,West Eurasia,#ffffbf
+HGDP00533,SAMEA3302712,French,FrenchHGDP;FrenchSGDP,French,French in France,West Eurasia,#ffffbf
+HGDP00526,SAMEA3302828,French,FrenchHGDP;FrenchSGDP,French,French in France,West Eurasia,#ffffbf
+HGDP01036,SAMEA3302894,Juhoan,JuhoanNorthSGDP,Ju|'hoan North,Ju|'hoan North in Namibia,Africa,#e6f598
+HGDP01365,SAMEA3302903,Basque,BasqueHGDP;BasqueSGDP,Basque,Basque in France,West Eurasia,#ffffbf
+Sam02,SAMEA3302863,Samaritan,SamaritanSGDP,Samaritan,Samaritan in Israel,Middle East,#fee08b
+HGDP01079,SAMEA3302822,Sardinian,SardinianHGDP;SardinianSGDP,Sardinian,Sardinian in Italy,West Eurasia,#ffffbf
+NOR111,SAMEA3449879,Norwegian,NorwegianSGDP,Norwegian,Norwegian in Norway,West Eurasia,#ffffbf
+HGDP00660,SAMEA3302841,Bougainville,BougainvilleHGDP;BougainvilleSGDP,Bougainville,Bougainville in Bougainville,Oceania,#3288bd
+HGDP00090,SAMEA3302890,Balochi,BalochiHGDP;BalochiSGDP,Balochi,Balochi in Pakistan,South Asia,#fc8d59
+HGDP00569,SAMEA3302739,Druze,DruzeHGDP;DruzeSGDP,Druze,"Druze in Carmel, Israel",Middle East,#fee08b
+NA15761,SAMEA3302837,Icelandic,IcelandicSGDP,Icelandic,Icelandic in Iceland,West Eurasia,#ffffbf
+YemeniteJew5433,SAMEA3302807,Yemenite_Jew,YemeniteJewSGDP,Yemenite Jew,Yemenite Jew in Yemen,Middle East,#fee08b
+HGDP01199,SAMEA3302756,Mandenka,MandenkaHGDP;MandenkaSGDP,Mandenka,Mandenka in Senegal,Africa,#e6f598
+HGDP01168,SAMEA3302684,Tuscan,TuscanHGDP;TuscanSGDP,Tuscan,Tuscan in Italy,West Eurasia,#ffffbf
+HGDP00552,SAMEA3302700,Papuan,PapuanHighlandsHGDP;PapuanSGDP;PapuanSepikHGDP,Papuan Highlands,Papuan Highlands in New Guinea,Oceania,#3288bd
+HGDP00956,SAMEA3302706,Yakut,YakutSGDP;YakutHGDP,Yakut,Yakut in Russia,East Asia,#d53e4f
+armenia293,SAMEA3302624,Armenian,ArmenianSGDP,Armenian,Armenian in Armenia,West Eurasia,#ffffbf
+NA15728,SAMEA3302844,Czech,CzechSGDP,Czech,Czech in Czechoslovakia(pre1989),West Eurasia,#ffffbf
+K4,SAMEA3302839,Kapu,KapuSGDP,Kapu,Kapu in India,South Asia,#fc8d59
+Bu16,SAMEA3302895,Burmese,BurmeseSGDP,Burmese,Burmese in Myanmar,East Asia,#d53e4f
+HGDP01012,SAMEA3302790,Karitiana,KaritianaHGDP;KaritianaSGDP,Karitiana,Karitiana in Brazil,America,#99d594
+HGDP00987,SAMEA3302900,Juhoan,JuhoanNorthSGDP,Ju|'hoan North,Ju|'hoan North in Namibia,Africa,#e6f598
+HGDP00932,SAMEA3302632,YRI,YRI;YorubaHGDP;YorubaSGDP,Yoruba,"Yoruba in Ibadan, Nigeria",Africa,#e6f598
+HGDP01315,SAMEA3302785,Dai,DaiHGDP;DaiSGDP,Dai,Dai in China,East Asia,#d53e4f
+HGDP01308,SAMEA3302666,Dai,DaiHGDP;DaiSGDP,Dai,Dai in China,East Asia,#d53e4f
+Dus22,SAMEA3302688,Dusun,DusunSGDP,Dusun,Dusun in Brunei,Oceania,#3288bd
+Est400,SAMEA3302679,Estonian,EstonianSGDP,Estonian,Estonian in Estonia,West Eurasia,#ffffbf
+HGDP01240,SAMEA3302880,Hezhen,HezhenHGDP;HezhenSGDP,Hezhen,Hezhen in China,East Asia,#d53e4f
+mixe0042,SAMEA3302723,MXL,MXL;MixeSGDP;MixtecSGDP,Mexican Ancestry,"Mexican Ancestry in Los Angeles, California",America,#99d594
+HGDP00216,SAMEA3302674,Pathan,PathanHGDP;PathanSGDP,Pathan,Pathan in Pakistan,South Asia,#fc8d59
+HGDP00982,SAMEA3302833,Mbuti,MbutiSGDP;MbutiHGDP,Mbuti,Mbuti in Congo,Africa,#e6f598
+HGDP01098,SAMEA3302665,Tujia,TujiaHGDP;TujiaSGDP,Tujia,Tujia in China,East Asia,#d53e4f
+HGDP00160,SAMEA3302771,Makrani,MakraniHGDP;MakraniSGDP,Makrani,Makrani in Pakistan,South Asia,#fc8d59
+Bishkek28440,SAMEA3302717,Kyrgyz,KyrgyzSGDP,Kyrgyz,Kyrgyz in Kyrgyzystan,East Asia,#d53e4f
+HGDP01163,SAMEA3302758,Tuscan,TuscanHGDP;TuscanSGDP,Tuscan,Tuscan in Italy,West Eurasia,#ffffbf
+HGDP00951,SAMEA3302802,Yakut,YakutSGDP;YakutHGDP,Yakut,Yakut in Russia,East Asia,#d53e4f
+HGDP00785,SAMEA3302804,CHB,CHB;HanHGDP;HanSGDP;NorthernHanHGDP,Han Chinese,"Han Chinese in Beijing, China",East Asia,#d53e4f
+HGDP00855,SAMEA3302866,Maya,MayaHGDP;MayanSGDP,Maya,Maya in Mexico,America,#99d594
+Kusunda15,SAMEA3302911,Kusunda,KusundaSGDP,Kusunda,Kusunda in Nepal,South Asia,#fc8d59
+NA13607,SAMEA3302722,Ami,AmiSGDP,Ami,Ami in Taiwan,East Asia,#d53e4f
+HGDP00773,SAMEA3302906,JPT,JapaneseHGDP;JapaneseSGDP;JPT,Japanese,Japanese in Japan,East Asia,#d53e4f
+R3,SAMEA3302714,Relli,RelliSGDP,Relli,Relli in India,South Asia,#fc8d59
+HGDP00005,,Brahui,BrahuiHGDP;BrahuiSGDP,Brahui,Brahui in Pakistan,South Asia,#fc8d59
+HGDP00017,,Brahui,BrahuiHGDP;BrahuiSGDP,Brahui,Brahui in Pakistan,South Asia,#fc8d59
+HGDP00029,,Brahui,BrahuiHGDP;BrahuiSGDP,Brahui,Brahui in Pakistan,South Asia,#fc8d59
+HGDP00031,,Brahui,BrahuiHGDP;BrahuiSGDP,Brahui,Brahui in Pakistan,South Asia,#fc8d59
+HGDP00043,,Brahui,BrahuiHGDP;BrahuiSGDP,Brahui,Brahui in Pakistan,South Asia,#fc8d59
+HGDP00466,,Biaka,BiakaHGDP;BiakaSGDP,Biaka,Biaka in Central Africa Republic,Africa,#e6f598
+HGDP00473,,Biaka,BiakaHGDP;BiakaSGDP,Biaka,Biaka in Central Africa Republic,Africa,#e6f598
+HGDP00478,,Mbuti,MbutiSGDP;MbutiHGDP,Mbuti,Mbuti in Congo,Africa,#e6f598
+HGDP00512,,French,FrenchHGDP;FrenchSGDP,French,French in France,West Eurasia,#ffffbf
+HGDP00372,,Burusho,BurushoHGDP;BurushoSGDP,Burusho,Burusho in Pakistan,South Asia,#fc8d59
+HGDP00423,,Burusho,BurushoHGDP;BurushoSGDP,Burusho,Burusho in Pakistan,South Asia,#fc8d59
+HGDP00454,,Biaka,BiakaHGDP;BiakaSGDP,Biaka,Biaka in Central Africa Republic,Africa,#e6f598
+HGDP00459,,Biaka,BiakaHGDP;BiakaSGDP,Biaka,Biaka in Central Africa Republic,Africa,#e6f598
+HGDP00288,,Kalash,KalashHGDP;KalashSGDP,Kalash,Kalash in Pakistan,South Asia,#fc8d59
+HGDP00290,,Kalash,KalashHGDP;KalashSGDP,Kalash,Kalash in Pakistan,South Asia,#fc8d59
+HGDP00315,,Kalash,KalashHGDP;KalashSGDP,Kalash,Kalash in Pakistan,South Asia,#fc8d59
+HGDP00341,,Burusho,BurushoHGDP;BurushoSGDP,Burusho,Burusho in Pakistan,South Asia,#fc8d59
+HGDP00346,,Burusho,BurushoHGDP;BurushoSGDP,Burusho,Burusho in Pakistan,South Asia,#fc8d59
+HGDP00137,,Makrani,MakraniHGDP;MakraniSGDP,Makrani,Makrani in Pakistan,South Asia,#fc8d59
+HGDP00144,,Makrani,MakraniHGDP;MakraniSGDP,Makrani,Makrani in Pakistan,South Asia,#fc8d59
+HGDP00149,,Makrani,MakraniHGDP;MakraniSGDP,Makrani,Makrani in Pakistan,South Asia,#fc8d59
+HGDP00151,,Makrani,MakraniHGDP;MakraniSGDP,Makrani,Makrani in Pakistan,South Asia,#fc8d59
+HGDP00163,,Sindhi,SindhiHGDP;SindhiSGDP,Sindhi,Sindhi in Pakistan,South Asia,#fc8d59
+HGDP00175,,Sindhi,SindhiHGDP;SindhiSGDP,Sindhi,Sindhi in Pakistan,South Asia,#fc8d59
+HGDP00187,,Sindhi,SindhiHGDP;SindhiSGDP,Sindhi,Sindhi in Pakistan,South Asia,#fc8d59
+HGDP00199,,Sindhi,SindhiHGDP;SindhiSGDP,Sindhi,Sindhi in Pakistan,South Asia,#fc8d59
+HGDP00214,,Pathan,PathanHGDP;PathanSGDP,Pathan,Pathan in Pakistan,South Asia,#fc8d59
+HGDP00062,,Balochi,BalochiHGDP;BalochiSGDP,Balochi,Balochi in Pakistan,South Asia,#fc8d59
+HGDP00074,,Balochi,BalochiHGDP;BalochiSGDP,Balochi,Balochi in Pakistan,South Asia,#fc8d59
+HGDP00086,,Balochi,BalochiHGDP;BalochiSGDP,Balochi,Balochi in Pakistan,South Asia,#fc8d59
+HGDP00098,,Balochi,BalochiHGDP;BalochiSGDP,Balochi,Balochi in Pakistan,South Asia,#fc8d59
+HGDP00517,,French,FrenchHGDP;FrenchSGDP,French,French in France,West Eurasia,#ffffbf
+HGDP00524,,French,FrenchHGDP;FrenchSGDP,French,French in France,West Eurasia,#ffffbf
+HGDP00009,,Brahui,BrahuiHGDP;BrahuiSGDP,Brahui,Brahui in Pakistan,South Asia,#fc8d59
+HGDP00529,,French,FrenchHGDP;FrenchSGDP,French,French in France,West Eurasia,#ffffbf
+HGDP00011,,Brahui,BrahuiHGDP;BrahuiSGDP,Brahui,Brahui in Pakistan,South Asia,#fc8d59
+HGDP00531,,French,FrenchHGDP;FrenchSGDP,French,French in France,West Eurasia,#ffffbf
+HGDP00023,,Brahui,BrahuiHGDP;BrahuiSGDP,Brahui,Brahui in Pakistan,South Asia,#fc8d59
+HGDP00536,,French,FrenchHGDP;FrenchSGDP,French,French in France,West Eurasia,#ffffbf
+HGDP00035,,Brahui,BrahuiHGDP;BrahuiSGDP,Brahui,Brahui in Pakistan,South Asia,#fc8d59
+HGDP00106,,Hazara,HazaraHGDP;HazaraSGDP,Hazara,Hazara in Pakistan,South Asia,#fc8d59
+HGDP00047,,Brahui,BrahuiHGDP;BrahuiSGDP,Brahui,Brahui in Pakistan,South Asia,#fc8d59
+HGDP00118,,Hazara,HazaraHGDP;HazaraSGDP,Hazara,Hazara in Pakistan,South Asia,#fc8d59
+HGDP00302,,Kalash,KalashHGDP;KalashSGDP,Kalash,Kalash in Pakistan,South Asia,#fc8d59
+HGDP00120,,Hazara,HazaraHGDP;HazaraSGDP,Hazara,Hazara in Pakistan,South Asia,#fc8d59
+HGDP00307,,Kalash,KalashHGDP;KalashSGDP,Kalash,Kalash in Pakistan,South Asia,#fc8d59
+HGDP00226,,Pathan,PathanHGDP;PathanSGDP,Pathan,Pathan in Pakistan,South Asia,#fc8d59
+HGDP00319,,Kalash,KalashHGDP;KalashSGDP,Kalash,Kalash in Pakistan,South Asia,#fc8d59
+HGDP00264,,Pathan,PathanHGDP;PathanSGDP,Pathan,Pathan in Pakistan,South Asia,#fc8d59
+HGDP00321,,Kalash,KalashHGDP;KalashSGDP,Kalash,Kalash in Pakistan,South Asia,#fc8d59
+HGDP00326,,Kalash,KalashHGDP;KalashSGDP,Kalash,Kalash in Pakistan,South Asia,#fc8d59
+HGDP00333,,Kalash,KalashHGDP;KalashSGDP,Kalash,Kalash in Pakistan,South Asia,#fc8d59
+HGDP00364,,Burusho,BurushoHGDP;BurushoSGDP,Burusho,Burusho in Pakistan,South Asia,#fc8d59
+HGDP00562,,Druze,DruzeHGDP;DruzeSGDP,Druze,"Druze in Carmel, Israel",Middle East,#fee08b
+HGDP00371,,Burusho,BurushoHGDP;BurushoSGDP,Burusho,Burusho in Pakistan,South Asia,#fc8d59
+HGDP00649,,Bedouin,BedouinBSGDP;BedouinHGDP,Bedouin B,Bedouin B in Israel(Negev),Middle East,#fee08b
+HGDP00179,,Sindhi,SindhiHGDP;SindhiSGDP,Sindhi,Sindhi in Pakistan,South Asia,#fc8d59
+HGDP00651,,Bedouin,BedouinBSGDP;BedouinHGDP,Bedouin B,Bedouin B in Israel(Negev),Middle East,#fee08b
+HGDP00181,,Sindhi,SindhiHGDP;SindhiSGDP,Sindhi,Sindhi in Pakistan,South Asia,#fc8d59
+HGDP00663,,Bougainville,BougainvilleHGDP;BougainvilleSGDP,Bougainville,Bougainville in Bougainville,Oceania,#3288bd
+HGDP00201,,Sindhi,SindhiHGDP;SindhiSGDP,Sindhi,Sindhi in Pakistan,South Asia,#fc8d59
+HGDP00668,,Sardinian,SardinianHGDP;SardinianSGDP,Sardinian,Sardinian in Italy,West Eurasia,#ffffbf
+HGDP00206,,Sindhi,SindhiHGDP;SindhiSGDP,Sindhi,Sindhi in Pakistan,South Asia,#fc8d59
+HGDP00670,,Sardinian,SardinianHGDP;SardinianSGDP,Sardinian,Sardinian in Italy,West Eurasia,#ffffbf
+HGDP00213,,Pathan,PathanHGDP;PathanSGDP,Pathan,Pathan in Pakistan,South Asia,#fc8d59
+HGDP00675,,Palestinian,PalestinianHGDP;PalestinianSGDP,Palestinian,"Palestinian in Central, Israel",Middle East,#fee08b
+HGDP00218,,Pathan,PathanHGDP;PathanSGDP,Pathan,Pathan in Pakistan,South Asia,#fc8d59
+HGDP00714,,Cambodian,CambodianHGDP;CambodianSGDP,Cambodian,Cambodian in Cambodia,East Asia,#d53e4f
+HGDP00460,,Biaka,BiakaHGDP;BiakaSGDP,Biaka,Biaka in Central Africa Republic,Africa,#e6f598
+HGDP00719,,Cambodian,CambodianHGDP;CambodianSGDP,Cambodian,Cambodian in Cambodia,East Asia,#d53e4f
+HGDP00465,,Biaka,BiakaHGDP;BiakaSGDP,Biaka,Biaka in Central Africa Republic,Africa,#e6f598
+HGDP00721,,Cambodian,CambodianHGDP;CambodianSGDP,Cambodian,Cambodian in Cambodia,East Asia,#d53e4f
+HGDP00472,,Biaka,BiakaHGDP;BiakaSGDP,Biaka,Biaka in Central Africa Republic,Africa,#e6f598
+HGDP00726,,Palestinian,PalestinianHGDP;PalestinianSGDP,Palestinian,"Palestinian in Central, Israel",Middle East,#fee08b
+HGDP00491,,Bougainville,BougainvilleHGDP;BougainvilleSGDP,Bougainville,Bougainville in Bougainville,Oceania,#3288bd
+HGDP00733,,Palestinian,PalestinianHGDP;PalestinianSGDP,Palestinian,"Palestinian in Central, Israel",Middle East,#fee08b
+HGDP00511,,French,FrenchHGDP;FrenchSGDP,French,French in France,West Eurasia,#ffffbf
+HGDP00764,,JPT,JapaneseHGDP;JapaneseSGDP;JPT,Japanese,Japanese in Japan,East Asia,#d53e4f
+HGDP00136,,Makrani,MakraniHGDP;MakraniSGDP,Makrani,Makrani in Pakistan,South Asia,#fc8d59
+HGDP00769,,JPT,JapaneseHGDP;JapaneseSGDP;JPT,Japanese,Japanese in Japan,East Asia,#d53e4f
+HGDP00143,,Makrani,MakraniHGDP;MakraniSGDP,Makrani,Makrani in Pakistan,South Asia,#fc8d59
+HGDP00771,,JPT,JapaneseHGDP;JapaneseSGDP;JPT,Japanese,Japanese in Japan,East Asia,#d53e4f
+HGDP00148,,Makrani,MakraniHGDP;MakraniSGDP,Makrani,Makrani in Pakistan,South Asia,#fc8d59
+HGDP00776,,CHB,CHB;HanHGDP;HanSGDP;NorthernHanHGDP,Han Chinese,"Han Chinese in Beijing, China",East Asia,#d53e4f
+HGDP00150,,Makrani,MakraniHGDP;MakraniSGDP,Makrani,Makrani in Pakistan,South Asia,#fc8d59
+HGDP00788,,Bougainville,BougainvilleHGDP;BougainvilleSGDP,Bougainville,Bougainville in Bougainville,Oceania,#3288bd
+HGDP00155,,Makrani,MakraniHGDP;MakraniSGDP,Makrani,Makrani in Pakistan,South Asia,#fc8d59
+HGDP00790,,JPT,JapaneseHGDP;JapaneseSGDP;JPT,Japanese,Japanese in Japan,East Asia,#d53e4f
+HGDP00167,,Sindhi,SindhiHGDP;SindhiSGDP,Sindhi,Sindhi in Pakistan,South Asia,#fc8d59
+HGDP00738,,Palestinian,PalestinianHGDP;PalestinianSGDP,Palestinian,"Palestinian in Central, Israel",Middle East,#fee08b
+HGDP00516,,French,FrenchHGDP;FrenchSGDP,French,French in France,West Eurasia,#ffffbf
+HGDP00740,,Palestinian,PalestinianHGDP;PalestinianSGDP,Palestinian,"Palestinian in Central, Israel",Middle East,#fee08b
+HGDP00523,,French,FrenchHGDP;FrenchSGDP,French,French in France,West Eurasia,#ffffbf
+HGDP00745,,Palestinian,PalestinianHGDP;PalestinianSGDP,Palestinian,"Palestinian in Central, Israel",Middle East,#fee08b
+HGDP00528,,French,FrenchHGDP;FrenchSGDP,French,French in France,West Eurasia,#ffffbf
+HGDP00752,,JPT,JapaneseHGDP;JapaneseSGDP;JPT,Japanese,Japanese in Japan,East Asia,#d53e4f
+HGDP00535,,French,FrenchHGDP;FrenchSGDP,French,French in France,West Eurasia,#ffffbf
+HGDP00757,,JPT,JapaneseHGDP;JapaneseSGDP;JPT,Japanese,Japanese in Japan,East Asia,#d53e4f
+HGDP00542,,Papuan,PapuanHighlandsHGDP;PapuanSGDP;PapuanSepikHGDP,Papuan Highlands,Papuan Highlands in New Guinea,Oceania,#3288bd
+HGDP00598,,Druze,DruzeHGDP;DruzeSGDP,Druze,"Druze in Carmel, Israel",Middle East,#fee08b
+HGDP00376,,Burusho,BurushoHGDP;BurushoSGDP,Burusho,Burusho in Pakistan,South Asia,#fc8d59
+HGDP00601,,Druze,DruzeHGDP;DruzeSGDP,Druze,"Druze in Carmel, Israel",Middle East,#fee08b
+HGDP00388,,Burusho,BurushoHGDP;BurushoSGDP,Burusho,Burusho in Pakistan,South Asia,#fc8d59
+HGDP00606,,Druze,DruzeHGDP;DruzeSGDP,Druze,"Druze in Carmel, Israel",Middle East,#fee08b
+HGDP00453,,Biaka,BiakaHGDP;BiakaSGDP,Biaka,Biaka in Central Africa Republic,Africa,#e6f598
+HGDP00613,,Bedouin,BedouinBSGDP;BedouinHGDP,Bedouin B,Bedouin B in Israel(Negev),Middle East,#fee08b
+HGDP00458,,Biaka,BiakaHGDP;BiakaSGDP,Biaka,Biaka in Central Africa Republic,Africa,#e6f598
+HGDP00618,,Bedouin,BedouinBSGDP;BedouinHGDP,Bedouin B,Bedouin B in Israel(Negev),Middle East,#fee08b
+HGDP00100,,Hazara,HazaraHGDP;HazaraSGDP,Hazara,Hazara in Pakistan,South Asia,#fc8d59
+HGDP00620,,Bedouin,BedouinBSGDP;BedouinHGDP,Bedouin B,Bedouin B in Israel(Negev),Middle East,#fee08b
+HGDP00105,,Hazara,HazaraHGDP;HazaraSGDP,Hazara,Hazara in Pakistan,South Asia,#fc8d59
+HGDP00567,,Druze,DruzeHGDP;DruzeSGDP,Druze,"Druze in Carmel, Israel",Middle East,#fee08b
+HGDP00129,,Hazara,HazaraHGDP;HazaraSGDP,Hazara,Hazara in Pakistan,South Asia,#fc8d59
+HGDP00574,,Druze,DruzeHGDP;DruzeSGDP,Druze,"Druze in Carmel, Israel",Middle East,#fee08b
+HGDP00131,,Makrani,MakraniHGDP;MakraniSGDP,Makrani,Makrani in Pakistan,South Asia,#fc8d59
+HGDP00579,,Druze,DruzeHGDP;DruzeSGDP,Druze,"Druze in Carmel, Israel",Middle East,#fee08b
+HGDP00237,,Pathan,PathanHGDP;PathanSGDP,Pathan,Pathan in Pakistan,South Asia,#fc8d59
+HGDP00581,,Druze,DruzeHGDP;DruzeSGDP,Druze,"Druze in Carmel, Israel",Middle East,#fee08b
+HGDP00244,,Pathan,PathanHGDP;PathanSGDP,Pathan,Pathan in Pakistan,South Asia,#fc8d59
+HGDP00586,,Druze,DruzeHGDP;DruzeSGDP,Druze,"Druze in Carmel, Israel",Middle East,#fee08b
+HGDP00251,,Pathan,PathanHGDP;PathanSGDP,Pathan,Pathan in Pakistan,South Asia,#fc8d59
+HGDP00682,,Palestinian,PalestinianHGDP;PalestinianSGDP,Palestinian,"Palestinian in Central, Israel",Middle East,#fee08b
+HGDP00054,,Balochi,BalochiHGDP;BalochiSGDP,Balochi,Balochi in Pakistan,South Asia,#fc8d59
+HGDP00687,,Palestinian,PalestinianHGDP;PalestinianSGDP,Palestinian,"Palestinian in Central, Israel",Middle East,#fee08b
+HGDP00066,,Balochi,BalochiHGDP;BalochiSGDP,Balochi,Balochi in Pakistan,South Asia,#fc8d59
+HGDP00694,,Palestinian,PalestinianHGDP;PalestinianSGDP,Palestinian,"Palestinian in Central, Israel",Middle East,#fee08b
+HGDP00078,,Balochi,BalochiHGDP;BalochiSGDP,Balochi,Balochi in Pakistan,South Asia,#fc8d59
+HGDP00699,,Palestinian,PalestinianHGDP;PalestinianSGDP,Palestinian,"Palestinian in Central, Israel",Middle East,#fee08b
+HGDP00080,,Balochi,BalochiHGDP;BalochiSGDP,Balochi,Balochi in Pakistan,South Asia,#fc8d59
+HGDP00625,,Bedouin,BedouinBSGDP;BedouinHGDP,Bedouin B,Bedouin B in Israel(Negev),Middle East,#fee08b
+HGDP00092,,Balochi,BalochiHGDP;BalochiSGDP,Balochi,Balochi in Pakistan,South Asia,#fc8d59
+HGDP00632,,Bedouin,BedouinBSGDP;BedouinHGDP,Bedouin B,Bedouin B in Israel(Negev),Middle East,#fee08b
+HGDP00637,,Bedouin,BedouinBSGDP;BedouinHGDP,Bedouin B,Bedouin B in Israel(Negev),Middle East,#fee08b
+HGDP00559,,Druze,DruzeHGDP;DruzeSGDP,Druze,"Druze in Carmel, Israel",Middle East,#fee08b
+HGDP00644,,Bedouin,BedouinBSGDP;BedouinHGDP,Bedouin B,Bedouin B in Israel(Negev),Middle East,#fee08b
+HGDP00561,,Druze,DruzeHGDP;DruzeSGDP,Druze,"Druze in Carmel, Israel",Middle East,#fee08b
+HGDP01027,,Bougainville,BougainvilleHGDP;BougainvilleSGDP,Bougainville,Bougainville in Bougainville,Oceania,#3288bd
+HGDP00566,,Druze,DruzeHGDP;DruzeSGDP,Druze,"Druze in Carmel, Israel",Middle East,#fee08b
+HGDP01041,,Pima,PimaHGDP;PimaSGDP,Pima,Pima in Mexico,America,#99d594
+HGDP00648,,Bedouin,BedouinBSGDP;BedouinHGDP,Bedouin B,Bedouin B in Israel(Negev),Middle East,#fee08b
+HGDP01053,,Pima,PimaHGDP;PimaSGDP,Pima,Pima in Mexico,America,#99d594
+HGDP00655,,Bougainville,BougainvilleHGDP;BougainvilleSGDP,Bougainville,Bougainville in Bougainville,Oceania,#3288bd
+HGDP01058,,Pima,PimaHGDP;PimaSGDP,Pima,Pima in Mexico,America,#99d594
+HGDP00662,,Bougainville,BougainvilleHGDP;BougainvilleSGDP,Bougainville,Bougainville in Bougainville,Oceania,#3288bd
+HGDP01060,,Pima,PimaHGDP;PimaSGDP,Pima,Pima in Mexico,America,#99d594
+HGDP00667,,Sardinian,SardinianHGDP;SardinianSGDP,Sardinian,Sardinian in Italy,West Eurasia,#ffffbf
+HGDP01065,,Sardinian,SardinianHGDP;SardinianSGDP,Sardinian,Sardinian in Italy,West Eurasia,#ffffbf
+HGDP00674,,Sardinian,SardinianHGDP;SardinianSGDP,Sardinian,Sardinian in Italy,West Eurasia,#ffffbf
+HGDP00872,,Maya,MayaHGDP;MayanSGDP,Maya,Maya in Mexico,America,#99d594
+HGDP00679,,Palestinian,PalestinianHGDP;PalestinianSGDP,Palestinian,"Palestinian in Central, Israel",Middle East,#fee08b
+HGDP00877,,Maya,MayaHGDP;MayanSGDP,Maya,Maya in Mexico,America,#99d594
+HGDP00686,,Palestinian,PalestinianHGDP;PalestinianSGDP,Palestinian,"Palestinian in Central, Israel",Middle East,#fee08b
+HGDP00884,,Russian,RussianHGDP;RussianSGDP,Russian,Russian in Russia,West Eurasia,#ffffbf
+HGDP00693,,Palestinian,PalestinianHGDP;PalestinianSGDP,Palestinian,"Palestinian in Central, Israel",Middle East,#fee08b
+HGDP00889,,Russian,RussianHGDP;RussianSGDP,Russian,Russian in Russia,West Eurasia,#ffffbf
+HGDP00698,,Palestinian,PalestinianHGDP;PalestinianSGDP,Palestinian,"Palestinian in Central, Israel",Middle East,#fee08b
+HGDP00891,,Russian,RussianHGDP;RussianSGDP,Russian,Russian in Russia,West Eurasia,#ffffbf
+HGDP00701,,Bedouin,BedouinBSGDP;BedouinHGDP,Bedouin B,Bedouin B in Israel(Negev),Middle East,#fee08b
+HGDP00985,,Biaka,BiakaHGDP;BiakaSGDP,Biaka,Biaka in Central Africa Republic,Africa,#e6f598
+HGDP00763,,JPT,JapaneseHGDP;JapaneseSGDP;JPT,Japanese,Japanese in Japan,East Asia,#d53e4f
+HGDP00992,,San,SanHGDP,San,San in Namibia,Africa,#e6f598
+HGDP00768,,JPT,JapaneseHGDP;JapaneseSGDP;JPT,Japanese,Japanese in Japan,East Asia,#d53e4f
+HGDP01010,,Karitiana,KaritianaHGDP;KaritianaSGDP,Karitiana,Karitiana in Brazil,America,#99d594
+HGDP00782,,CHB,CHB;HanHGDP;HanSGDP;NorthernHanHGDP,Han Chinese,"Han Chinese in Beijing, China",East Asia,#d53e4f
+HGDP00954,,Yakut,YakutSGDP;YakutHGDP,Yakut,Yakut in Russia,East Asia,#d53e4f
+HGDP00787,,Bougainville,BougainvilleHGDP;BougainvilleSGDP,Bougainville,Bougainville in Bougainville,Oceania,#3288bd
+HGDP00959,,Yakut,YakutSGDP;YakutHGDP,Yakut,Yakut in Russia,East Asia,#d53e4f
+HGDP00720,,Cambodian,CambodianHGDP;CambodianSGDP,Cambodian,Cambodian in Cambodia,East Asia,#d53e4f
+HGDP00961,,Yakut,YakutSGDP;YakutHGDP,Yakut,Yakut in Russia,East Asia,#d53e4f
+HGDP00732,,Palestinian,PalestinianHGDP;PalestinianSGDP,Palestinian,"Palestinian in Central, Israel",Middle East,#fee08b
+HGDP00966,,Yakut,YakutSGDP;YakutHGDP,Yakut,Yakut in Russia,East Asia,#d53e4f
+HGDP00744,,Palestinian,PalestinianHGDP;PalestinianSGDP,Palestinian,"Palestinian in Central, Israel",Middle East,#fee08b
+HGDP00973,,CHB,CHB;HanHGDP;HanSGDP;NorthernHanHGDP,Han Chinese,"Han Chinese in Beijing, China",East Asia,#d53e4f
+HGDP00751,,JPT,JapaneseHGDP;JapaneseSGDP;JPT,Japanese,Japanese in Japan,East Asia,#d53e4f
+HGDP00896,,Russian,RussianHGDP;RussianSGDP,Russian,Russian in Russia,West Eurasia,#ffffbf
+HGDP00756,,JPT,JapaneseHGDP;JapaneseSGDP;JPT,Japanese,Japanese in Japan,East Asia,#d53e4f
+HGDP00904,,Mandenka,MandenkaHGDP;MandenkaSGDP,Mandenka,Mandenka in Senegal,Africa,#e6f598
+HGDP00624,,Bedouin,BedouinBSGDP;BedouinHGDP,Bedouin B,Bedouin B in Israel(Negev),Middle East,#fee08b
+HGDP00909,,Mandenka,MandenkaHGDP;MandenkaSGDP,Mandenka,Mandenka in Senegal,Africa,#e6f598
+HGDP00629,,Bedouin,BedouinBSGDP;BedouinHGDP,Bedouin B,Bedouin B in Israel(Negev),Middle East,#fee08b
+HGDP00911,,Mandenka,MandenkaHGDP;MandenkaSGDP,Mandenka,Mandenka in Senegal,Africa,#e6f598
+HGDP00631,,Bedouin,BedouinBSGDP;BedouinHGDP,Bedouin B,Bedouin B in Israel(Negev),Middle East,#fee08b
+HGDP00916,,Mandenka,MandenkaHGDP;MandenkaSGDP,Mandenka,Mandenka in Senegal,Africa,#e6f598
+HGDP00636,,Bedouin,BedouinBSGDP;BedouinHGDP,Bedouin B,Bedouin B in Israel(Negev),Middle East,#fee08b
+HGDP00822,,CHB,CHB;HanHGDP;HanSGDP;NorthernHanHGDP,Han Chinese,"Han Chinese in Beijing, China",East Asia,#d53e4f
+HGDP00643,,Bedouin,BedouinBSGDP;BedouinHGDP,Bedouin B,Bedouin B in Israel(Negev),Middle East,#fee08b
+HGDP00858,,Maya,MayaHGDP;MayanSGDP,Maya,Maya in Mexico,America,#99d594
+HGDP00573,,Druze,DruzeHGDP;DruzeSGDP,Druze,"Druze in Carmel, Israel",Middle East,#fee08b
+HGDP00860,,Maya,MayaHGDP;MayanSGDP,Maya,Maya in Mexico,America,#99d594
+HGDP00578,,Druze,DruzeHGDP;DruzeSGDP,Druze,"Druze in Carmel, Israel",Middle East,#fee08b
+HGDP00865,,Maya,MayaHGDP;MayanSGDP,Maya,Maya in Mexico,America,#99d594
+HGDP00580,,Druze,DruzeHGDP;DruzeSGDP,Druze,"Druze in Carmel, Israel",Middle East,#fee08b
+HGDP00795,,Orcadian,OrcadianHGDP;OrcadianSGDP,Orcadian,Orcadian in Orkney,West Eurasia,#ffffbf
+HGDP00600,,Druze,DruzeHGDP;DruzeSGDP,Druze,"Druze in Carmel, Israel",Middle East,#fee08b
+HGDP00803,,Orcadian,OrcadianHGDP;OrcadianSGDP,Orcadian,Orcadian in Orkney,West Eurasia,#ffffbf
+HGDP00612,,Bedouin,BedouinBSGDP;BedouinHGDP,Bedouin B,Bedouin B in Israel(Negev),Middle East,#fee08b
+HGDP00808,,Orcadian,OrcadianHGDP;OrcadianSGDP,Orcadian,Orcadian in Orkney,West Eurasia,#ffffbf
+HGDP00977,,CHB,CHB;HanHGDP;HanSGDP;NorthernHanHGDP,Han Chinese,"Han Chinese in Beijing, China",East Asia,#d53e4f
+HGDP00810,,Orcadian,OrcadianHGDP;OrcadianSGDP,Orcadian,Orcadian in Orkney,West Eurasia,#ffffbf
+HGDP00984,,Mbuti,MbutiSGDP;MbutiHGDP,Mbuti,Mbuti in Congo,Africa,#e6f598
+HGDP00815,,CHB,CHB;HanHGDP;HanSGDP;NorthernHanHGDP,Han Chinese,"Han Chinese in Beijing, China",East Asia,#d53e4f
+HGDP01014,,Karitiana,KaritianaHGDP;KaritianaSGDP,Karitiana,Karitiana in Brazil,America,#99d594
+HGDP00930,,YRI,YRI;YorubaHGDP;YorubaSGDP,Yoruba,"Yoruba in Ibadan, Nigeria",Africa,#e6f598
+HGDP01019,,Karitiana,KaritianaHGDP;KaritianaSGDP,Karitiana,Karitiana in Brazil,America,#99d594
+HGDP00935,,YRI,YRI;YorubaHGDP;YorubaSGDP,Yoruba,"Yoruba in Ibadan, Nigeria",Africa,#e6f598
+HGDP01021,,CHB,CHB;HanHGDP;HanSGDP;NorthernHanHGDP,Han Chinese,"Han Chinese in Beijing, China",East Asia,#d53e4f
+HGDP00942,,YRI,YRI;YorubaHGDP;YorubaSGDP,Yoruba,"Yoruba in Ibadan, Nigeria",Africa,#e6f598
+HGDP01069,,Sardinian,SardinianHGDP;SardinianSGDP,Sardinian,Sardinian in Italy,West Eurasia,#ffffbf
+HGDP00947,,Yakut,YakutSGDP;YakutHGDP,Yakut,Yakut in Russia,East Asia,#d53e4f
+HGDP01071,,Sardinian,SardinianHGDP;SardinianSGDP,Sardinian,Sardinian in Italy,West Eurasia,#ffffbf
+HGDP01072,,Sardinian,SardinianHGDP;SardinianSGDP,Sardinian,Sardinian in Italy,West Eurasia,#ffffbf
+HGDP01090,,Biaka,BiakaHGDP;BiakaSGDP,Biaka,Biaka in Central Africa Republic,Africa,#e6f598
+HGDP01077,,Sardinian,SardinianHGDP;SardinianSGDP,Sardinian,Sardinian in Italy,West Eurasia,#ffffbf
+HGDP01103,,Tujia,TujiaHGDP;TujiaSGDP,Tujia,Tujia in China,East Asia,#d53e4f
+HGDP01096,,Tujia,TujiaHGDP;TujiaSGDP,Tujia,Tujia in China,East Asia,#d53e4f
+HGDP00794,,Orcadian,OrcadianHGDP;OrcadianSGDP,Orcadian,Orcadian in Orkney,West Eurasia,#ffffbf
+HGDP01387,,Adygei,AdygeiHGDP;AdygeiSGDP,Adygei,"Adygei in Caucasus, Russia",West Eurasia,#ffffbf
+HGDP00799,,Orcadian,OrcadianHGDP;OrcadianSGDP,Orcadian,Orcadian in Orkney,West Eurasia,#ffffbf
+HGDP01399,,Adygei,AdygeiHGDP;AdygeiSGDP,Adygei,"Adygei in Caucasus, Russia",West Eurasia,#ffffbf
+HGDP00802,,Orcadian,OrcadianHGDP;OrcadianSGDP,Orcadian,Orcadian in Orkney,West Eurasia,#ffffbf
+HGDP01419,,Bantu,BantuHereroSGDP;BantuKenyaHGDP;BantuSouthAfricaHGDP;BantuKenyaSGDP;BantuTswanaSGDP,Bantu Herero,Bantu Herero in Botswana Or Namibia,Africa,#e6f598
+HGDP00807,,Orcadian,OrcadianHGDP;OrcadianSGDP,Orcadian,Orcadian in Orkney,West Eurasia,#ffffbf
+HGDP00814,,CHB,CHB;HanHGDP;HanSGDP;NorthernHanHGDP,Han Chinese,"Han Chinese in Beijing, China",East Asia,#d53e4f
+HGDP01243,,Xibo,XiboHGDP;XiboSGDP,Xibo,Xibo in China,East Asia,#d53e4f
+HGDP00819,,CHB,CHB;HanHGDP;HanSGDP;NorthernHanHGDP,Han Chinese,"Han Chinese in Beijing, China",East Asia,#d53e4f
+HGDP01248,,Xibo,XiboHGDP;XiboSGDP,Xibo,Xibo in China,East Asia,#d53e4f
+HGDP00869,,Maya,MayaHGDP;MayanSGDP,Maya,Maya in Mexico,America,#99d594
+HGDP01255,,Mozabite,MozabiteSGDP;MozabiteHGDP,Mozabite,Mozabite in Algeria,Middle East,#fee08b
+HGDP00871,,Maya,MayaHGDP;MayanSGDP,Maya,Maya in Mexico,America,#99d594
+HGDP01262,,Mozabite,MozabiteSGDP;MozabiteHGDP,Mozabite,Mozabite in Algeria,Middle East,#fee08b
+HGDP00876,,Maya,MayaHGDP;MayanSGDP,Maya,Maya in Mexico,America,#99d594
+HGDP01267,,Mozabite,MozabiteSGDP;MozabiteHGDP,Mozabite,Mozabite in Algeria,Middle East,#fee08b
+HGDP00883,,Russian,RussianHGDP;RussianSGDP,Russian,Russian in Russia,West Eurasia,#ffffbf
+HGDP01185,,Yi,YiHGDP;YiSGDP,Yi,Yi in China,East Asia,#d53e4f
+HGDP00888,,Russian,RussianHGDP;RussianSGDP,Russian,Russian in Russia,West Eurasia,#ffffbf
+HGDP01192,,Miao,MiaoHGDP;MiaoSGDP,Miao,Miao in China,East Asia,#d53e4f
+HGDP00890,,Russian,RussianHGDP;RussianSGDP,Russian,Russian in Russia,West Eurasia,#ffffbf
+HGDP01197,,Miao,MiaoHGDP;MiaoSGDP,Miao,Miao in China,East Asia,#d53e4f
+HGDP01033,,Bantu,BantuHereroSGDP;BantuKenyaHGDP;BantuSouthAfricaHGDP;BantuKenyaSGDP;BantuTswanaSGDP,Bantu Herero,Bantu Herero in Botswana Or Namibia,Africa,#e6f598
+HGDP01200,,Mandenka,MandenkaHGDP;MandenkaSGDP,Mandenka,Mandenka in Senegal,Africa,#e6f598
+HGDP01057,,Pima,PimaHGDP;PimaSGDP,Pima,Pima in Mexico,America,#99d594
+HGDP01205,,Oroqen,OroqenHGDP;OroqenSGDP,Oroqen,Oroqen in China,East Asia,#d53e4f
+HGDP01064,,Sardinian,SardinianHGDP;SardinianSGDP,Sardinian,Sardinian in Italy,West Eurasia,#ffffbf
+HGDP01212,,Oroqen,OroqenHGDP;OroqenSGDP,Oroqen,Oroqen in China,East Asia,#d53e4f
+HGDP00821,,CHB,CHB;HanHGDP;HanSGDP;NorthernHanHGDP,Han Chinese,"Han Chinese in Beijing, China",East Asia,#d53e4f
+HGDP01104,,Tujia,TujiaHGDP;TujiaSGDP,Tujia,Tujia in China,East Asia,#d53e4f
+HGDP00838,,Surui,SuruiHGDP;SuruiSGDP,Surui,Surui in Brazil,America,#99d594
+HGDP01161,,Tuscan,TuscanHGDP;TuscanSGDP,Tuscan,Tuscan in Italy,West Eurasia,#ffffbf
+HGDP00845,,Surui,SuruiHGDP;SuruiSGDP,Surui,Surui in Brazil,America,#99d594
+HGDP01166,,Tuscan,TuscanHGDP;TuscanSGDP,Tuscan,Tuscan in Italy,West Eurasia,#ffffbf
+HGDP00864,,Maya,MayaHGDP;MayanSGDP,Maya,Maya in Mexico,America,#99d594
+HGDP01173,,Bergamo,BergamoSGDP;BergamoItalianHGDP,Bergamo,Bergamo in Italy(Bergamo),West Eurasia,#ffffbf
+HGDP00934,,YRI,YRI;YorubaHGDP;YorubaSGDP,Yoruba,"Yoruba in Ibadan, Nigeria",Africa,#e6f598
+HGDP01180,,Yi,YiHGDP;YiSGDP,Yi,Yi in China,East Asia,#d53e4f
+HGDP00939,,YRI,YRI;YorubaHGDP;YorubaSGDP,Yoruba,"Yoruba in Ibadan, Nigeria",Africa,#e6f598
+HGDP01217,,Daur,DaurHGDP;DaurSGDP,Daur,Daur in China,East Asia,#d53e4f
+HGDP00941,,YRI,YRI;YorubaHGDP;YorubaSGDP,Yoruba,"Yoruba in Ibadan, Nigeria",Africa,#e6f598
+HGDP01224,,Mongola,MongolaSGDP;MongolianHGDP,Mongola,Mongola in China,East Asia,#d53e4f
+HGDP00946,,Yakut,YakutSGDP;YakutHGDP,Yakut,Yakut in Russia,East Asia,#d53e4f
+HGDP01229,,Mongola,MongolaSGDP;MongolianHGDP,Mongola,Mongola in China,East Asia,#d53e4f
+HGDP00953,,Yakut,YakutSGDP;YakutHGDP,Yakut,Yakut in Russia,East Asia,#d53e4f
+HGDP01231,,Mongola,MongolaSGDP;MongolianHGDP,Mongola,Mongola in China,East Asia,#d53e4f
+HGDP00958,,Yakut,YakutSGDP;YakutHGDP,Yakut,Yakut in Russia,East Asia,#d53e4f
+HGDP01236,,Hezhen,HezhenHGDP;HezhenSGDP,Hezhen,Hezhen in China,East Asia,#d53e4f
+HGDP00960,,Yakut,YakutSGDP;YakutHGDP,Yakut,Yakut in Russia,East Asia,#d53e4f
+HGDP01363,,Basque,BasqueHGDP;BasqueSGDP,Basque,Basque in France,West Eurasia,#ffffbf
+HGDP00965,,Yakut,YakutSGDP;YakutHGDP,Yakut,Yakut in Russia,East Asia,#d53e4f
+HGDP01368,,Basque,BasqueHGDP;BasqueSGDP,Basque,Basque in France,West Eurasia,#ffffbf
+HGDP00972,,CHB,CHB;HanHGDP;HanSGDP;NorthernHanHGDP,Han Chinese,"Han Chinese in Beijing, China",East Asia,#d53e4f
+HGDP01370,,Basque,BasqueHGDP;BasqueSGDP,Basque,Basque in France,West Eurasia,#ffffbf
+HGDP00895,,Russian,RussianHGDP;RussianSGDP,Russian,Russian in Russia,West Eurasia,#ffffbf
+HGDP01375,,Basque,BasqueHGDP;BasqueSGDP,Basque,Basque in France,West Eurasia,#ffffbf
+HGDP00908,,Mandenka,MandenkaHGDP;MandenkaSGDP,Mandenka,Mandenka in Senegal,Africa,#e6f598
+HGDP01382,,Adygei,AdygeiHGDP;AdygeiSGDP,Adygei,"Adygei in Caucasus, Russia",West Eurasia,#ffffbf
+HGDP00910,,Mandenka,MandenkaHGDP;MandenkaSGDP,Mandenka,Mandenka in Senegal,Africa,#e6f598
+HGDP01298,,Uygur,UygurHGDP;UygurSGDP,Uygur,Uygur in China,East Asia,#d53e4f
+HGDP01247,,Xibo,XiboHGDP;XiboSGDP,Xibo,Xibo in China,East Asia,#d53e4f
+HGDP01301,,Uygur,UygurHGDP;UygurSGDP,Uygur,Uygur in China,East Asia,#d53e4f
+HGDP01254,,Mozabite,MozabiteSGDP;MozabiteHGDP,Mozabite,Mozabite in Algeria,Middle East,#fee08b
+HGDP01313,,Dai,DaiHGDP;DaiSGDP,Dai,Dai in China,East Asia,#d53e4f
+HGDP01259,,Mozabite,MozabiteSGDP;MozabiteHGDP,Mozabite,Mozabite in Algeria,Middle East,#fee08b
+HGDP01318,,Lahu,LahuHGDP;LahuSGDP,Lahu,Lahu in China,East Asia,#d53e4f
+HGDP01261,,Mozabite,MozabiteSGDP;MozabiteHGDP,Mozabite,Mozabite in Algeria,Middle East,#fee08b
+HGDP01332,,She,SheHGDP;SheSGDP,She,She in China,East Asia,#d53e4f
+HGDP01266,,Mozabite,MozabiteSGDP;MozabiteHGDP,Mozabite,Mozabite in Algeria,Middle East,#fee08b
+HGDP01337,,Naxi,NaxiHGDP;NaxiSGDP,Naxi,Naxi in China,East Asia,#d53e4f
+HGDP01273,,Mozabite,MozabiteSGDP;MozabiteHGDP,Mozabite,Mozabite in Algeria,Middle East,#fee08b
+HGDP01349,,Tu,TuHGDP;TuSGDP,Tu,Tu in China,East Asia,#d53e4f
+HGDP01280,,Mozabite,MozabiteSGDP;MozabiteHGDP,Mozabite,Mozabite in Algeria,Middle East,#fee08b
+HGDP01351,,Tu,TuHGDP;TuSGDP,Tu,Tu in China,East Asia,#d53e4f
+HGDP01285,,Mandenka,MandenkaHGDP;MandenkaSGDP,Mandenka,Mandenka in Senegal,Africa,#e6f598
+HGDP01356,,Tu,TuHGDP;TuSGDP,Tu,Tu in China,East Asia,#d53e4f
+HGDP01292,,CHB,CHB;HanHGDP;HanSGDP;NorthernHanHGDP,Han Chinese,"Han Chinese in Beijing, China",East Asia,#d53e4f
+HGDP01279,,Mozabite,MozabiteSGDP;MozabiteHGDP,Mozabite,Mozabite in Algeria,Middle East,#fee08b
+HGDP01386,,Adygei,AdygeiHGDP;AdygeiSGDP,Adygei,"Adygei in Caucasus, Russia",West Eurasia,#ffffbf
+HGDP01293,,CHB,CHB;HanHGDP;HanSGDP;NorthernHanHGDP,Han Chinese,"Han Chinese in Beijing, China",East Asia,#d53e4f
+HGDP01398,,Adygei,AdygeiHGDP;AdygeiSGDP,Adygei,"Adygei in Caucasus, Russia",West Eurasia,#ffffbf
+HGDP01406,,Bantu,BantuHereroSGDP;BantuKenyaHGDP;BantuSouthAfricaHGDP;BantuKenyaSGDP;BantuTswanaSGDP,Bantu Herero,Bantu Herero in Botswana Or Namibia,Africa,#e6f598
+HGDP01413,,Bantu,BantuHereroSGDP;BantuKenyaHGDP;BantuSouthAfricaHGDP;BantuKenyaSGDP;BantuTswanaSGDP,Bantu Herero,Bantu Herero in Botswana Or Namibia,Africa,#e6f598
+HGDP01418,,Bantu,BantuHereroSGDP;BantuKenyaHGDP;BantuSouthAfricaHGDP;BantuKenyaSGDP;BantuTswanaSGDP,Bantu Herero,Bantu Herero in Botswana Or Namibia,Africa,#e6f598
+HGDP01362,,Basque,BasqueHGDP;BasqueSGDP,Basque,Basque in France,West Eurasia,#ffffbf
+HGDP01367,,Basque,BasqueHGDP;BasqueSGDP,Basque,Basque in France,West Eurasia,#ffffbf
+HGDP01374,,Basque,BasqueHGDP;BasqueSGDP,Basque,Basque in France,West Eurasia,#ffffbf
+HGDP01379,,Basque,BasqueHGDP;BasqueSGDP,Basque,Basque in France,West Eurasia,#ffffbf
+HGDP01381,,Adygei,AdygeiHGDP;AdygeiSGDP,Adygei,"Adygei in Caucasus, Russia",West Eurasia,#ffffbf
+HGDP01300,,Uygur,UygurHGDP;UygurSGDP,Uygur,Uygur in China,East Asia,#d53e4f
+HGDP01305,,Uygur,UygurHGDP;UygurSGDP,Uygur,Uygur in China,East Asia,#d53e4f
+HGDP01317,,Lahu,LahuHGDP;LahuSGDP,Lahu,Lahu in China,East Asia,#d53e4f
+HGDP01329,,She,SheHGDP;SheSGDP,She,She in China,East Asia,#d53e4f
+HGDP01189,,Miao,MiaoHGDP;MiaoSGDP,Miao,Miao in China,East Asia,#d53e4f
+HGDP01196,,Miao,MiaoHGDP;MiaoSGDP,Miao,Miao in China,East Asia,#d53e4f
+HGDP01204,,Oroqen,OroqenHGDP;OroqenSGDP,Oroqen,Oroqen in China,East Asia,#d53e4f
+HGDP01209,,Oroqen,OroqenHGDP;OroqenSGDP,Oroqen,Oroqen in China,East Asia,#d53e4f
+HGDP01177,,Bergamo,BergamoSGDP;BergamoItalianHGDP,Bergamo,Bergamo in Italy(Bergamo),West Eurasia,#ffffbf
+HGDP01184,,Yi,YiHGDP;YiSGDP,Yi,Yi in China,East Asia,#d53e4f
+HGDP01216,,Daur,DaurHGDP;DaurSGDP,Daur,Daur in China,East Asia,#d53e4f
+HGDP01230,,Mongola,MongolaSGDP;MongolianHGDP,Mongola,Mongola in China,East Asia,#d53e4f
+HGDP01331,,She,SheHGDP;SheSGDP,She,She in China,East Asia,#d53e4f
+HGDP01336,,She,SheHGDP;SheSGDP,She,She in China,East Asia,#d53e4f
+HGDP01348,,Tu,TuHGDP;TuSGDP,Tu,Tu in China,East Asia,#d53e4f
+HGDP00001,,Brahui,BrahuiHGDP;BrahuiSGDP,Brahui,Brahui in Pakistan,South Asia,#fc8d59
+HGDP00392,,Burusho,BurushoHGDP;BurushoSGDP,Burusho,Burusho in Pakistan,South Asia,#fc8d59
+HGDP00397,,Burusho,BurushoHGDP;BurushoSGDP,Burusho,Burusho in Pakistan,South Asia,#fc8d59
+HGDP00412,,Burusho,BurushoHGDP;BurushoSGDP,Burusho,Burusho in Pakistan,South Asia,#fc8d59
+HGDP00417,,Burusho,BurushoHGDP;BurushoSGDP,Burusho,Burusho in Pakistan,South Asia,#fc8d59
+HGDP00450,,Mbuti,MbutiSGDP;MbutiHGDP,Mbuti,Mbuti in Congo,Africa,#e6f598
+HGDP00455,,Biaka,BiakaHGDP;BiakaSGDP,Biaka,Biaka in Central Africa Republic,Africa,#e6f598
+HGDP00462,,Mbuti,MbutiSGDP;MbutiHGDP,Mbuti,Mbuti in Congo,Africa,#e6f598
+HGDP00467,,Mbuti,MbutiSGDP;MbutiHGDP,Mbuti,Mbuti in Congo,Africa,#e6f598
+HGDP00479,,Biaka,BiakaHGDP;BiakaSGDP,Biaka,Biaka in Central Africa Republic,Africa,#e6f598
+HGDP00513,,French,FrenchHGDP;FrenchSGDP,French,French in France,West Eurasia,#ffffbf
+HGDP00518,,French,FrenchHGDP;FrenchSGDP,French,French in France,West Eurasia,#ffffbf
+HGDP00234,,Pathan,PathanHGDP;PathanSGDP,Pathan,Pathan in Pakistan,South Asia,#fc8d59
+HGDP00239,,Pathan,PathanHGDP;PathanSGDP,Pathan,Pathan in Pakistan,South Asia,#fc8d59
+HGDP00241,,Pathan,PathanHGDP;PathanSGDP,Pathan,Pathan in Pakistan,South Asia,#fc8d59
+HGDP00258,,Pathan,PathanHGDP;PathanSGDP,Pathan,Pathan in Pakistan,South Asia,#fc8d59
+HGDP00277,,Kalash,KalashHGDP;KalashSGDP,Kalash,Kalash in Pakistan,South Asia,#fc8d59
+HGDP00304,,Kalash,KalashHGDP;KalashSGDP,Kalash,Kalash in Pakistan,South Asia,#fc8d59
+HGDP00309,,Kalash,KalashHGDP;KalashSGDP,Kalash,Kalash in Pakistan,South Asia,#fc8d59
+HGDP00311,,Kalash,KalashHGDP;KalashSGDP,Kalash,Kalash in Pakistan,South Asia,#fc8d59
+HGDP00323,,Kalash,KalashHGDP;KalashSGDP,Kalash,Kalash in Pakistan,South Asia,#fc8d59
+HGDP00330,,Kalash,KalashHGDP;KalashSGDP,Kalash,Kalash in Pakistan,South Asia,#fc8d59
+HGDP00359,,Burusho,BurushoHGDP;BurushoSGDP,Burusho,Burusho in Pakistan,South Asia,#fc8d59
+HGDP00068,,Balochi,BalochiHGDP;BalochiSGDP,Balochi,Balochi in Pakistan,South Asia,#fc8d59
+HGDP00070,,Balochi,BalochiHGDP;BalochiSGDP,Balochi,Balochi in Pakistan,South Asia,#fc8d59
+HGDP00003,,Brahui,BrahuiHGDP;BrahuiSGDP,Brahui,Brahui in Pakistan,South Asia,#fc8d59
+HGDP00082,,Balochi,BalochiHGDP;BalochiSGDP,Balochi,Balochi in Pakistan,South Asia,#fc8d59
+HGDP00094,,Balochi,BalochiHGDP;BalochiSGDP,Balochi,Balochi in Pakistan,South Asia,#fc8d59
+HGDP00099,,Hazara,HazaraHGDP;HazaraSGDP,Hazara,Hazara in Pakistan,South Asia,#fc8d59
+HGDP00102,,Hazara,HazaraHGDP;HazaraSGDP,Hazara,Hazara in Pakistan,South Asia,#fc8d59
+HGDP00013,,Brahui,BrahuiHGDP;BrahuiSGDP,Brahui,Brahui in Pakistan,South Asia,#fc8d59
+HGDP00025,,Brahui,BrahuiHGDP;BrahuiSGDP,Brahui,Brahui in Pakistan,South Asia,#fc8d59
+HGDP00037,,Brahui,BrahuiHGDP;BrahuiSGDP,Brahui,Brahui in Pakistan,South Asia,#fc8d59
+HGDP00049,,Brahui,BrahuiHGDP;BrahuiSGDP,Brahui,Brahui in Pakistan,South Asia,#fc8d59
+HGDP00056,,Balochi,BalochiHGDP;BalochiSGDP,Balochi,Balochi in Pakistan,South Asia,#fc8d59
+HGDP00183,,Sindhi,SindhiHGDP;SindhiSGDP,Sindhi,Sindhi in Pakistan,South Asia,#fc8d59
+HGDP00210,,Sindhi,SindhiHGDP;SindhiSGDP,Sindhi,Sindhi in Pakistan,South Asia,#fc8d59
+HGDP00222,,Pathan,PathanHGDP;PathanSGDP,Pathan,Pathan in Pakistan,South Asia,#fc8d59
+HGDP00140,,Makrani,MakraniHGDP;MakraniSGDP,Makrani,Makrani in Pakistan,South Asia,#fc8d59
+HGDP00145,,Makrani,MakraniHGDP;MakraniSGDP,Makrani,Makrani in Pakistan,South Asia,#fc8d59
+HGDP00169,,Sindhi,SindhiHGDP;SindhiSGDP,Sindhi,Sindhi in Pakistan,South Asia,#fc8d59
+HGDP00171,,Sindhi,SindhiHGDP;SindhiSGDP,Sindhi,Sindhi in Pakistan,South Asia,#fc8d59
+HGDP00119,,Hazara,HazaraHGDP;HazaraSGDP,Hazara,Hazara in Pakistan,South Asia,#fc8d59
+HGDP00121,,Hazara,HazaraHGDP;HazaraSGDP,Hazara,Hazara in Pakistan,South Asia,#fc8d59
+HGDP00133,,Makrani,MakraniHGDP;MakraniSGDP,Makrani,Makrani in Pakistan,South Asia,#fc8d59
+HGDP00563,,Druze,DruzeHGDP;DruzeSGDP,Druze,"Druze in Carmel, Israel",Middle East,#fee08b
+HGDP00568,,Druze,DruzeHGDP;DruzeSGDP,Druze,"Druze in Carmel, Israel",Middle East,#fee08b
+HGDP00683,,Palestinian,PalestinianHGDP;PalestinianSGDP,Palestinian,"Palestinian in Central, Israel",Middle East,#fee08b
+HGDP00688,,Palestinian,PalestinianHGDP;PalestinianSGDP,Palestinian,"Palestinian in Central, Israel",Middle East,#fee08b
+HGDP00690,,Palestinian,PalestinianHGDP;PalestinianSGDP,Palestinian,"Palestinian in Central, Israel",Middle East,#fee08b
+HGDP00703,,CLM,ColombianHGDP;CLM,Colombian,Colombian in Colombia,America,#99d594
+HGDP00708,,CLM,ColombianHGDP;CLM,Colombian,Colombian in Colombia,America,#99d594
+HGDP00710,,CLM,ColombianHGDP;CLM,Colombian,Colombian in Colombia,America,#99d594
+HGDP00715,,Cambodian,CambodianHGDP;CambodianSGDP,Cambodian,Cambodian in Cambodia,East Asia,#d53e4f
+HGDP00727,,Palestinian,PalestinianHGDP;PalestinianSGDP,Palestinian,"Palestinian in Central, Israel",Middle East,#fee08b
+HGDP00734,,Palestinian,PalestinianHGDP;PalestinianSGDP,Palestinian,"Palestinian in Central, Israel",Middle East,#fee08b
+HGDP00739,,Palestinian,PalestinianHGDP;PalestinianSGDP,Palestinian,"Palestinian in Central, Israel",Middle East,#fee08b
+HGDP00741,,Palestinian,PalestinianHGDP;PalestinianSGDP,Palestinian,"Palestinian in Central, Israel",Middle East,#fee08b
+HGDP00746,,Palestinian,PalestinianHGDP;PalestinianSGDP,Palestinian,"Palestinian in Central, Israel",Middle East,#fee08b
+HGDP00753,,JPT,JapaneseHGDP;JapaneseSGDP;JPT,Japanese,Japanese in Japan,East Asia,#d53e4f
+HGDP00758,,JPT,JapaneseHGDP;JapaneseSGDP;JPT,Japanese,Japanese in Japan,East Asia,#d53e4f
+HGDP00760,,JPT,JapaneseHGDP;JapaneseSGDP;JPT,Japanese,Japanese in Japan,East Asia,#d53e4f
+HGDP00765,,JPT,JapaneseHGDP;JapaneseSGDP;JPT,Japanese,Japanese in Japan,East Asia,#d53e4f
+HGDP00664,,Bougainville,BougainvilleHGDP;BougainvilleSGDP,Bougainville,Bougainville in Bougainville,Oceania,#3288bd
+HGDP00464,,Biaka,BiakaHGDP;BiakaSGDP,Biaka,Biaka in Central Africa Republic,Africa,#e6f598
+HGDP00669,,Sardinian,SardinianHGDP;SardinianSGDP,Sardinian,Sardinian in Italy,West Eurasia,#ffffbf
+HGDP00469,,Biaka,BiakaHGDP;BiakaSGDP,Biaka,Biaka in Central Africa Republic,Africa,#e6f598
+HGDP00671,,Sardinian,SardinianHGDP;SardinianSGDP,Sardinian,Sardinian in Italy,West Eurasia,#ffffbf
+HGDP00471,,Mbuti,MbutiSGDP;MbutiHGDP,Mbuti,Mbuti in Congo,Africa,#e6f598
+HGDP00676,,Palestinian,PalestinianHGDP;PalestinianSGDP,Palestinian,"Palestinian in Central, Israel",Middle East,#fee08b
+HGDP00490,,Bougainville,BougainvilleHGDP;BougainvilleSGDP,Bougainville,Bougainville in Bougainville,Oceania,#3288bd
+HGDP00602,,Druze,DruzeHGDP;DruzeSGDP,Druze,"Druze in Carmel, Israel",Middle East,#fee08b
+HGDP00515,,French,FrenchHGDP;FrenchSGDP,French,French in France,West Eurasia,#ffffbf
+HGDP00607,,Bedouin,BedouinBSGDP;BedouinHGDP,Bedouin B,Bedouin B in Israel(Negev),Middle East,#fee08b
+HGDP00382,,Burusho,BurushoHGDP;BurushoSGDP,Burusho,Burusho in Pakistan,South Asia,#fc8d59
+HGDP00614,,Bedouin,BedouinBSGDP;BedouinHGDP,Bedouin B,Bedouin B in Israel(Negev),Middle East,#fee08b
+HGDP00402,,Burusho,BurushoHGDP;BurushoSGDP,Burusho,Burusho in Pakistan,South Asia,#fc8d59
+HGDP00619,,Bedouin,BedouinBSGDP;BedouinHGDP,Bedouin B,Bedouin B in Israel(Negev),Middle East,#fee08b
+HGDP00407,,Burusho,BurushoHGDP;BurushoSGDP,Burusho,Burusho in Pakistan,South Asia,#fc8d59
+HGDP00621,,Bedouin,BedouinBSGDP;BedouinHGDP,Bedouin B,Bedouin B in Israel(Negev),Middle East,#fee08b
+HGDP00433,,Burusho,BurushoHGDP;BurushoSGDP,Burusho,Burusho in Pakistan,South Asia,#fc8d59
+HGDP00626,,Bedouin,BedouinBSGDP;BedouinHGDP,Bedouin B,Bedouin B in Israel(Negev),Middle East,#fee08b
+HGDP00438,,Burusho,BurushoHGDP;BurushoSGDP,Burusho,Burusho in Pakistan,South Asia,#fc8d59
+HGDP00520,,French,FrenchHGDP;FrenchSGDP,French,French in France,West Eurasia,#ffffbf
+HGDP00445,,Burusho,BurushoHGDP;BurushoSGDP,Burusho,Burusho in Pakistan,South Asia,#fc8d59
+HGDP00525,,French,FrenchHGDP;FrenchSGDP,French,French in France,West Eurasia,#ffffbf
+HGDP00452,,Biaka,BiakaHGDP;BiakaSGDP,Biaka,Biaka in Central Africa Republic,Africa,#e6f598
+HGDP00537,,French,FrenchHGDP;FrenchSGDP,French,French in France,West Eurasia,#ffffbf
+HGDP00243,,Pathan,PathanHGDP;PathanSGDP,Pathan,Pathan in Pakistan,South Asia,#fc8d59
+HGDP00544,,Papuan,PapuanHighlandsHGDP;PapuanSGDP;PapuanSepikHGDP,Papuan Highlands,Papuan Highlands in New Guinea,Oceania,#3288bd
+HGDP00248,,Pathan,PathanHGDP;PathanSGDP,Pathan,Pathan in Pakistan,South Asia,#fc8d59
+HGDP00575,,Druze,DruzeHGDP;DruzeSGDP,Druze,"Druze in Carmel, Israel",Middle East,#fee08b
+HGDP00262,,Pathan,PathanHGDP;PathanSGDP,Pathan,Pathan in Pakistan,South Asia,#fc8d59
+HGDP00582,,Druze,DruzeHGDP;DruzeSGDP,Druze,"Druze in Carmel, Israel",Middle East,#fee08b
+HGDP00274,,Kalash,KalashHGDP;KalashSGDP,Kalash,Kalash in Pakistan,South Asia,#fc8d59
+HGDP00587,,Druze,DruzeHGDP;DruzeSGDP,Druze,"Druze in Carmel, Israel",Middle East,#fee08b
+HGDP00279,,Kalash,KalashHGDP;KalashSGDP,Kalash,Kalash in Pakistan,South Asia,#fc8d59
+HGDP00594,,Druze,DruzeHGDP;DruzeSGDP,Druze,"Druze in Carmel, Israel",Middle East,#fee08b
+HGDP00281,,Kalash,KalashHGDP;KalashSGDP,Kalash,Kalash in Pakistan,South Asia,#fc8d59
+HGDP00599,,Druze,DruzeHGDP;DruzeSGDP,Druze,"Druze in Carmel, Israel",Middle East,#fee08b
+HGDP00173,,Sindhi,SindhiHGDP;SindhiSGDP,Sindhi,Sindhi in Pakistan,South Asia,#fc8d59
+HGDP00638,,Bedouin,BedouinBSGDP;BedouinHGDP,Bedouin B,Bedouin B in Israel(Negev),Middle East,#fee08b
+HGDP00185,,Sindhi,SindhiHGDP;SindhiSGDP,Sindhi,Sindhi in Pakistan,South Asia,#fc8d59
+HGDP00640,,Bedouin,BedouinBSGDP;BedouinHGDP,Bedouin B,Bedouin B in Israel(Negev),Middle East,#fee08b
+HGDP00192,,Sindhi,SindhiHGDP;SindhiSGDP,Sindhi,Sindhi in Pakistan,South Asia,#fc8d59
+HGDP00645,,Bedouin,BedouinBSGDP;BedouinHGDP,Bedouin B,Bedouin B in Israel(Negev),Middle East,#fee08b
+HGDP00197,,Sindhi,SindhiHGDP;SindhiSGDP,Sindhi,Sindhi in Pakistan,South Asia,#fc8d59
+HGDP00981,,Biaka,BiakaHGDP;BiakaSGDP,Biaka,Biaka in Central Africa Republic,Africa,#e6f598
+HGDP00205,,Sindhi,SindhiHGDP;SindhiSGDP,Sindhi,Sindhi in Pakistan,South Asia,#fc8d59
+HGDP00986,,Biaka,BiakaHGDP;BiakaSGDP,Biaka,Biaka in Central Africa Republic,Africa,#e6f598
+HGDP00224,,Pathan,PathanHGDP;PathanSGDP,Pathan,Pathan in Pakistan,South Asia,#fc8d59
+HGDP00993,,Bantu,BantuHereroSGDP;BantuKenyaHGDP;BantuSouthAfricaHGDP;BantuKenyaSGDP;BantuTswanaSGDP,Bantu Herero,Bantu Herero in Botswana Or Namibia,Africa,#e6f598
+HGDP00298,,Kalash,KalashHGDP;KalashSGDP,Kalash,Kalash in Pakistan,South Asia,#fc8d59
+HGDP01009,,Karitiana,KaritianaHGDP;KaritianaSGDP,Karitiana,Karitiana in Brazil,America,#99d594
+HGDP00313,,Kalash,KalashHGDP;KalashSGDP,Kalash,Kalash in Pakistan,South Asia,#fc8d59
+HGDP01023,,CHB,CHB;HanHGDP;HanSGDP;NorthernHanHGDP,Han Chinese,"Han Chinese in Beijing, China",East Asia,#d53e4f
+HGDP00351,,Burusho,BurushoHGDP;BurushoSGDP,Burusho,Burusho in Pakistan,South Asia,#fc8d59
+HGDP00823,,Bougainville,BougainvilleHGDP;BougainvilleSGDP,Bougainville,Bougainville in Bougainville,Oceania,#3288bd
+HGDP00356,,Burusho,BurushoHGDP;BurushoSGDP,Burusho,Burusho in Pakistan,South Asia,#fc8d59
+HGDP00828,,JPT,JapaneseHGDP;JapaneseSGDP;JPT,Japanese,Japanese in Japan,East Asia,#d53e4f
+HGDP00104,,Hazara,HazaraHGDP;HazaraSGDP,Hazara,Hazara in Pakistan,South Asia,#fc8d59
+HGDP00854,,Maya,MayaHGDP;MayanSGDP,Maya,Maya in Mexico,America,#99d594
+HGDP00109,,Hazara,HazaraHGDP;HazaraSGDP,Hazara,Hazara in Pakistan,South Asia,#fc8d59
+HGDP00859,,Maya,MayaHGDP;MayanSGDP,Maya,Maya in Mexico,America,#99d594
+HGDP00130,,Makrani,MakraniHGDP;MakraniSGDP,Makrani,Makrani in Pakistan,South Asia,#fc8d59
+HGDP00861,,Maya,MayaHGDP;MayanSGDP,Maya,Maya in Mexico,America,#99d594
+HGDP00135,,Makrani,MakraniHGDP;MakraniSGDP,Makrani,Makrani in Pakistan,South Asia,#fc8d59
+HGDP00929,,YRI,YRI;YorubaHGDP;YorubaSGDP,Yoruba,"Yoruba in Ibadan, Nigeria",Africa,#e6f598
+HGDP00154,,Makrani,MakraniHGDP;MakraniSGDP,Makrani,Makrani in Pakistan,South Asia,#fc8d59
+HGDP00931,,YRI,YRI;YorubaHGDP;YorubaSGDP,Yoruba,"Yoruba in Ibadan, Nigeria",Africa,#e6f598
+HGDP00161,,Makrani,MakraniHGDP;MakraniSGDP,Makrani,Makrani in Pakistan,South Asia,#fc8d59
+HGDP00943,,YRI,YRI;YorubaHGDP;YorubaSGDP,Yoruba,"Yoruba in Ibadan, Nigeria",Africa,#e6f598
+HGDP00060,,Balochi,BalochiHGDP;BalochiSGDP,Balochi,Balochi in Pakistan,South Asia,#fc8d59
+HGDP00948,,Yakut,YakutSGDP;YakutHGDP,Yakut,Yakut in Russia,East Asia,#d53e4f
+HGDP00072,,Balochi,BalochiHGDP;BalochiSGDP,Balochi,Balochi in Pakistan,South Asia,#fc8d59
+HGDP00950,,Yakut,YakutSGDP;YakutHGDP,Yakut,Yakut in Russia,East Asia,#d53e4f
+HGDP00096,,Balochi,BalochiHGDP;BalochiSGDP,Balochi,Balochi in Pakistan,South Asia,#fc8d59
+HGDP00900,,Russian,RussianHGDP;RussianSGDP,Russian,Russian in Russia,West Eurasia,#ffffbf
+HGDP00015,,Brahui,BrahuiHGDP;BrahuiSGDP,Brahui,Brahui in Pakistan,South Asia,#fc8d59
+HGDP00905,,Mandenka,MandenkaHGDP;MandenkaSGDP,Mandenka,Mandenka in Senegal,Africa,#e6f598
+HGDP00039,,Brahui,BrahuiHGDP;BrahuiSGDP,Brahui,Brahui in Pakistan,South Asia,#fc8d59
+HGDP00912,,Mandenka,MandenkaHGDP;MandenkaSGDP,Mandenka,Mandenka in Senegal,Africa,#e6f598
+HGDP00041,,Brahui,BrahuiHGDP;BrahuiSGDP,Brahui,Brahui in Pakistan,South Asia,#fc8d59
+HGDP00917,,Mandenka,MandenkaHGDP;MandenkaSGDP,Mandenka,Mandenka in Senegal,Africa,#e6f598
+HGDP00924,,YRI,YRI;YorubaHGDP;YorubaSGDP,Yoruba,"Yoruba in Ibadan, Nigeria",Africa,#e6f598
+HGDP00955,,Yakut,YakutSGDP;YakutHGDP,Yakut,Yakut in Russia,East Asia,#d53e4f
+HGDP00558,,Druze,DruzeHGDP;DruzeSGDP,Druze,"Druze in Carmel, Israel",Middle East,#fee08b
+HGDP00962,,Yakut,YakutSGDP;YakutHGDP,Yakut,Yakut in Russia,East Asia,#d53e4f
+HGDP00560,,Druze,DruzeHGDP;DruzeSGDP,Druze,"Druze in Carmel, Israel",Middle East,#fee08b
+HGDP00967,,Yakut,YakutSGDP;YakutHGDP,Yakut,Yakut in Russia,East Asia,#d53e4f
+HGDP00565,,Druze,DruzeHGDP;DruzeSGDP,Druze,"Druze in Carmel, Israel",Middle East,#fee08b
+HGDP00974,,CHB,CHB;HanHGDP;HanSGDP;NorthernHanHGDP,Han Chinese,"Han Chinese in Beijing, China",East Asia,#d53e4f
+HGDP00522,,French,FrenchHGDP;FrenchSGDP,French,French in France,West Eurasia,#ffffbf
+HGDP00873,,Maya,MayaHGDP;MayanSGDP,Maya,Maya in Mexico,America,#99d594
+HGDP00527,,French,FrenchHGDP;FrenchSGDP,French,French in France,West Eurasia,#ffffbf
+HGDP00880,,Russian,RussianHGDP;RussianSGDP,Russian,Russian in Russia,West Eurasia,#ffffbf
+HGDP00534,,French,FrenchHGDP;FrenchSGDP,French,French in France,West Eurasia,#ffffbf
+HGDP00885,,Russian,RussianHGDP;RussianSGDP,Russian,Russian in Russia,West Eurasia,#ffffbf
+HGDP00539,,French,FrenchHGDP;FrenchSGDP,French,French in France,West Eurasia,#ffffbf
+HGDP00892,,Russian,RussianHGDP;RussianSGDP,Russian,Russian in Russia,West Eurasia,#ffffbf
+HGDP00897,,Russian,RussianHGDP;RussianSGDP,Russian,Russian in Russia,West Eurasia,#ffffbf
+HGDP00712,,Cambodian,CambodianHGDP;CambodianSGDP,Cambodian,Cambodian in Cambodia,East Asia,#d53e4f
+HGDP00772,,JPT,JapaneseHGDP;JapaneseSGDP;JPT,Japanese,Japanese in Japan,East Asia,#d53e4f
+HGDP00724,,Palestinian,PalestinianHGDP;PalestinianSGDP,Palestinian,"Palestinian in Central, Israel",Middle East,#fee08b
+HGDP00777,,CHB,CHB;HanHGDP;HanSGDP;NorthernHanHGDP,Han Chinese,"Han Chinese in Beijing, China",East Asia,#d53e4f
+HGDP00729,,Palestinian,PalestinianHGDP;PalestinianSGDP,Palestinian,"Palestinian in Central, Israel",Middle East,#fee08b
+HGDP00784,,CHB,CHB;HanHGDP;HanSGDP;NorthernHanHGDP,Han Chinese,"Han Chinese in Beijing, China",East Asia,#d53e4f
+HGDP00731,,Palestinian,PalestinianHGDP;PalestinianSGDP,Palestinian,"Palestinian in Central, Israel",Middle East,#fee08b
+HGDP00791,,JPT,JapaneseHGDP;JapaneseSGDP;JPT,Japanese,Japanese in Japan,East Asia,#d53e4f
+HGDP00654,,Bedouin,BedouinBSGDP;BedouinHGDP,Bedouin B,Bedouin B in Israel(Negev),Middle East,#fee08b
+HGDP00804,,Orcadian,OrcadianHGDP;OrcadianSGDP,Orcadian,Orcadian in Orkney,West Eurasia,#ffffbf
+HGDP00661,,Bougainville,BougainvilleHGDP;BougainvilleSGDP,Bougainville,Bougainville in Bougainville,Oceania,#3288bd
+HGDP00811,,CHB,CHB;HanHGDP;HanSGDP;NorthernHanHGDP,Han Chinese,"Han Chinese in Beijing, China",East Asia,#d53e4f
+HGDP00666,,Sardinian,SardinianHGDP;SardinianSGDP,Sardinian,Sardinian in Italy,West Eurasia,#ffffbf
+HGDP01059,,Pima,PimaHGDP;PimaSGDP,Pima,Pima in Mexico,America,#99d594
+HGDP00673,,Sardinian,SardinianHGDP;SardinianSGDP,Sardinian,Sardinian in Italy,West Eurasia,#ffffbf
+HGDP01066,,Sardinian,SardinianHGDP;SardinianSGDP,Sardinian,Sardinian in Italy,West Eurasia,#ffffbf
+HGDP00736,,Palestinian,PalestinianHGDP;PalestinianSGDP,Palestinian,"Palestinian in Central, Israel",Middle East,#fee08b
+HGDP01275,,Mozabite,MozabiteSGDP;MozabiteHGDP,Mozabite,Mozabite in Algeria,Middle East,#fee08b
+HGDP00748,,JPT,JapaneseHGDP;JapaneseSGDP;JPT,Japanese,Japanese in Japan,East Asia,#d53e4f
+HGDP01282,,Mozabite,MozabiteSGDP;MozabiteHGDP,Mozabite,Mozabite in Algeria,Middle East,#fee08b
+HGDP00750,,JPT,JapaneseHGDP;JapaneseSGDP;JPT,Japanese,Japanese in Japan,East Asia,#d53e4f
+HGDP01287,,CHB,CHB;HanHGDP;HanSGDP;NorthernHanHGDP,Han Chinese,"Han Chinese in Beijing, China",East Asia,#d53e4f
+HGDP00755,,JPT,JapaneseHGDP;JapaneseSGDP;JPT,Japanese,Japanese in Japan,East Asia,#d53e4f
+HGDP01294,,CHB,CHB;HanHGDP;HanSGDP;NorthernHanHGDP,Han Chinese,"Han Chinese in Beijing, China",East Asia,#d53e4f
+HGDP00762,,JPT,JapaneseHGDP;JapaneseSGDP;JPT,Japanese,Japanese in Japan,East Asia,#d53e4f
+HGDP01299,,Uygur,UygurHGDP;UygurSGDP,Uygur,Uygur in China,East Asia,#d53e4f
+HGDP00678,,Palestinian,PalestinianHGDP;PalestinianSGDP,Palestinian,"Palestinian in Central, Israel",Middle East,#fee08b
+HGDP01155,,Bergamo,BergamoSGDP;BergamoItalianHGDP,Bergamo,Bergamo in Italy(Bergamo),West Eurasia,#ffffbf
+HGDP00680,,Palestinian,PalestinianHGDP;PalestinianSGDP,Palestinian,"Palestinian in Central, Israel",Middle East,#fee08b
+HGDP01162,,Tuscan,TuscanHGDP;TuscanSGDP,Tuscan,Tuscan in Italy,West Eurasia,#ffffbf
+HGDP00685,,Palestinian,PalestinianHGDP;PalestinianSGDP,Palestinian,"Palestinian in Central, Israel",Middle East,#fee08b
+HGDP01167,,Tuscan,TuscanHGDP;TuscanSGDP,Tuscan,Tuscan in Italy,West Eurasia,#ffffbf
+HGDP00692,,Palestinian,PalestinianHGDP;PalestinianSGDP,Palestinian,"Palestinian in Central, Israel",Middle East,#fee08b
+HGDP01174,,Bergamo,BergamoSGDP;BergamoItalianHGDP,Bergamo,Bergamo in Italy(Bergamo),West Eurasia,#ffffbf
+HGDP00697,,Palestinian,PalestinianHGDP;PalestinianSGDP,Palestinian,"Palestinian in Central, Israel",Middle East,#fee08b
+HGDP01181,,Yi,YiHGDP;YiSGDP,Yi,Yi in China,East Asia,#d53e4f
+HGDP00700,,Palestinian,PalestinianHGDP;PalestinianSGDP,Palestinian,"Palestinian in Central, Israel",Middle East,#fee08b
+HGDP01186,,Yi,YiHGDP;YiSGDP,Yi,Yi in China,East Asia,#d53e4f
+HGDP00604,,Druze,DruzeHGDP;DruzeSGDP,Druze,"Druze in Carmel, Israel",Middle East,#fee08b
+HGDP01218,,Daur,DaurHGDP;DaurSGDP,Daur,Daur in China,East Asia,#d53e4f
+HGDP00609,,Bedouin,BedouinBSGDP;BedouinHGDP,Bedouin B,Bedouin B in Israel(Negev),Middle East,#fee08b
+HGDP01220,,Daur,DaurHGDP;DaurSGDP,Daur,Daur in China,East Asia,#d53e4f
+HGDP00611,,Bedouin,BedouinBSGDP;BedouinHGDP,Bedouin B,Bedouin B in Israel(Negev),Middle East,#fee08b
+HGDP01225,,Mongola,MongolaSGDP;MongolianHGDP,Mongola,Mongola in China,East Asia,#d53e4f
+HGDP00623,,Bedouin,BedouinBSGDP;BedouinHGDP,Bedouin B,Bedouin B in Israel(Negev),Middle East,#fee08b
+HGDP01232,,Mongola,MongolaSGDP;MongolianHGDP,Mongola,Mongola in China,East Asia,#d53e4f
+HGDP00628,,Bedouin,BedouinBSGDP;BedouinHGDP,Bedouin B,Bedouin B in Israel(Negev),Middle East,#fee08b
+HGDP01237,,Hezhen,HezhenHGDP;HezhenSGDP,Hezhen,Hezhen in China,East Asia,#d53e4f
+HGDP00630,,Bedouin,BedouinBSGDP;BedouinHGDP,Bedouin B,Bedouin B in Israel(Negev),Middle East,#fee08b
+HGDP01244,,Xibo,XiboHGDP;XiboSGDP,Xibo,Xibo in China,East Asia,#d53e4f
+HGDP00635,,Bedouin,BedouinBSGDP;BedouinHGDP,Bedouin B,Bedouin B in Israel(Negev),Middle East,#fee08b
+HGDP01249,,Xibo,XiboHGDP;XiboSGDP,Xibo,Xibo in China,East Asia,#d53e4f
+HGDP00642,,Bedouin,BedouinBSGDP;BedouinHGDP,Bedouin B,Bedouin B in Israel(Negev),Middle East,#fee08b
+HGDP01251,,Xibo,XiboHGDP;XiboSGDP,Xibo,Xibo in China,East Asia,#d53e4f
+HGDP00647,,Bedouin,BedouinBSGDP;BedouinHGDP,Bedouin B,Bedouin B in Israel(Negev),Middle East,#fee08b
+HGDP01256,,Mozabite,MozabiteSGDP;MozabiteHGDP,Mozabite,Mozabite in Algeria,Middle East,#fee08b
+HGDP00572,,Druze,DruzeHGDP;DruzeSGDP,Druze,"Druze in Carmel, Israel",Middle East,#fee08b
+HGDP01263,,Mozabite,MozabiteSGDP;MozabiteHGDP,Mozabite,Mozabite in Algeria,Middle East,#fee08b
+HGDP00577,,Druze,DruzeHGDP;DruzeSGDP,Druze,"Druze in Carmel, Israel",Middle East,#fee08b
+HGDP01268,,Mozabite,MozabiteSGDP;MozabiteHGDP,Mozabite,Mozabite in Algeria,Middle East,#fee08b
+HGDP00584,,Druze,DruzeHGDP;DruzeSGDP,Druze,"Druze in Carmel, Israel",Middle East,#fee08b
+HGDP01270,,Mozabite,MozabiteSGDP;MozabiteHGDP,Mozabite,Mozabite in Algeria,Middle East,#fee08b
+HGDP00591,,Druze,DruzeHGDP;DruzeSGDP,Druze,"Druze in Carmel, Israel",Middle East,#fee08b
+HGDP01193,,Miao,MiaoHGDP;MiaoSGDP,Miao,Miao in China,East Asia,#d53e4f
+HGDP00976,,CHB,CHB;HanHGDP;HanSGDP;NorthernHanHGDP,Han Chinese,"Han Chinese in Beijing, China",East Asia,#d53e4f
+HGDP01201,,Mandenka,MandenkaHGDP;MandenkaSGDP,Mandenka,Mandenka in Senegal,Africa,#e6f598
+HGDP00983,,Mbuti,MbutiSGDP;MbutiHGDP,Mbuti,Mbuti in Congo,Africa,#e6f598
+HGDP01206,,Oroqen,OroqenHGDP;OroqenSGDP,Oroqen,Oroqen in China,East Asia,#d53e4f
+HGDP00995,,Karitiana,KaritianaHGDP;KaritianaSGDP,Karitiana,Karitiana in Brazil,America,#99d594
+HGDP01213,,Daur,DaurHGDP;DaurSGDP,Daur,Daur in China,East Asia,#d53e4f
+HGDP01001,,Karitiana,KaritianaHGDP;KaritianaSGDP,Karitiana,Karitiana in Brazil,America,#99d594
+HGDP01073,,Sardinian,SardinianHGDP;SardinianSGDP,Sardinian,Sardinian in Italy,West Eurasia,#ffffbf
+HGDP01006,,Karitiana,KaritianaHGDP;KaritianaSGDP,Karitiana,Karitiana in Brazil,America,#99d594
+HGDP01092,,Biaka,BiakaHGDP;BiakaSGDP,Biaka,Biaka in Central Africa Republic,Africa,#e6f598
+HGDP01013,,Karitiana,KaritianaHGDP;KaritianaSGDP,Karitiana,Karitiana in Brazil,America,#99d594
+HGDP01097,,Tujia,TujiaHGDP;TujiaSGDP,Tujia,Tujia in China,East Asia,#d53e4f
+HGDP00832,,Surui,SuruiHGDP;SuruiSGDP,Surui,Surui in Brazil,America,#99d594
+HGDP01100,,Tujia,TujiaHGDP;TujiaSGDP,Tujia,Tujia in China,East Asia,#d53e4f
+HGDP00837,,Surui,SuruiHGDP;SuruiSGDP,Surui,Surui in Brazil,America,#99d594
+HGDP01369,,Basque,BasqueHGDP;BasqueSGDP,Basque,Basque in France,West Eurasia,#ffffbf
+HGDP00849,,Surui,SuruiHGDP;SuruiSGDP,Surui,Surui in Brazil,America,#99d594
+HGDP01371,,Basque,BasqueHGDP;BasqueSGDP,Basque,Basque in France,West Eurasia,#ffffbf
+HGDP00856,,Maya,MayaHGDP;MayanSGDP,Maya,Maya in Mexico,America,#99d594
+HGDP01376,,Basque,BasqueHGDP;BasqueSGDP,Basque,Basque in France,West Eurasia,#ffffbf
+HGDP00863,,Maya,MayaHGDP;MayanSGDP,Maya,Maya in Mexico,America,#99d594
+HGDP01383,,Adygei,AdygeiHGDP;AdygeiSGDP,Adygei,"Adygei in Caucasus, Russia",West Eurasia,#ffffbf
+HGDP00868,,Maya,MayaHGDP;MayanSGDP,Maya,Maya in Mexico,America,#99d594
+HGDP01388,,Adygei,AdygeiHGDP;AdygeiSGDP,Adygei,"Adygei in Caucasus, Russia",West Eurasia,#ffffbf
+HGDP00952,,Yakut,YakutSGDP;YakutHGDP,Yakut,Yakut in Russia,East Asia,#d53e4f
+HGDP01302,,Uygur,UygurHGDP;UygurSGDP,Uygur,Uygur in China,East Asia,#d53e4f
+HGDP00957,,Yakut,YakutSGDP;YakutHGDP,Yakut,Yakut in Russia,East Asia,#d53e4f
+HGDP01319,,Lahu,LahuHGDP;LahuSGDP,Lahu,Lahu in China,East Asia,#d53e4f
+HGDP00964,,Yakut,YakutSGDP;YakutHGDP,Yakut,Yakut in Russia,East Asia,#d53e4f
+HGDP01321,,Lahu,LahuHGDP;LahuSGDP,Lahu,Lahu in China,East Asia,#d53e4f
+HGDP00969,,Yakut,YakutSGDP;YakutHGDP,Yakut,Yakut in Russia,East Asia,#d53e4f
+HGDP01326,,Lahu,LahuHGDP;LahuSGDP,Lahu,Lahu in China,East Asia,#d53e4f
+HGDP00971,,CHB,CHB;HanHGDP;HanSGDP;NorthernHanHGDP,Han Chinese,"Han Chinese in Beijing, China",East Asia,#d53e4f
+HGDP01340,,Naxi,NaxiHGDP;NaxiSGDP,Naxi,Naxi in China,East Asia,#d53e4f
+HGDP00899,,Russian,RussianHGDP;RussianSGDP,Russian,Russian in Russia,West Eurasia,#ffffbf
+HGDP01352,,Tu,TuHGDP;TuSGDP,Tu,Tu in China,East Asia,#d53e4f
+HGDP00902,,Russian,RussianHGDP;RussianSGDP,Russian,Russian in Russia,West Eurasia,#ffffbf
+HGDP01357,,Basque,BasqueHGDP;BasqueSGDP,Basque,Basque in France,West Eurasia,#ffffbf
+HGDP00907,,Mandenka,MandenkaHGDP;MandenkaSGDP,Mandenka,Mandenka in Senegal,Africa,#e6f598
+HGDP00914,,Mandenka,MandenkaHGDP;MandenkaSGDP,Mandenka,Mandenka in Senegal,Africa,#e6f598
+HGDP00919,,Mandenka,MandenkaHGDP;MandenkaSGDP,Mandenka,Mandenka in Senegal,Africa,#e6f598
+HGDP00767,,JPT,JapaneseHGDP;JapaneseSGDP;JPT,Japanese,Japanese in Japan,East Asia,#d53e4f
+HGDP00774,,CHB,CHB;HanHGDP;HanSGDP;NorthernHanHGDP,Han Chinese,"Han Chinese in Beijing, China",East Asia,#d53e4f
+HGDP00779,,CHB,CHB;HanHGDP;HanSGDP;NorthernHanHGDP,Han Chinese,"Han Chinese in Beijing, China",East Asia,#d53e4f
+HGDP00781,,CHB,CHB;HanHGDP;HanSGDP;NorthernHanHGDP,Han Chinese,"Han Chinese in Beijing, China",East Asia,#d53e4f
+HGDP00786,,CHB,CHB;HanHGDP;HanSGDP;NorthernHanHGDP,Han Chinese,"Han Chinese in Beijing, China",East Asia,#d53e4f
+HGDP00926,,YRI,YRI;YorubaHGDP;YorubaSGDP,Yoruba,"Yoruba in Ibadan, Nigeria",Africa,#e6f598
+HGDP00933,,YRI,YRI;YorubaHGDP;YorubaSGDP,Yoruba,"Yoruba in Ibadan, Nigeria",Africa,#e6f598
+HGDP00938,,YRI,YRI;YorubaHGDP;YorubaSGDP,Yoruba,"Yoruba in Ibadan, Nigeria",Africa,#e6f598
+HGDP00940,,YRI,YRI;YorubaHGDP;YorubaSGDP,Yoruba,"Yoruba in Ibadan, Nigeria",Africa,#e6f598
+HGDP00945,,Yakut,YakutSGDP;YakutHGDP,Yakut,Yakut in Russia,East Asia,#d53e4f
+HGDP01037,,Pima,PimaHGDP;PimaSGDP,Pima,Pima in Mexico,America,#99d594
+HGDP01051,,Pima,PimaHGDP;PimaSGDP,Pima,Pima in Mexico,America,#99d594
+HGDP01056,,Pima,PimaHGDP;PimaSGDP,Pima,Pima in Mexico,America,#99d594
+HGDP01403,,Adygei,AdygeiHGDP;AdygeiSGDP,Adygei,"Adygei in Caucasus, Russia",West Eurasia,#ffffbf
+HGDP01063,,Sardinian,SardinianHGDP;SardinianSGDP,Sardinian,Sardinian in Italy,West Eurasia,#ffffbf
+HGDP01408,,Bantu,BantuHereroSGDP;BantuKenyaHGDP;BantuSouthAfricaHGDP;BantuKenyaSGDP;BantuTswanaSGDP,Bantu Herero,Bantu Herero in Botswana Or Namibia,Africa,#e6f598
+HGDP00806,,Orcadian,OrcadianHGDP;OrcadianSGDP,Orcadian,Orcadian in Orkney,West Eurasia,#ffffbf
+HGDP01415,,Bantu,BantuHereroSGDP;BantuKenyaHGDP;BantuSouthAfricaHGDP;BantuKenyaSGDP;BantuTswanaSGDP,Bantu Herero,Bantu Herero in Botswana Or Namibia,Africa,#e6f598
+HGDP00813,,CHB,CHB;HanHGDP;HanSGDP;NorthernHanHGDP,Han Chinese,"Han Chinese in Beijing, China",East Asia,#d53e4f
+HGDP00818,,CHB,CHB;HanHGDP;HanSGDP;NorthernHanHGDP,Han Chinese,"Han Chinese in Beijing, China",East Asia,#d53e4f
+HGDP00820,,CHB,CHB;HanHGDP;HanSGDP;NorthernHanHGDP,Han Chinese,"Han Chinese in Beijing, China",East Asia,#d53e4f
+HGDP00870,,Maya,MayaHGDP;MayanSGDP,Maya,Maya in Mexico,America,#99d594
+HGDP00875,,Maya,MayaHGDP;MayanSGDP,Maya,Maya in Mexico,America,#99d594
+HGDP00882,,Russian,RussianHGDP;RussianSGDP,Russian,Russian in Russia,West Eurasia,#ffffbf
+HGDP00894,,Russian,RussianHGDP;RussianSGDP,Russian,Russian in Russia,West Eurasia,#ffffbf
+HGDP01068,,Sardinian,SardinianHGDP;SardinianSGDP,Sardinian,Sardinian in Italy,West Eurasia,#ffffbf
+HGDP01070,,Sardinian,SardinianHGDP;SardinianSGDP,Sardinian,Sardinian in Italy,West Eurasia,#ffffbf
+HGDP01075,,Sardinian,SardinianHGDP;SardinianSGDP,Sardinian,Sardinian in Italy,West Eurasia,#ffffbf
+HGDP01087,,Biaka,BiakaHGDP;BiakaSGDP,Biaka,Biaka in Central Africa Republic,Africa,#e6f598
+HGDP01094,,Biaka,BiakaHGDP;BiakaSGDP,Biaka,Biaka in Central Africa Republic,Africa,#e6f598
+HGDP01099,,Tujia,TujiaHGDP;TujiaSGDP,Tujia,Tujia in China,East Asia,#d53e4f
+HGDP01102,,Tujia,TujiaHGDP;TujiaSGDP,Tujia,Tujia in China,East Asia,#d53e4f
+HGDP01272,,Mozabite,MozabiteSGDP;MozabiteHGDP,Mozabite,Mozabite in Algeria,Middle East,#fee08b
+HGDP01277,,Mozabite,MozabiteSGDP;MozabiteHGDP,Mozabite,Mozabite in Algeria,Middle East,#fee08b
+HGDP01289,,CHB,CHB;HanHGDP;HanSGDP;NorthernHanHGDP,Han Chinese,"Han Chinese in Beijing, China",East Asia,#d53e4f
+HGDP01291,,CHB,CHB;HanHGDP;HanSGDP;NorthernHanHGDP,Han Chinese,"Han Chinese in Beijing, China",East Asia,#d53e4f
+HGDP01296,,CHB,CHB;HanHGDP;HanSGDP;NorthernHanHGDP,Han Chinese,"Han Chinese in Beijing, China",East Asia,#d53e4f
+HGDP01152,,Bergamo,BergamoSGDP;BergamoItalianHGDP,Bergamo,Bergamo in Italy(Bergamo),West Eurasia,#ffffbf
+HGDP01157,,Bergamo,BergamoSGDP;BergamoItalianHGDP,Bergamo,Bergamo in Italy(Bergamo),West Eurasia,#ffffbf
+HGDP01164,,Tuscan,TuscanHGDP;TuscanSGDP,Tuscan,Tuscan in Italy,West Eurasia,#ffffbf
+HGDP01169,,Tuscan,TuscanHGDP;TuscanSGDP,Tuscan,Tuscan in Italy,West Eurasia,#ffffbf
+HGDP01171,,Bergamo,BergamoSGDP;BergamoItalianHGDP,Bergamo,Bergamo in Italy(Bergamo),West Eurasia,#ffffbf
+HGDP01183,,Yi,YiHGDP;YiSGDP,Yi,Yi in China,East Asia,#d53e4f
+HGDP01304,,Uygur,UygurHGDP;UygurSGDP,Uygur,Uygur in China,East Asia,#d53e4f
+HGDP01309,,Dai,DaiHGDP;DaiSGDP,Dai,Dai in China,East Asia,#d53e4f
+HGDP01311,,Dai,DaiHGDP;DaiSGDP,Dai,Dai in China,East Asia,#d53e4f
+HGDP01316,,Dai,DaiHGDP;DaiSGDP,Dai,Dai in China,East Asia,#d53e4f
+HGDP01328,,She,SheHGDP;SheSGDP,She,She in China,East Asia,#d53e4f
+HGDP01330,,She,SheHGDP;SheSGDP,She,She in China,East Asia,#d53e4f
+HGDP01366,,Basque,BasqueHGDP;BasqueSGDP,Basque,Basque in France,West Eurasia,#ffffbf
+HGDP01373,,Basque,BasqueHGDP;BasqueSGDP,Basque,Basque in France,West Eurasia,#ffffbf
+HGDP01378,,Basque,BasqueHGDP;BasqueSGDP,Basque,Basque in France,West Eurasia,#ffffbf
+HGDP01380,,Basque,BasqueHGDP;BasqueSGDP,Basque,Basque in France,West Eurasia,#ffffbf
+HGDP01385,,Adygei,AdygeiHGDP;AdygeiSGDP,Adygei,"Adygei in Caucasus, Russia",West Eurasia,#ffffbf
+HGDP01222,,Daur,DaurHGDP;DaurSGDP,Daur,Daur in China,East Asia,#d53e4f
+HGDP01227,,Mongola,MongolaSGDP;MongolianHGDP,Mongola,Mongola in China,East Asia,#d53e4f
+HGDP01234,,Hezhen,HezhenHGDP;HezhenSGDP,Hezhen,Hezhen in China,East Asia,#d53e4f
+HGDP01239,,Hezhen,HezhenHGDP;HezhenSGDP,Hezhen,Hezhen in China,East Asia,#d53e4f
+HGDP01241,,Hezhen,HezhenHGDP;HezhenSGDP,Hezhen,Hezhen in China,East Asia,#d53e4f
+HGDP01342,,Naxi,NaxiHGDP;NaxiSGDP,Naxi,Naxi in China,East Asia,#d53e4f
+HGDP01347,,Tu,TuHGDP;TuSGDP,Tu,Tu in China,East Asia,#d53e4f
+HGDP01354,,Tu,TuHGDP;TuSGDP,Tu,Tu in China,East Asia,#d53e4f
+HGDP01359,,Basque,BasqueHGDP;BasqueSGDP,Basque,Basque in France,West Eurasia,#ffffbf
+HGDP01361,,Basque,BasqueHGDP;BasqueSGDP,Basque,Basque in France,West Eurasia,#ffffbf
+HGDP01258,,Mozabite,MozabiteSGDP;MozabiteHGDP,Mozabite,Mozabite in Algeria,Middle East,#fee08b
+HGDP01260,,Mozabite,MozabiteSGDP;MozabiteHGDP,Mozabite,Mozabite in Algeria,Middle East,#fee08b
+HGDP01265,,Mozabite,MozabiteSGDP;MozabiteHGDP,Mozabite,Mozabite in Algeria,Middle East,#fee08b
+HGDP01190,,Miao,MiaoHGDP;MiaoSGDP,Miao,Miao in China,East Asia,#d53e4f
+HGDP01195,,Miao,MiaoHGDP;MiaoSGDP,Miao,Miao in China,East Asia,#d53e4f
+HGDP01208,,Oroqen,OroqenHGDP;OroqenSGDP,Oroqen,Oroqen in China,East Asia,#d53e4f
+HGDP00007,,Brahui,BrahuiHGDP;BrahuiSGDP,Brahui,Brahui in Pakistan,South Asia,#fc8d59
+HGDP00108,,Hazara,HazaraHGDP;HazaraSGDP,Hazara,Hazara in Pakistan,South Asia,#fc8d59
+HGDP00110,,Hazara,HazaraHGDP;HazaraSGDP,Hazara,Hazara in Pakistan,South Asia,#fc8d59
+HGDP00115,,Hazara,HazaraHGDP;HazaraSGDP,Hazara,Hazara in Pakistan,South Asia,#fc8d59
+HGDP00122,,Hazara,HazaraHGDP;HazaraSGDP,Hazara,Hazara in Pakistan,South Asia,#fc8d59
+HGDP00127,,Hazara,HazaraHGDP;HazaraSGDP,Hazara,Hazara in Pakistan,South Asia,#fc8d59
+HGDP00134,,Makrani,MakraniHGDP;MakraniSGDP,Makrani,Makrani in Pakistan,South Asia,#fc8d59
+HGDP00139,,Makrani,MakraniHGDP;MakraniSGDP,Makrani,Makrani in Pakistan,South Asia,#fc8d59
+HGDP00141,,Makrani,MakraniHGDP;MakraniSGDP,Makrani,Makrani in Pakistan,South Asia,#fc8d59
+HGDP00146,,Makrani,MakraniHGDP;MakraniSGDP,Makrani,Makrani in Pakistan,South Asia,#fc8d59
+HGDP00153,,Makrani,MakraniHGDP;MakraniSGDP,Makrani,Makrani in Pakistan,South Asia,#fc8d59
+HGDP00158,,Makrani,MakraniHGDP;MakraniSGDP,Makrani,Makrani in Pakistan,South Asia,#fc8d59
+HGDP00165,,Sindhi,SindhiHGDP;SindhiSGDP,Sindhi,Sindhi in Pakistan,South Asia,#fc8d59
+HGDP00247,,Pathan,PathanHGDP;PathanSGDP,Pathan,Pathan in Pakistan,South Asia,#fc8d59
+HGDP00254,,Pathan,PathanHGDP;PathanSGDP,Pathan,Pathan in Pakistan,South Asia,#fc8d59
+HGDP00259,,Pathan,PathanHGDP;PathanSGDP,Pathan,Pathan in Pakistan,South Asia,#fc8d59
+HGDP00285,,Kalash,KalashHGDP;KalashSGDP,Kalash,Kalash in Pakistan,South Asia,#fc8d59
+HGDP00021,,Brahui,BrahuiHGDP;BrahuiSGDP,Brahui,Brahui in Pakistan,South Asia,#fc8d59
+HGDP00033,,Brahui,BrahuiHGDP;BrahuiSGDP,Brahui,Brahui in Pakistan,South Asia,#fc8d59
+HGDP00045,,Brahui,BrahuiHGDP;BrahuiSGDP,Brahui,Brahui in Pakistan,South Asia,#fc8d59
+HGDP00052,,Balochi,BalochiHGDP;BalochiSGDP,Balochi,Balochi in Pakistan,South Asia,#fc8d59
+HGDP01397,,Adygei,AdygeiHGDP;AdygeiSGDP,Adygei,"Adygei in Caucasus, Russia",West Eurasia,#ffffbf
+HGDP00057,,Balochi,BalochiHGDP;BalochiSGDP,Balochi,Balochi in Pakistan,South Asia,#fc8d59
+HGDP01400,,Adygei,AdygeiHGDP;AdygeiSGDP,Adygei,"Adygei in Caucasus, Russia",West Eurasia,#ffffbf
+HGDP00177,,Sindhi,SindhiHGDP;SindhiSGDP,Sindhi,Sindhi in Pakistan,South Asia,#fc8d59
+HGDP01405,,Bantu,BantuHereroSGDP;BantuKenyaHGDP;BantuSouthAfricaHGDP;BantuKenyaSGDP;BantuTswanaSGDP,Bantu Herero,Bantu Herero in Botswana Or Namibia,Africa,#e6f598
+HGDP00189,,Sindhi,SindhiHGDP;SindhiSGDP,Sindhi,Sindhi in Pakistan,South Asia,#fc8d59
+HGDP01412,,Bantu,BantuHereroSGDP;BantuKenyaHGDP;BantuSouthAfricaHGDP;BantuKenyaSGDP;BantuTswanaSGDP,Bantu Herero,Bantu Herero in Botswana Or Namibia,Africa,#e6f598
+HGDP00191,,Sindhi,SindhiHGDP;SindhiSGDP,Sindhi,Sindhi in Pakistan,South Asia,#fc8d59
+HGDP00228,,Pathan,PathanHGDP;PathanSGDP,Pathan,Pathan in Pakistan,South Asia,#fc8d59
+HGDP00230,,Pathan,PathanHGDP;PathanSGDP,Pathan,Pathan in Pakistan,South Asia,#fc8d59
+HGDP00064,,Balochi,BalochiHGDP;BalochiSGDP,Balochi,Balochi in Pakistan,South Asia,#fc8d59
+HGDP00076,,Balochi,BalochiHGDP;BalochiSGDP,Balochi,Balochi in Pakistan,South Asia,#fc8d59
+HGDP00088,,Balochi,BalochiHGDP;BalochiSGDP,Balochi,Balochi in Pakistan,South Asia,#fc8d59
+HGDP00103,,Hazara,HazaraHGDP;HazaraSGDP,Hazara,Hazara in Pakistan,South Asia,#fc8d59
+HGDP00444,,Burusho,BurushoHGDP;BurushoSGDP,Burusho,Burusho in Pakistan,South Asia,#fc8d59
+HGDP00463,,Mbuti,MbutiSGDP;MbutiHGDP,Mbuti,Mbuti in Congo,Africa,#e6f598
+HGDP00519,,French,FrenchHGDP;FrenchSGDP,French,French in France,West Eurasia,#ffffbf
+HGDP00538,,French,FrenchHGDP;FrenchSGDP,French,French in France,West Eurasia,#ffffbf
+HGDP00711,,Cambodian,CambodianHGDP;CambodianSGDP,Cambodian,Cambodian in Cambodia,East Asia,#d53e4f
+HGDP00716,,Cambodian,CambodianHGDP;CambodianSGDP,Cambodian,Cambodian in Cambodia,East Asia,#d53e4f
+HGDP00723,,Palestinian,PalestinianHGDP;PalestinianSGDP,Palestinian,"Palestinian in Central, Israel",Middle East,#fee08b
+HGDP00730,,Palestinian,PalestinianHGDP;PalestinianSGDP,Palestinian,"Palestinian in Central, Israel",Middle East,#fee08b
+HGDP00735,,Palestinian,PalestinianHGDP;PalestinianSGDP,Palestinian,"Palestinian in Central, Israel",Middle East,#fee08b
+HGDP00468,,Mbuti,MbutiSGDP;MbutiHGDP,Mbuti,Mbuti in Congo,Africa,#e6f598
+HGDP00470,,Biaka,BiakaHGDP;BiakaSGDP,Biaka,Biaka in Central Africa Republic,Africa,#e6f598
+HGDP00475,,Biaka,BiakaHGDP;BiakaSGDP,Biaka,Biaka in Central Africa Republic,Africa,#e6f598
+HGDP00514,,French,FrenchHGDP;FrenchSGDP,French,French in France,West Eurasia,#ffffbf
+HGDP00684,,Palestinian,PalestinianHGDP;PalestinianSGDP,Palestinian,"Palestinian in Central, Israel",Middle East,#fee08b
+HGDP00689,,Palestinian,PalestinianHGDP;PalestinianSGDP,Palestinian,"Palestinian in Central, Israel",Middle East,#fee08b
+HGDP00691,,Palestinian,PalestinianHGDP;PalestinianSGDP,Palestinian,"Palestinian in Central, Israel",Middle East,#fee08b
+HGDP00696,,Palestinian,PalestinianHGDP;PalestinianSGDP,Palestinian,"Palestinian in Central, Israel",Middle East,#fee08b
+HGDP00704,,CLM,ColombianHGDP;CLM,Colombian,Colombian in Colombia,America,#99d594
+HGDP00653,,Bedouin,BedouinBSGDP;BedouinHGDP,Bedouin B,Bedouin B in Israel(Negev),Middle East,#fee08b
+HGDP00672,,Sardinian,SardinianHGDP;SardinianSGDP,Sardinian,Sardinian in Italy,West Eurasia,#ffffbf
+HGDP00677,,Palestinian,PalestinianHGDP;PalestinianSGDP,Palestinian,"Palestinian in Central, Israel",Middle East,#fee08b
+HGDP00576,,Druze,DruzeHGDP;DruzeSGDP,Druze,"Druze in Carmel, Israel",Middle East,#fee08b
+HGDP00583,,Druze,DruzeHGDP;DruzeSGDP,Druze,"Druze in Carmel, Israel",Middle East,#fee08b
+HGDP00588,,Druze,DruzeHGDP;DruzeSGDP,Druze,"Druze in Carmel, Israel",Middle East,#fee08b
+HGDP00590,,Druze,DruzeHGDP;DruzeSGDP,Druze,"Druze in Carmel, Israel",Middle East,#fee08b
+HGDP00595,,Druze,DruzeHGDP;DruzeSGDP,Druze,"Druze in Carmel, Israel",Middle East,#fee08b
+HGDP00627,,Bedouin,BedouinBSGDP;BedouinHGDP,Bedouin B,Bedouin B in Israel(Negev),Middle East,#fee08b
+HGDP00634,,Bedouin,BedouinBSGDP;BedouinHGDP,Bedouin B,Bedouin B in Israel(Negev),Middle East,#fee08b
+HGDP00639,,Bedouin,BedouinBSGDP;BedouinHGDP,Bedouin B,Bedouin B in Israel(Negev),Middle East,#fee08b
+HGDP00641,,Bedouin,BedouinBSGDP;BedouinHGDP,Bedouin B,Bedouin B in Israel(Negev),Middle East,#fee08b
+HGDP00646,,Bedouin,BedouinBSGDP;BedouinHGDP,Bedouin B,Bedouin B in Israel(Negev),Middle East,#fee08b
+HGDP00608,,Bedouin,BedouinBSGDP;BedouinHGDP,Bedouin B,Bedouin B in Israel(Negev),Middle East,#fee08b
+HGDP00610,,Bedouin,BedouinBSGDP;BedouinHGDP,Bedouin B,Bedouin B in Israel(Negev),Middle East,#fee08b
+HGDP00615,,Bedouin,BedouinBSGDP;BedouinHGDP,Bedouin B,Bedouin B in Israel(Negev),Middle East,#fee08b
+HGDP00622,,Bedouin,BedouinBSGDP;BedouinHGDP,Bedouin B,Bedouin B in Israel(Negev),Middle East,#fee08b
+HGDP00557,,Druze,DruzeHGDP;DruzeSGDP,Druze,"Druze in Carmel, Israel",Middle East,#fee08b
+HGDP00564,,Druze,DruzeHGDP;DruzeSGDP,Druze,"Druze in Carmel, Israel",Middle East,#fee08b
+HGDP00571,,Druze,DruzeHGDP;DruzeSGDP,Druze,"Druze in Carmel, Israel",Middle East,#fee08b
+HGDP00994,,Bantu,BantuHereroSGDP;BantuKenyaHGDP;BantuSouthAfricaHGDP;BantuKenyaSGDP;BantuTswanaSGDP,Bantu Herero,Bantu Herero in Botswana Or Namibia,Africa,#e6f598
+HGDP00999,,Karitiana,KaritianaHGDP;KaritianaSGDP,Karitiana,Karitiana in Brazil,America,#99d594
+HGDP01024,,CHB,CHB;HanHGDP;HanSGDP;NorthernHanHGDP,Han Chinese,"Han Chinese in Beijing, China",East Asia,#d53e4f
+HGDP01029,,San,SanHGDP,San,San in Namibia,Africa,#e6f598
+HGDP00898,,Russian,RussianHGDP;RussianSGDP,Russian,Russian in Russia,West Eurasia,#ffffbf
+HGDP00901,,Russian,RussianHGDP;RussianSGDP,Russian,Russian in Russia,West Eurasia,#ffffbf
+HGDP00906,,Mandenka,MandenkaHGDP;MandenkaSGDP,Mandenka,Mandenka in Senegal,Africa,#e6f598
+HGDP00913,,Mandenka,MandenkaHGDP;MandenkaSGDP,Mandenka,Mandenka in Senegal,Africa,#e6f598
+HGDP00918,,Mandenka,MandenkaHGDP;MandenkaSGDP,Mandenka,Mandenka in Senegal,Africa,#e6f598
+HGDP00920,,YRI,YRI;YorubaHGDP;YorubaSGDP,Yoruba,"Yoruba in Ibadan, Nigeria",Africa,#e6f598
+HGDP00925,,YRI,YRI;YorubaHGDP;YorubaSGDP,Yoruba,"Yoruba in Ibadan, Nigeria",Africa,#e6f598
+HGDP00963,,Yakut,YakutSGDP;YakutHGDP,Yakut,Yakut in Russia,East Asia,#d53e4f
+HGDP00968,,Yakut,YakutSGDP;YakutHGDP,Yakut,Yakut in Russia,East Asia,#d53e4f
+HGDP00970,,CLM,ColombianHGDP;CLM,Colombian,Colombian in Colombia,America,#99d594
+HGDP00975,,CHB,CHB;HanHGDP;HanSGDP;NorthernHanHGDP,Han Chinese,"Han Chinese in Beijing, China",East Asia,#d53e4f
+HGDP00766,,JPT,JapaneseHGDP;JapaneseSGDP;JPT,Japanese,Japanese in Japan,East Asia,#d53e4f
+HGDP00780,,CHB,CHB;HanHGDP;HanSGDP;NorthernHanHGDP,Han Chinese,"Han Chinese in Beijing, China",East Asia,#d53e4f
+HGDP00797,,Orcadian,OrcadianHGDP;OrcadianSGDP,Orcadian,Orcadian in Orkney,West Eurasia,#ffffbf
+HGDP00800,,Orcadian,OrcadianHGDP;OrcadianSGDP,Orcadian,Orcadian in Orkney,West Eurasia,#ffffbf
+HGDP00805,,Orcadian,OrcadianHGDP;OrcadianSGDP,Orcadian,Orcadian in Orkney,West Eurasia,#ffffbf
+HGDP00812,,CHB,CHB;HanHGDP;HanSGDP;NorthernHanHGDP,Han Chinese,"Han Chinese in Beijing, China",East Asia,#d53e4f
+HGDP00817,,CHB,CHB;HanHGDP;HanSGDP;NorthernHanHGDP,Han Chinese,"Han Chinese in Beijing, China",East Asia,#d53e4f
+HGDP00937,,YRI,YRI;YorubaHGDP;YorubaSGDP,Yoruba,"Yoruba in Ibadan, Nigeria",Africa,#e6f598
+HGDP00944,,YRI,YRI;YorubaHGDP;YorubaSGDP,Yoruba,"Yoruba in Ibadan, Nigeria",Africa,#e6f598
+HGDP00949,,Yakut,YakutSGDP;YakutHGDP,Yakut,Yakut in Russia,East Asia,#d53e4f
+HGDP00747,,JPT,JapaneseHGDP;JapaneseSGDP;JPT,Japanese,Japanese in Japan,East Asia,#d53e4f
+HGDP00754,,JPT,JapaneseHGDP;JapaneseSGDP;JPT,Japanese,Japanese in Japan,East Asia,#d53e4f
+HGDP00759,,JPT,JapaneseHGDP;JapaneseSGDP;JPT,Japanese,Japanese in Japan,East Asia,#d53e4f
+HGDP00761,,JPT,JapaneseHGDP;JapaneseSGDP;JPT,Japanese,Japanese in Japan,East Asia,#d53e4f
+HGDP00879,,Russian,RussianHGDP;RussianSGDP,Russian,Russian in Russia,West Eurasia,#ffffbf
+HGDP00881,,Russian,RussianHGDP;RussianSGDP,Russian,Russian in Russia,West Eurasia,#ffffbf
+HGDP00886,,Russian,RussianHGDP;RussianSGDP,Russian,Russian in Russia,West Eurasia,#ffffbf
+HGDP00893,,Russian,RussianHGDP;RussianSGDP,Russian,Russian in Russia,West Eurasia,#ffffbf
+HGDP00843,,Surui,SuruiHGDP;SuruiSGDP,Surui,Surui in Brazil,America,#99d594
+HGDP00862,,Maya,MayaHGDP;MayanSGDP,Maya,Maya in Mexico,America,#99d594
+HGDP01074,,Sardinian,SardinianHGDP;SardinianSGDP,Sardinian,Sardinian in Italy,West Eurasia,#ffffbf
+HGDP01081,,Mbuti,MbutiSGDP;MbutiHGDP,Mbuti,Mbuti in Congo,Africa,#e6f598
+HGDP01086,,Biaka,BiakaHGDP;BiakaSGDP,Biaka,Biaka in Central Africa Republic,Africa,#e6f598
+HGDP01101,,Tujia,TujiaHGDP;TujiaSGDP,Tujia,Tujia in China,East Asia,#d53e4f
+HGDP01149,,Bergamo,BergamoSGDP;BergamoItalianHGDP,Bergamo,Bergamo in Italy(Bergamo),West Eurasia,#ffffbf
+HGDP01151,,Bergamo,BergamoSGDP;BergamoItalianHGDP,Bergamo,Bergamo in Italy(Bergamo),West Eurasia,#ffffbf
+HGDP01031,,Bantu,BantuHereroSGDP;BantuKenyaHGDP;BantuSouthAfricaHGDP;BantuKenyaSGDP;BantuTswanaSGDP,Bantu Herero,Bantu Herero in Botswana Or Namibia,Africa,#e6f598
+HGDP01043,,Pima,PimaHGDP;PimaSGDP,Pima,Pima in Mexico,America,#99d594
+HGDP01050,,Pima,PimaHGDP;PimaSGDP,Pima,Pima in Mexico,America,#99d594
+HGDP01055,,Pima,PimaHGDP;PimaSGDP,Pima,Pima in Mexico,America,#99d594
+HGDP01062,,Sardinian,SardinianHGDP;SardinianSGDP,Sardinian,Sardinian in Italy,West Eurasia,#ffffbf
+HGDP01067,,Sardinian,SardinianHGDP;SardinianSGDP,Sardinian,Sardinian in Italy,West Eurasia,#ffffbf
+HGDP01276,,Mozabite,MozabiteSGDP;MozabiteHGDP,Mozabite,Mozabite in Algeria,Middle East,#fee08b
+HGDP01283,,Mandenka,MandenkaHGDP;MandenkaSGDP,Mandenka,Mandenka in Senegal,Africa,#e6f598
+HGDP01288,,CHB,CHB;HanHGDP;HanSGDP;NorthernHanHGDP,Han Chinese,"Han Chinese in Beijing, China",East Asia,#d53e4f
+HGDP01290,,CHB,CHB;HanHGDP;HanSGDP;NorthernHanHGDP,Han Chinese,"Han Chinese in Beijing, China",East Asia,#d53e4f
+HGDP01295,,CHB,CHB;HanHGDP;HanSGDP;NorthernHanHGDP,Han Chinese,"Han Chinese in Beijing, China",East Asia,#d53e4f
+HGDP01219,,Daur,DaurHGDP;DaurSGDP,Daur,Daur in China,East Asia,#d53e4f
+HGDP01221,,Daur,DaurHGDP;DaurSGDP,Daur,Daur in China,East Asia,#d53e4f
+HGDP01226,,Mongola,MongolaSGDP;MongolianHGDP,Mongola,Mongola in China,East Asia,#d53e4f
+HGDP01233,,Hezhen,HezhenHGDP;HezhenSGDP,Hezhen,Hezhen in China,East Asia,#d53e4f
+HGDP01238,,Hezhen,HezhenHGDP;HezhenSGDP,Hezhen,Hezhen in China,East Asia,#d53e4f
+HGDP01245,,Xibo,XiboHGDP;XiboSGDP,Xibo,Xibo in China,East Asia,#d53e4f
+HGDP01339,,Naxi,NaxiHGDP;NaxiSGDP,Naxi,Naxi in China,East Asia,#d53e4f
+HGDP01341,,Naxi,NaxiHGDP;NaxiSGDP,Naxi,Naxi in China,East Asia,#d53e4f
+HGDP01346,,Naxi,NaxiHGDP;NaxiSGDP,Naxi,Naxi in China,East Asia,#d53e4f
+HGDP01353,,Tu,TuHGDP;TuSGDP,Tu,Tu in China,East Asia,#d53e4f
+HGDP01358,,Basque,BasqueHGDP;BasqueSGDP,Basque,Basque in France,West Eurasia,#ffffbf
+HGDP01360,,Basque,BasqueHGDP;BasqueSGDP,Basque,Basque in France,West Eurasia,#ffffbf
+HGDP01194,,Miao,MiaoHGDP;MiaoSGDP,Miao,Miao in China,East Asia,#d53e4f
+HGDP01202,,Mandenka,MandenkaHGDP;MandenkaSGDP,Mandenka,Mandenka in Senegal,Africa,#e6f598
+HGDP01207,,Oroqen,OroqenHGDP;OroqenSGDP,Oroqen,Oroqen in China,East Asia,#d53e4f
+HGDP01214,,Daur,DaurHGDP;DaurSGDP,Daur,Daur in China,East Asia,#d53e4f
+HGDP01257,,Mozabite,MozabiteSGDP;MozabiteHGDP,Mozabite,Mozabite in Algeria,Middle East,#fee08b
+HGDP01264,,Mozabite,MozabiteSGDP;MozabiteHGDP,Mozabite,Mozabite in Algeria,Middle East,#fee08b
+HGDP01269,,Mozabite,MozabiteSGDP;MozabiteHGDP,Mozabite,Mozabite in Algeria,Middle East,#fee08b
+HGDP01271,,Mozabite,MozabiteSGDP;MozabiteHGDP,Mozabite,Mozabite in Algeria,Middle East,#fee08b
+HGDP01303,,Uygur,UygurHGDP;UygurSGDP,Uygur,Uygur in China,East Asia,#d53e4f
+HGDP01310,,Dai,DaiHGDP;DaiSGDP,Dai,Dai in China,East Asia,#d53e4f
+HGDP01322,,Lahu,LahuHGDP;LahuSGDP,Lahu,Lahu in China,East Asia,#d53e4f
+HGDP01327,,She,SheHGDP;SheSGDP,She,She in China,East Asia,#d53e4f
+HGDP01334,,She,SheHGDP;SheSGDP,She,She in China,East Asia,#d53e4f
+HGDP01156,,Bergamo,BergamoSGDP;BergamoItalianHGDP,Bergamo,Bergamo in Italy(Bergamo),West Eurasia,#ffffbf
+HGDP01182,,Yi,YiHGDP;YiSGDP,Yi,Yi in China,East Asia,#d53e4f
+HGDP01187,,Yi,YiHGDP;YiSGDP,Yi,Yi in China,East Asia,#d53e4f
+HGDP01396,,Adygei,AdygeiHGDP;AdygeiSGDP,Adygei,"Adygei in Caucasus, Russia",West Eurasia,#ffffbf
+HGDP01404,,Adygei,AdygeiHGDP;AdygeiSGDP,Adygei,"Adygei in Caucasus, Russia",West Eurasia,#ffffbf
+HGDP01411,,Bantu,BantuHereroSGDP;BantuKenyaHGDP;BantuSouthAfricaHGDP;BantuKenyaSGDP;BantuTswanaSGDP,Bantu Herero,Bantu Herero in Botswana Or Namibia,Africa,#e6f598
+HGDP01416,,Bantu,BantuHereroSGDP;BantuKenyaHGDP;BantuSouthAfricaHGDP;BantuKenyaSGDP;BantuTswanaSGDP,Bantu Herero,Bantu Herero in Botswana Or Namibia,Africa,#e6f598
+HGDP01372,,Basque,BasqueHGDP;BasqueSGDP,Basque,Basque in France,West Eurasia,#ffffbf
+HGDP01377,,Basque,BasqueHGDP;BasqueSGDP,Basque,Basque in France,West Eurasia,#ffffbf
+HGDP01384,,Adygei,AdygeiHGDP;AdygeiSGDP,Adygei,"Adygei in Caucasus, Russia",West Eurasia,#ffffbf
