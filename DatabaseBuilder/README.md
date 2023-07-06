@@ -4,6 +4,12 @@
 
 * To run this workflow, make sure you have Snakemake version 7.0.0 or higher and Conda for installing necessary tools: Metagraph and KMC.
 
+* After building TheGreatGenotyper, Go to the DatabaseBuilder folder in the build directory
+
+  ```
+  cd build/DatabaseBuilder
+  ``` 
+
 
 * We are using [PEP](https://pep.databio.org/en/2.1.0/specification/) specification to describe the input for the workflow, and you'll need to edit three files before running the Snakemake workflow:
 
