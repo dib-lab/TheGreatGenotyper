@@ -1,5 +1,6 @@
 outputFolder:  result/
 tempFolder: /scratch/mshokrof/
 kSize: 31
-downloadUrls: 
+kmcMinCount: 
 batchSize: 16
+downloadUrls: 

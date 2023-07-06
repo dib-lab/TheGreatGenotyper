@@ -43,13 +43,12 @@ def getLowPartition(sample,attempt):
 
 
 
-tmp=list(filter(lambda x:x.library=="short",pep.samples))
-illuminaSamples=[s.sample_name for s in tmp]
+illuminaSamples=[s.sample_name for s in pep.samples]
 
 
 urls={}
 kmcfileType= {}
-for s in tmp:
+for s in pep.samples:
     if hasattr(s, 'file'): urls[s.sample_name]=s.file
     kmcfileType[s.sample_name] = "-fq"
 
@@ -293,7 +292,7 @@ rule kmc:
 
 	echo {input} |tr -s ' ' $'\n' > {output.lst}
 	kmc -ci{kmcMinCount} -t{threads} -k{kSize} -m16 {params.filetype}  @{output.lst} {params.outPrefix} {resources.tmp} &> {log}
-        ../computeHistogram -i {params.outPrefix} -m 1000 -o {output.histogram} &>> {log}
+        ./computeHistogram -i {params.outPrefix} -m 1000 -o {output.histogram} &>> {log}
 	rm -rf {resources.tmp}
         """
 
