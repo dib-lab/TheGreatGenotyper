@@ -11,7 +11,7 @@ kmcMinCount=3
 if "kmcMinCount" in config:
    kmcMinCount= config["kmcMinCount"]
 
-metagraph_smooth_value=10000000
+
 
 globus_ebi_id= ""
 globus_client_id= ""
@@ -254,9 +254,9 @@ localrules: all, createGraphDescriptor, prepareAnnnotationColumns, DownloadGlobu
 
 rule all:
     input:
-        outputFolder+"smooth_10000000/annotation.relaxed.row_diff_int_brwt.annodbg",
-	outputFolder+"smooth_10000000/graph.desc.tsv",
-	outputFolder+"smooth_10000000/graph.dbg",
+        outputFolder+"smooth_1/annotation.relaxed.row_diff_int_brwt.annodbg",
+	outputFolder+"smooth_1/graph.desc.tsv",
+	outputFolder+"smooth_1/graph.dbg",
 #        contigs2,
 # 	metagraphUnitigsNoSmooth
 
@@ -279,7 +279,7 @@ rule kmc:
     resources:
         mem_mb=17000,
         cores=16,
-	nodes = 1,
+	    nodes = 1,
         time = 60 * 5,
         partition =  lambda wildcards: getMeduimPartition(f"{wildcards.experiment}"),
         tmp= lambda wildcards: "%skmc_%s/"%(tmpFolder,f"{wildcards.experiment}")		
@@ -566,8 +566,8 @@ rule clean:
             metagraph clean  \
             --to-fasta --primary-kmers \
             --smoothing-window 1 \
-	    --prune-tips {pruneTips} \
-	    --prune-unitigs 0 \
+	    --prune-tips 0 \
+	    --prune-unitigs 1 \
             --smoothing-window {wildcards.smooth_value} \
             -p {threads} \
             -o {resources.tmp}{wildcards.sample} \
