@@ -279,7 +279,7 @@ rule kmc:
         mem_mb=17000,
         cores=16,
 	    nodes = 1,
-        time = 60 * 5,
+        runtime = 60 * 5,
         partition =  lambda wildcards: getMeduimPartition(f"{wildcards.experiment}"),
         tmp= lambda wildcards: "%skmc_%s/"%(tmpFolder,f"{wildcards.experiment}")		
     log: outputFolder +"kmc/{experiment}.log"
@@ -380,7 +380,7 @@ rule get_fasta:
 	cores=6,
 	parallel_sra=1,
         nodes = 1,
-        time = 60 * 8,
+        runtime = 60 * 8,
         partition = lambda wildcards: getHighPartition(f"{wildcards.accession}"),
         tmp= lambda wildcards: "%sgetfasta_%s/"%(tmpFolder,f"{wildcards.accession}")	
     conda:
@@ -499,7 +499,7 @@ rule kmc_to_graph:
         cores=16,
         mem_gb=18,
 	nodes = 1,
-        time = lambda wildcards, attempt: 60 * 4 * attempt,
+        runtime = lambda wildcards, attempt: 60 * 4 * attempt,
         partition = lambda wildcards , attempt: getLowPartition(f"{wildcards.sample}", attempt),
 	tmp= lambda wildcards: "%sgraph_%s/"%(tmpFolder,f"{wildcards.sample}")
     log: outputFolder+"graphs/{sample}.log"
@@ -549,7 +549,7 @@ rule clean:
         cores=16,
         mem_gb=18,
 	nodes = 1,
-        time = lambda wildcards, attempt: 60 * 4 * attempt,
+        runtime = lambda wildcards, attempt: 60 * 4 * attempt,
         partition = lambda wildcards , attempt: getLowPartition(f"{wildcards.sample}", attempt),
         tmp= lambda wildcards: "%sclean_smooth%s_%s/"%(tmpFolder,f"{wildcards.smooth_value}",f"{wildcards.sample}")
     log: outputFolder+"unitigs/smooth_{smooth_value}/{sample}.log"
@@ -642,7 +642,7 @@ rule metagraph_buildSmoothMainGraph_1:
         cores=32,
         mem_gb=200,
 	nodes = 1,
-        time = lambda wildcards, attempt: 60 * 100 * attempt,
+        runtime = lambda wildcards, attempt: 60 * 100 * attempt,
         partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.smooth_value}"),
         tmp= lambda wildcards: "%smaingraph_smooth%s/"%(tmpFolder,f"{wildcards.smooth_value}")
     log: outputFolder+"smooth_{smooth_value}/buildMainGraphlog"
@@ -681,7 +681,7 @@ rule metagraph_buildSmoothMainGraph_2:
         cores=32,
         mem_gb=200,
 	nodes = 1,
-        time = lambda wildcards, attempt: 60 * 100 * attempt,
+        runtime = lambda wildcards, attempt: 60 * 100 * attempt,
         partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.smooth_value}"),
         tmp= lambda wildcards: "%smaingraph_smooth%s/"%(tmpFolder,f"{wildcards.smooth_value}")
     log: outputFolder+"smooth_{smooth_value}/buildMainGraphlog"
@@ -720,7 +720,7 @@ rule metagraph_buildSmoothMainGraph_3:
         cores=32,
         mem_gb=200,
 	    nodes = 1,
-        time = lambda wildcards, attempt: 60 * 100 * attempt,
+        runtime = lambda wildcards, attempt: 60 * 100 * attempt,
         partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.smooth_value}"),
         tmp= lambda wildcards: "%smaingraph_smooth%s/"%(tmpFolder,f"{wildcards.smooth_value}")
     log: outputFolder+"smooth_{smooth_value}/buildMainGraphlog"
@@ -764,7 +764,7 @@ rule createAnnotationColumns:
         cores=32,
         mem_gb=10,
 	nodes = 1,
-        time = lambda wildcards, attempt: 60 * 72 * attempt,
+        runtime = lambda wildcards, attempt: 60 * 72 * attempt,
         partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.batchID}"),
         tmp= lambda wildcards: "%screateAnnotation_smooth%s_batch%s/"%(tmpFolder,f"{wildcards.smooth_value}",f"{wildcards.batchID}")
     log: outputFolder+"smooth_{smooth_value}/columns/{batchID}.done.log"
@@ -837,7 +837,7 @@ rule optimizeAnnotationColumns_1:
         cores=32,
         mem_gb=100,
 	nodes = 1,
-        time = lambda wildcards, attempt: 60 * 48 * attempt,
+        runtime = lambda wildcards, attempt: 60 * 48 * attempt,
         partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.smooth_value}"),
         tmp= lambda wildcards: "%soptomize_smooth%s/"%(tmpFolder,f"{wildcards.smooth_value}")
     log: outputFolder+"smooth_{smooth_value}/optimize_stage0.log"
@@ -889,7 +889,7 @@ rule optimizeAnnotationColumns_2:
         cores=32,
         mem_gb=100,
 	nodes = 1,
-        time = lambda wildcards, attempt: 60 * 48 * attempt,
+        runtime = lambda wildcards, attempt: 60 * 48 * attempt,
         partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.smooth_value}"),
         tmp= lambda wildcards: "%soptomize_smooth%s/"%(tmpFolder,f"{wildcards.smooth_value}")
     log: outputFolder+"smooth_{smooth_value}/optimize_stage1.log"
@@ -937,7 +937,7 @@ rule optimizeAnnotationColumns_3:
         cores=32,
         mem_gb=100,
 	nodes = 1,
-        time = lambda wildcards, attempt: 60 * 48 * attempt,
+        runtime = lambda wildcards, attempt: 60 * 48 * attempt,
         partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.smooth_value}"),
         tmp= lambda wildcards: "%soptomize_smooth%s/"%(tmpFolder,f"{wildcards.smooth_value}")
     log: outputFolder+"smooth_{smooth_value}/optimize_stage2.log"
@@ -984,7 +984,7 @@ rule optimizeAnnotationColumns_4:
         cores=32,
         mem_gb=100,
 	nodes = 1,
-        time = lambda wildcards, attempt: 60 * 48 * attempt,
+        runtime = lambda wildcards, attempt: 60 * 48 * attempt,
         partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.smooth_value}"),
         tmp= lambda wildcards: "%soptomize_smooth%s/"%(tmpFolder,f"{wildcards.smooth_value}")
     log: outputFolder+"smooth_{smooth_value}/optimize_stage3.log"
@@ -1026,7 +1026,7 @@ rule optimizeAnnotationColumns_relax:
         cores=32,
         mem_gb=100,
 	    nodes = 1,
-        time = lambda wildcards, attempt: 60 * 48 * attempt,
+        runtime = lambda wildcards, attempt: 60 * 48 * attempt,
         partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.smooth_value}"),
         tmp= lambda wildcards: "%soptomize_smooth%s/"%(tmpFolder,f"{wildcards.smooth_value}")
     log: outputFolder+"smooth_{smooth_value}/optimize_relax.log"
