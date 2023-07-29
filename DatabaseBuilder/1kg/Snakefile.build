@@ -649,11 +649,11 @@ rule metagraph_buildSmoothMainGraph_1:
     shell:
        	"""
 	    mkdir  -p {tmpFolder}$$/
-        currDir=${pwd}
+        currDir=$(pwd)
         cd /mnt/gs21/scratch/mansourt/TheGreatGenotyper/
         cmake -Bbuild.$$
         cmake --build build -j{threads}
-        cd ${currDir}
+        cd ${{currDir}}
 
         /mnt/gs21/scratch/mansourt/TheGreatGenotyper/build.$$/metagraph build  \
         -k {kSize} \
@@ -689,11 +689,11 @@ rule metagraph_buildSmoothMainGraph_2:
        	"""
 	    mkdir  -p {tmpFolder}$$/
         mkdir  -p {tmpFolder}$$/
-        currDir=${pwd}
+        currDir=$(pwd)
         cd /mnt/gs21/scratch/mansourt/TheGreatGenotyper/
         cmake -Bbuild.$$
         cmake --build build -j{threads}
-        cd ${currDir}
+        cd ${{currDir}}
 
 
         /mnt/gs21/scratch/mansourt/TheGreatGenotyper/build.$$/metagraph transform  \
@@ -727,11 +727,11 @@ rule metagraph_buildSmoothMainGraph_3:
     shell:
        	"""
 	    mkdir  -p {tmpFolder}$$/
-        currDir=${pwd}
+        currDir=$(pwd)
         cd /mnt/gs21/scratch/mansourt/TheGreatGenotyper/
         cmake -Bbuild.$$
         cmake --build build -j{threads}
-        cd ${currDir}
+        cd ${{currDir}}
 
         /mnt/gs21/scratch/mansourt/TheGreatGenotyper/build.$$/metagraph build  \
             -k {kSize} \
@@ -772,11 +772,11 @@ rule createAnnotationColumns:
        	"""
 
     mkdir  -p {tmpFolder}$$/
-        currDir=${pwd}
+        currDir=$(pwd)
         cd /mnt/gs21/scratch/mansourt/TheGreatGenotyper/
         cmake -Bbuild.$$
         cmake --build build -j{threads}
-        cd ${currDir}
+        cd ${{currDir}}
 
 
 	/mnt/gs21/scratch/mansourt/TheGreatGenotyper/build.$$/metagraph annotate  \
@@ -847,11 +847,11 @@ rule optimizeAnnotationColumns_1:
 	mkdir -p {params.rowDiffPrefix}
 
     mkdir  -p {tmpFolder}$$/
-        currDir=${pwd}
+        currDir=$(pwd)
         cd /mnt/gs21/scratch/mansourt/TheGreatGenotyper/
         cmake -Bbuild.$$
         cmake --build build -j{threads}
-        cd ${currDir}
+        cd ${{currDir}}
 
 
 
@@ -898,11 +898,11 @@ rule optimizeAnnotationColumns_2:
 	mkdir  -p {tmpFolder}$$/
 
     mkdir  -p {tmpFolder}$$/
-        currDir=${pwd}
+        currDir=$(pwd)
         cd /mnt/gs21/scratch/mansourt/TheGreatGenotyper/
         cmake -Bbuild.$$
         cmake --build build -j{threads}
-        cd ${currDir}
+        cd ${{currDir}}
 
 
 	/mnt/gs21/scratch/mansourt/TheGreatGenotyper/build.$$/metagraph transform_anno  \
@@ -946,11 +946,11 @@ rule optimizeAnnotationColumns_3:
 	mkdir  -p {tmpFolder}$$/
 
     mkdir  -p {tmpFolder}$$/
-        currDir=${pwd}
+        currDir=$(pwd)
         cd /mnt/gs21/scratch/mansourt/TheGreatGenotyper/
         cmake -Bbuild.$$
         cmake --build build -j{threads}
-        cd ${currDir}
+        cd ${{currDir}}
 
    
     /mnt/gs21/scratch/mansourt/TheGreatGenotyper/build.$$/metagraph transform_anno  \
@@ -993,11 +993,11 @@ rule optimizeAnnotationColumns_4:
 	mkdir  -p {tmpFolder}$$/
 
     mkdir  -p {tmpFolder}$$/
-        currDir=${pwd}
+        currDir=$(pwd)
         cd /mnt/gs21/scratch/mansourt/TheGreatGenotyper/
         cmake -Bbuild.$$
         cmake --build build -j{threads}
-        cd ${currDir}
+        cd ${{currDir}}
 
 
         echo {input.columns} |tr -s ' ' $'\n'  \
@@ -1034,11 +1034,11 @@ rule optimizeAnnotationColumns_relax:
        	"""
 
         mkdir  -p {tmpFolder}$$/
-        currDir=${pwd}
+        currDir=$(pwd)
         cd /mnt/gs21/scratch/mansourt/TheGreatGenotyper/
         cmake -Bbuild.$$
         cmake --build build -j{threads}
-        cd ${currDir}
+        cd ${{currDir}}
 
 
         /mnt/gs21/scratch/mansourt/TheGreatGenotyper/build.$$/metagraph relax_brwt  \
