@@ -652,7 +652,7 @@ rule metagraph_buildSmoothMainGraph_1:
         currDir=$(pwd)
         cd /mnt/gs21/scratch/mansourt/TheGreatGenotyper/
         cmake -Bbuild.$$
-        cmake --build build -j{threads}
+        cmake --build build.$$ -j{threads}
         cd ${{currDir}}
 
         /mnt/gs21/scratch/mansourt/TheGreatGenotyper/build.$$/metagraph build  \
@@ -692,7 +692,7 @@ rule metagraph_buildSmoothMainGraph_2:
         currDir=$(pwd)
         cd /mnt/gs21/scratch/mansourt/TheGreatGenotyper/
         cmake -Bbuild.$$
-        cmake --build build -j{threads}
+        cmake --build build.$$ -j{threads}
         cd ${{currDir}}
 
 
@@ -730,7 +730,7 @@ rule metagraph_buildSmoothMainGraph_3:
         currDir=$(pwd)
         cd /mnt/gs21/scratch/mansourt/TheGreatGenotyper/
         cmake -Bbuild.$$
-        cmake --build build -j{threads}
+        cmake --build build.$$ -j{threads}
         cd ${{currDir}}
 
         /mnt/gs21/scratch/mansourt/TheGreatGenotyper/build.$$/metagraph build  \
@@ -775,7 +775,7 @@ rule createAnnotationColumns:
         currDir=$(pwd)
         cd /mnt/gs21/scratch/mansourt/TheGreatGenotyper/
         cmake -Bbuild.$$
-        cmake --build build -j{threads}
+        cmake --build build.$$ -j{threads}
         cd ${{currDir}}
 
 
@@ -850,7 +850,7 @@ rule optimizeAnnotationColumns_1:
         currDir=$(pwd)
         cd /mnt/gs21/scratch/mansourt/TheGreatGenotyper/
         cmake -Bbuild.$$
-        cmake --build build -j{threads}
+        cmake --build build.$$ -j{threads}
         cd ${{currDir}}
 
 
@@ -901,7 +901,7 @@ rule optimizeAnnotationColumns_2:
         currDir=$(pwd)
         cd /mnt/gs21/scratch/mansourt/TheGreatGenotyper/
         cmake -Bbuild.$$
-        cmake --build build -j{threads}
+        cmake --build build.$$ -j{threads}
         cd ${{currDir}}
 
 
@@ -949,7 +949,7 @@ rule optimizeAnnotationColumns_3:
         currDir=$(pwd)
         cd /mnt/gs21/scratch/mansourt/TheGreatGenotyper/
         cmake -Bbuild.$$
-        cmake --build build -j{threads}
+        cmake --build build.$$ -j{threads}
         cd ${{currDir}}
 
    
@@ -996,7 +996,7 @@ rule optimizeAnnotationColumns_4:
         currDir=$(pwd)
         cd /mnt/gs21/scratch/mansourt/TheGreatGenotyper/
         cmake -Bbuild.$$
-        cmake --build build -j{threads}
+        cmake --build build.$$ -j{threads}
         cd ${{currDir}}
 
 
@@ -1037,7 +1037,7 @@ rule optimizeAnnotationColumns_relax:
         currDir=$(pwd)
         cd /mnt/gs21/scratch/mansourt/TheGreatGenotyper/
         cmake -Bbuild.$$
-        cmake --build build -j{threads}
+        cmake --build build.$$ -j{threads}
         cd ${{currDir}}
 
 
