@@ -676,28 +676,23 @@ rule metagraph_buildSmoothMainGraph_2:
         cores=32,
         mem_gb=200,
 	nodes = 1,
-        runtime = lambda wildcards, attempt: 60 * 50 * attempt,
+        runtime = lambda wildcards, attempt: 60 * 1 * attempt,
         partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.smooth_value}"),
         tmp= lambda wildcards: "%smaingraph_smooth%s/"%(tmpFolder,f"{wildcards.smooth_value}")
     log: outputFolder+"smooth_{smooth_value}/buildMainGraphlog"
     shell:
        	"""
-	    mkdir  -p {tmpFolder}$$/
-        mkdir  -p {tmpFolder}$$/
-        currDir=$(pwd)
-        cd /mnt/gs21/scratch/mansourt/TheGreatGenotyper/
-        cmake -Bbuild.$$
-        cmake --build build.$$ -j{threads}
-        cd ${{currDir}}
+	mamba create -p ./metagraph.$$ -c bioconda -c conda-forge metagraph
+	conda activate ./metagraph.$$
+	
 
 
-        /mnt/gs21/scratch/mansourt/TheGreatGenotyper/build.$$/metagraph transform  \
+        metagraph transform  \
             --to-fasta --primary-kmers \
 	        -p {threads} \
             -o  {params.outputPrefix} \
             {input.graph} &>> {log}
-	    
-	    rm -rf {tmpFolder}$$/
+	
         """
 
 rule metagraph_buildSmoothMainGraph_3:
