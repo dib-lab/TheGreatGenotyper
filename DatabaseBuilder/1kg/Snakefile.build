@@ -642,7 +642,7 @@ rule metagraph_buildSmoothMainGraph_1:
         cores=32,
         mem_gb=200,
 	nodes = 1,
-        runtime = lambda wildcards, attempt: 60 * 100 * attempt,
+        runtime = lambda wildcards, attempt: 60 * 50 * attempt,
         partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.smooth_value}"),
         tmp= lambda wildcards: "%smaingraph_smooth%s/"%(tmpFolder,f"{wildcards.smooth_value}")
     log: outputFolder+"smooth_{smooth_value}/buildMainGraphlog"
@@ -681,7 +681,7 @@ rule metagraph_buildSmoothMainGraph_2:
         cores=32,
         mem_gb=200,
 	nodes = 1,
-        runtime = lambda wildcards, attempt: 60 * 100 * attempt,
+        runtime = lambda wildcards, attempt: 60 * 50 * attempt,
         partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.smooth_value}"),
         tmp= lambda wildcards: "%smaingraph_smooth%s/"%(tmpFolder,f"{wildcards.smooth_value}")
     log: outputFolder+"smooth_{smooth_value}/buildMainGraphlog"
@@ -720,7 +720,7 @@ rule metagraph_buildSmoothMainGraph_3:
         cores=32,
         mem_gb=200,
 	    nodes = 1,
-        runtime = lambda wildcards, attempt: 60 * 100 * attempt,
+        runtime = lambda wildcards, attempt: 60 * 50 * attempt,
         partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.smooth_value}"),
         tmp= lambda wildcards: "%smaingraph_smooth%s/"%(tmpFolder,f"{wildcards.smooth_value}")
     log: outputFolder+"smooth_{smooth_value}/buildMainGraphlog"
@@ -764,7 +764,7 @@ rule createAnnotationColumns:
         cores=32,
         mem_gb=10,
 	nodes = 1,
-        runtime = lambda wildcards, attempt: 60 * 72 * attempt,
+        runtime = lambda wildcards, attempt: 60 * 50 * attempt,
         partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.batchID}"),
         tmp= lambda wildcards: "%screateAnnotation_smooth%s_batch%s/"%(tmpFolder,f"{wildcards.smooth_value}",f"{wildcards.batchID}")
     log: outputFolder+"smooth_{smooth_value}/columns/{batchID}.done.log"
