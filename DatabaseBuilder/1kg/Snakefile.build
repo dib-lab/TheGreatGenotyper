@@ -634,22 +634,24 @@ rule metagraph_buildSmoothMainGraph_1:
          graph=temp(outputFolder+"smooth_{smooth_value}/graph_canonical.dbg")
     params:
          outputPrefix=outputFolder+"smooth_{smooth_value}/graph_canonical.dbg"
-    conda:
-         "../../environment.yml"
-    threads: 32
+#    conda:
+#         "../../environment.yml"
+    threads: 16
     resources:
-        mem_mb=220000,
+        mem_mb= 64 * 1024,
         cores=32,
-        mem_gb=200,
+        mem_gb= 60,
 	nodes = 1,
-        runtime = lambda wildcards, attempt: 60 * 1 * attempt,
+        runtime = lambda wildcards, attempt: 60 * 12 * attempt,
         partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.smooth_value}"),
         tmp= lambda wildcards: "%smaingraph_smooth%s/"%(tmpFolder,f"{wildcards.smooth_value}")
     log: outputFolder+"smooth_{smooth_value}/buildMainGraphlog"
     shell:
        	"""
 	mamba create -p ./metagraph.$$ -c bioconda -c conda-forge metagraph
-	conda activate ./metagraph.$$ 
+        source ~/miniconda3/etc/profile.d/conda.sh && conda activate ./metagraph.$$
+	#conda activate ./metagraph.$$ 
+
         metagraph build  \
         -k {kSize} \
         --mode canonical  \
@@ -668,22 +670,23 @@ rule metagraph_buildSmoothMainGraph_2:
          graph_fasta=temp(outputFolder+"smooth_{smooth_value}/graph_primary.fasta.gz")
     params:
          outputPrefix=outputFolder+"smooth_{smooth_value}/graph_primary"
-    conda:
-         "../../environment.yml"
-    threads: 32
+#    conda:
+#         "../../environment.yml"
+    threads: 8
     resources:
-        mem_mb=220000,
+        mem_mb= 24 * 1024,
         cores=32,
-        mem_gb=200,
+        mem_gb=22,
 	nodes = 1,
-        runtime = lambda wildcards, attempt: 60 * 1 * attempt,
+        runtime = lambda wildcards, attempt: 60 * 2 * attempt,
         partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.smooth_value}"),
         tmp= lambda wildcards: "%smaingraph_smooth%s/"%(tmpFolder,f"{wildcards.smooth_value}")
     log: outputFolder+"smooth_{smooth_value}/buildMainGraphlog"
     shell:
        	"""
 	mamba create -p ./metagraph.$$ -c bioconda -c conda-forge metagraph
-	conda activate ./metagraph.$$
+        source ~/miniconda3/etc/profile.d/conda.sh && conda activate ./metagraph.$$
+	#conda activate ./metagraph.$$
 	
 
 
