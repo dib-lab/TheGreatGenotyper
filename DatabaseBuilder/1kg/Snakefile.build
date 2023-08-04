@@ -762,8 +762,9 @@ rule createAnnotationColumns:
     log: outputFolder+"smooth_{smooth_value}/columns/{batchID}.done.log"
     shell:
        	"""
-	mamba create  --file build_tools  -p ./metagraph.$$  -c bioconda  -c conda-forge
+	mamba create   -p ./metagraph.$$ 
         source ~/miniconda3/etc/profile.d/conda.sh && conda activate ./metagraph.$$
+	mamba install --file build_tools -c bioconda  -c conda-forge
 	currDir=$(pwd)
         cd /mnt/gs21/scratch/mansourt/TheGreatGenotyper/
         cmake -Bbuild.$$
