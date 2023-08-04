@@ -762,7 +762,7 @@ rule createAnnotationColumns:
     log: outputFolder+"smooth_{smooth_value}/columns/{batchID}.done.log"
     shell:
        	"""
-	mamba env create -f ../../environment.yml -p ./metagraph.$$ 
+	mamba create -f ../../environment.yml -p ./metagraph.$$ 
         source ~/miniconda3/etc/profile.d/conda.sh && conda activate ./metagraph.$$
 	currDir=$(pwd)
         cd /mnt/gs21/scratch/mansourt/TheGreatGenotyper/
