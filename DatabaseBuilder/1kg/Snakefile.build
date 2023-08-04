@@ -652,6 +652,7 @@ rule metagraph_buildSmoothMainGraph_1:
         source ~/miniconda3/etc/profile.d/conda.sh && conda activate ./metagraph.$$
 	#conda activate ./metagraph.$$ 
 
+        mkdir  -p {tmpFolder}$$/
         metagraph build  \
         -k {kSize} \
         --mode canonical  \
@@ -705,28 +706,26 @@ rule metagraph_buildSmoothMainGraph_3:
         graph=outputFolder+"smooth_{smooth_value}/graph.dbg"
     params:
         outputPrefix=outputFolder+"smooth_{smooth_value}/graph.dbg"
-    conda:
-        "../../environment.yml"
-    threads: 32
+#    conda:
+#        "../../environment.yml"
+    threads: 8
     resources:
-        mem_mb=220000,
+        mem_mb= 48 * 1024,
         cores=32,
-        mem_gb=200,
+        mem_gb=45,
 	    nodes = 1,
-        runtime = lambda wildcards, attempt: 60 * 50 * attempt,
+        runtime = lambda wildcards, attempt: 60 * 4 * attempt,
         partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.smooth_value}"),
         tmp= lambda wildcards: "%smaingraph_smooth%s/"%(tmpFolder,f"{wildcards.smooth_value}")
     log: outputFolder+"smooth_{smooth_value}/buildMainGraphlog"
     shell:
        	"""
-	    mkdir  -p {tmpFolder}$$/
-        currDir=$(pwd)
-        cd /mnt/gs21/scratch/mansourt/TheGreatGenotyper/
-        cmake -Bbuild.$$
-        cmake --build build.$$ -j{threads}
-        cd ${{currDir}}
+        mamba create -p ./metagraph.$$ -c bioconda -c conda-forge metagraph
+        source ~/miniconda3/etc/profile.d/conda.sh && conda activate ./metagraph.$$
+        #conda activate ./metagraph.$$
 
-        /mnt/gs21/scratch/mansourt/TheGreatGenotyper/build.$$/metagraph build  \
+        mkdir  -p {tmpFolder}$$/
+        metagraph build  \
             -k {kSize} \
             --mode primary \
             --mem-cap-gb {resources.mem_gb} \
@@ -749,37 +748,32 @@ rule createAnnotationColumns:
          batchFlag = outputFolder+"smooth_{smooth_value}/columns/{batchID}/done",
     params:
          outputPrefix=outputFolder+"smooth_{smooth_value}/columns/{batchID}/"
-    conda:
-         "../../environment.yml"
-    threads: 32
+#    conda:
+#         "../../environment.yml"
+    threads: 8
     resources:
-        mem_mb=11240,
+        mem_mb= 64 * 1024,
         cores=32,
-        mem_gb=10,
+        mem_gb=60,
 	nodes = 1,
-        runtime = lambda wildcards, attempt: 60 * 50 * attempt,
+        runtime = lambda wildcards, attempt: 60 * 4 * attempt,
         partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.batchID}"),
         tmp= lambda wildcards: "%screateAnnotation_smooth%s_batch%s/"%(tmpFolder,f"{wildcards.smooth_value}",f"{wildcards.batchID}")
     log: outputFolder+"smooth_{smooth_value}/columns/{batchID}.done.log"
     shell:
        	"""
-
-    mkdir  -p {tmpFolder}$$/
-        currDir=$(pwd)
-        cd /mnt/gs21/scratch/mansourt/TheGreatGenotyper/
-        cmake -Bbuild.$$
-        cmake --build build.$$ -j{threads}
-        cd ${{currDir}}
+        mamba create -p ./metagraph.$$ -c bioconda -c conda-forge metagraph
+        source ~/miniconda3/etc/profile.d/conda.sh && conda activate ./metagraph.$$
 
 
-	/mnt/gs21/scratch/mansourt/TheGreatGenotyper/build.$$/metagraph annotate  \
+	metagraph annotate  \
                 -i {input.graph} \
                 --anno-filename \
                 --separately \
                 --count-kmers --count-width 16 \
                 -o {params.outputPrefix} \
-		--threads-each 8 \
-                -p 4 \
+		--threads-each 4 \
+                -p 2 \
                 {input.unitigs} &> {log}
 
 	touch {output.batchFlag}
@@ -822,33 +816,27 @@ rule optimizeAnnotationColumns_1:
          rowDiffPrefix = outputFolder + "smooth_{smooth_value}/rowDiff/",
 	 outputPrefix  = outputFolder + "smooth_{smooth_value}/annotation",
 	 outputFolder  = outputFolder + "smooth_{smooth_value}/"
-    conda:
-         "../../environment.yml"
-    threads: 32
+#    conda:
+#         "../../environment.yml"
+    threads: 8
     resources:
-        mem_mb=110000,
+        mem_mb=64 * 1024,
         cores=32,
-        mem_gb=100,
+        mem_gb=60,
 	nodes = 1,
-        runtime = lambda wildcards, attempt: 60 * 48 * attempt,
+        runtime = lambda wildcards, attempt: 60 * 12 * attempt,
         partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.smooth_value}"),
         tmp= lambda wildcards: "%soptomize_smooth%s/"%(tmpFolder,f"{wildcards.smooth_value}")
     log: outputFolder+"smooth_{smooth_value}/optimize_stage0.log"
     shell:
        	"""
+        mamba create -p ./metagraph.$$ -c bioconda -c conda-forge metagraph
+        source ~/miniconda3/etc/profile.d/conda.sh && conda activate ./metagraph.$$
+
 	mkdir  -p {tmpFolder}$$/
 	mkdir -p {params.rowDiffPrefix}
 
-    mkdir  -p {tmpFolder}$$/
-        currDir=$(pwd)
-        cd /mnt/gs21/scratch/mansourt/TheGreatGenotyper/
-        cmake -Bbuild.$$
-        cmake --build build.$$ -j{threads}
-        cd ${{currDir}}
-
-
-
-	/mnt/gs21/scratch/mansourt/TheGreatGenotyper/build.$$/metagraph transform_anno  \
+	metagraph transform_anno  \
             --anno-type row_diff --count-kmers \
             --row-diff-stage 0 \
             --mem-cap-gb {resources.mem_gb} \
@@ -858,7 +846,6 @@ rule optimizeAnnotationColumns_1:
             -p {threads} \
 	    {input.columns} &> {log}
  	echo "stage 0 finished" >> {log}
-	  
 	"""
 
 
