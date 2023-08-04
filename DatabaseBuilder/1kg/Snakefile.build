@@ -762,11 +762,15 @@ rule createAnnotationColumns:
     log: outputFolder+"smooth_{smooth_value}/columns/{batchID}.done.log"
     shell:
        	"""
-        mamba create -p ./metagraph.$$ -c bioconda -c conda-forge metagraph
+	conda env create -f ../../environment.yml -p ./metagraph.$$ 
         source ~/miniconda3/etc/profile.d/conda.sh && conda activate ./metagraph.$$
+	currDir=$(pwd)
+        cd /mnt/gs21/scratch/mansourt/TheGreatGenotyper/
+        cmake -Bbuild.$$
+        cmake --build build.$$ -j{threads}
+        cd ${{currDir}}
 
-
-	metagraph annotate  \
+	/mnt/gs21/scratch/mansourt/TheGreatGenotyper/build.$$/metagraph annotate  \
                 -i {input.graph} \
                 --anno-filename \
                 --separately \
