@@ -28,4 +28,4 @@ rule run_sourmash:
         partition =  ""		
     log: "{prefix}.sourmash.log"
     shell:
-        "gunzip -c {input} | sourmash sketch dna -p k=31,k=51,scaled=1000,noabund - -o {output}"
+        "gunzip -c {input} | sourmash sketch dna -p k=51,scaled=10000,noabund - -o {output}"
