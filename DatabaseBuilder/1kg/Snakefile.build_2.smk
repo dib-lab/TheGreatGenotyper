@@ -276,16 +276,16 @@ rule createAnnotationColumns:
     log: outputFolder+"{cluster}/columns/{batchID}.done.log"
     shell:
        	"""
-	mamba create   -p ./metagraph.$$ 
-        source ~/miniconda3/etc/profile.d/conda.sh && conda activate ./metagraph.$$
-	mamba install --file build_tools -c bioconda  -c conda-forge
-	currDir=$(pwd)
-        cd /mnt/gs21/scratch/mansourt/TheGreatGenotyper/
-        cmake -Bbuild.$$
-        cmake --build build.$$ -j{threads}
-        cd ${{currDir}}
+	# mamba create   -p ./metagraph.$$ 
+    #     source ~/miniconda3/etc/profile.d/conda.sh && conda activate ./metagraph.$$
+	# mamba install --file build_tools -c bioconda  -c conda-forge
+	# currDir=$(pwd)
+    #     cd /mnt/gs21/scratch/mansourt/TheGreatGenotyper/
+    #     cmake -Bbuild.$$
+    #     cmake --build build.$$ -j{threads}
+    #     cd ${{currDir}}
 
-	/mnt/gs21/scratch/mansourt/TheGreatGenotyper/build.$$/metagraph annotate  \
+	/mnt/gs21/scratch/mansourt/TheGreatGenotyper/build/metagraph annotate  \
                 -i {input.graph} \
                 --anno-filename \
                 --separately \
@@ -350,13 +350,13 @@ rule optimizeAnnotationColumns_1:
     log: outputFolder+"{cluster}/optimize_stage0.log"
     shell:
        	"""
-        mamba create -p ./metagraph.$$ -c bioconda -c conda-forge metagraph
-        source ~/miniconda3/etc/profile.d/conda.sh && conda activate ./metagraph.$$
+    #     mamba create -p ./metagraph.$$ -c bioconda -c conda-forge metagraph
+    #     source ~/miniconda3/etc/profile.d/conda.sh && conda activate ./metagraph.$$
 
-	mkdir  -p {tmpFolder}$$/
-	mkdir -p {params.rowDiffPrefix}
+	# mkdir  -p {tmpFolder}$$/
+	# mkdir -p {params.rowDiffPrefix}
 
-	metagraph transform_anno  \
+	/mnt/gs21/scratch/mansourt/TheGreatGenotyper/build/metagraph transform_anno  \
             --anno-type row_diff --count-kmers \
             --row-diff-stage 0 \
             --mem-cap-gb {resources.mem_gb} \
@@ -399,15 +399,15 @@ rule optimizeAnnotationColumns_2:
        	"""
 	mkdir  -p {tmpFolder}$$/
 
-    mkdir  -p {tmpFolder}$$/
-        currDir=$(pwd)
-        cd /mnt/gs21/scratch/mansourt/TheGreatGenotyper/
-        cmake -Bbuild.$$
-        cmake --build build.$$ -j{threads}
-        cd ${{currDir}}
+    # mkdir  -p {tmpFolder}$$/
+    #     currDir=$(pwd)
+    #     cd /mnt/gs21/scratch/mansourt/TheGreatGenotyper/
+    #     cmake -Bbuild.$$
+    #     cmake --build build.$$ -j{threads}
+    #     cd ${{currDir}}
 
 
-	/mnt/gs21/scratch/mansourt/TheGreatGenotyper/build.$$/metagraph transform_anno  \
+	/mnt/gs21/scratch/mansourt/TheGreatGenotyper/build/metagraph transform_anno  \
             --anno-type row_diff --count-kmers \
             --row-diff-stage 1 \
             --mem-cap-gb {resources.mem_gb} \
@@ -445,17 +445,17 @@ rule optimizeAnnotationColumns_3:
     log: outputFolder+"{cluster}/optimize_stage2.log"
     shell:
        	"""
-	mkdir  -p {tmpFolder}$$/
+	# mkdir  -p {tmpFolder}$$/
 
-    mkdir  -p {tmpFolder}$$/
-        currDir=$(pwd)
-        cd /mnt/gs21/scratch/mansourt/TheGreatGenotyper/
-        cmake -Bbuild.$$
-        cmake --build build.$$ -j{threads}
-        cd ${{currDir}}
+    # mkdir  -p {tmpFolder}$$/
+    #     currDir=$(pwd)
+    #     cd /mnt/gs21/scratch/mansourt/TheGreatGenotyper/
+    #     cmake -Bbuild.$$
+    #     cmake --build build.$$ -j{threads}
+    #     cd ${{currDir}}
 
    
-    /mnt/gs21/scratch/mansourt/TheGreatGenotyper/build.$$/metagraph transform_anno  \
+    /mnt/gs21/scratch/mansourt/TheGreatGenotyper/build/metagraph transform_anno  \
             --anno-type row_diff --count-kmers \
             --row-diff-stage 2 \
             --mem-cap-gb {resources.mem_gb} \
@@ -519,18 +519,18 @@ rule optimizeAnnotationColumns_4:
     log: outputFolder+"{cluster}/optimize_stage3.log"
     shell:
        	"""
-	mkdir  -p {tmpFolder}$$/
+	# mkdir  -p {tmpFolder}$$/
 
-    mkdir  -p {tmpFolder}$$/
-        currDir=$(pwd)
-        cd /mnt/gs21/scratch/mansourt/TheGreatGenotyper/
-        cmake -Bbuild.$$
-        cmake --build build.$$ -j{threads}
-        cd ${{currDir}}
+    # mkdir  -p {tmpFolder}$$/
+    #     currDir=$(pwd)
+    #     cd /mnt/gs21/scratch/mansourt/TheGreatGenotyper/
+    #     cmake -Bbuild.$$
+    #     cmake --build build.$$ -j{threads}
+    #     cd ${{currDir}}
 
 
         echo {input.columns} |tr -s ' ' $'\n'  \
-         | /mnt/gs21/scratch/mansourt/TheGreatGenotyper/build.$$/metagraph transform_anno  \
+         | /mnt/gs21/scratch/mansourt/TheGreatGenotyper/build/metagraph transform_anno  \
             --anno-type row_diff_int_brwt \
             --greedy --fast --subsample 1000000  \
             -i {input.graph} \
@@ -564,15 +564,15 @@ rule optimizeAnnotationColumns_relax:
     shell:
        	"""
 
-        mkdir  -p {tmpFolder}$$/
-        currDir=$(pwd)
-        cd /mnt/gs21/scratch/mansourt/TheGreatGenotyper/
-        cmake -Bbuild.$$
-        cmake --build build.$$ -j{threads}
-        cd ${{currDir}}
+        # mkdir  -p {tmpFolder}$$/
+        # currDir=$(pwd)
+        # cd /mnt/gs21/scratch/mansourt/TheGreatGenotyper/
+        # cmake -Bbuild.$$
+        # cmake --build build.$$ -j{threads}
+        # cd ${{currDir}}
 
 
-        /mnt/gs21/scratch/mansourt/TheGreatGenotyper/build.$$/metagraph relax_brwt  \
+        /mnt/gs21/scratch/mansourt/TheGreatGenotyper/build/metagraph relax_brwt  \
             -p {threads} \
             --relax-arity 32 \
             -o {params.outputPrefix}.relaxed \
