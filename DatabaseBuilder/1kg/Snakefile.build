@@ -750,7 +750,7 @@ rule createAnnotationColumns:
          outputPrefix=outputFolder+"smooth_{smooth_value}/columns/{batchID}/"
 #    conda:
 #         "../../environment.yml"
-    threads: 8
+    threads: 24
     resources:
         mem_mb= 64 * 1024,
         cores=32,
@@ -762,23 +762,23 @@ rule createAnnotationColumns:
     log: outputFolder+"smooth_{smooth_value}/columns/{batchID}.done.log"
     shell:
        	"""
-	mamba create   -p ./metagraph.$$ 
-        source ~/miniconda3/etc/profile.d/conda.sh && conda activate ./metagraph.$$
-	mamba install --file build_tools -c bioconda  -c conda-forge
-	currDir=$(pwd)
-        cd /mnt/gs21/scratch/mansourt/TheGreatGenotyper/
-        cmake -Bbuild.$$
-        cmake --build build.$$ -j{threads}
-        cd ${{currDir}}
+	#mamba create   -p ./metagraph.$$ 
+        #source ~/miniconda3/etc/profile.d/conda.sh && conda activate ./metagraph.$$
+	#mamba install --file build_tools -c bioconda  -c conda-forge
+	#currDir=$(pwd)
+        #cd /mnt/gs21/scratch/mansourt/TheGreatGenotyper/
+        #cmake -Bbuild.$$
+        #cmake --build build.$$ -j{threads}
+        #cd ${{currDir}}
 
-	/mnt/gs21/scratch/mansourt/TheGreatGenotyper/build.$$/metagraph annotate  \
+	/mnt/gs21/scratch/mansourt/TheGreatGenotyper/build/metagraph annotate  \
                 -i {input.graph} \
                 --anno-filename \
                 --separately \
                 --count-kmers --count-width 16 \
                 -o {params.outputPrefix} \
-		--threads-each 4 \
-                -p 2 \
+		--threads-each 6 \
+                -p 4 \
                 {input.unitigs} &> {log}
 
 	touch {output.batchFlag}
@@ -835,13 +835,13 @@ rule optimizeAnnotationColumns_1:
     log: outputFolder+"smooth_{smooth_value}/optimize_stage0.log"
     shell:
        	"""
-        mamba create -p ./metagraph.$$ -c bioconda -c conda-forge metagraph
-        source ~/miniconda3/etc/profile.d/conda.sh && conda activate ./metagraph.$$
+        #mamba create -p ./metagraph.$$ -c bioconda -c conda-forge metagraph
+        #source ~/miniconda3/etc/profile.d/conda.sh && conda activate ./metagraph.$$
 
 	mkdir  -p {tmpFolder}$$/
 	mkdir -p {params.rowDiffPrefix}
 
-	metagraph transform_anno  \
+	/mnt/gs21/scratch/mansourt/TheGreatGenotyper/build/metagraph transform_anno  \
             --anno-type row_diff --count-kmers \
             --row-diff-stage 0 \
             --mem-cap-gb {resources.mem_gb} \
