@@ -756,7 +756,7 @@ rule createAnnotationColumns:
         cores=32,
         mem_gb=60,
 	nodes = 1,
-        runtime = lambda wildcards, attempt: 60 * 4 * attempt,
+        runtime = lambda wildcards, attempt: 60 * 6 * attempt,
         partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.batchID}"),
         tmp= lambda wildcards: "%screateAnnotation_smooth%s_batch%s/"%(tmpFolder,f"{wildcards.smooth_value}",f"{wildcards.batchID}")
     log: outputFolder+"smooth_{smooth_value}/columns/{batchID}.done.log"
@@ -766,6 +766,9 @@ rule createAnnotationColumns:
         #source ~/miniconda3/etc/profile.d/conda.sh && conda activate ./metagraph.$$
 	#mamba install --file build_tools -c bioconda  -c conda-forge
 	#currDir=$(pwd)
+        ##conda deactivate
+        ##PATH=${{currDir}}/metagraph.$$/bin:${{PATH}}
+        ##CPATH=${{currDir}}/metagraph.$$/include:${{CPATH}}
         #cd /mnt/gs21/scratch/mansourt/TheGreatGenotyper/
         #cmake -Bbuild.$$
         #cmake --build build.$$ -j{threads}
@@ -798,7 +801,10 @@ rule prepareAnnnotationColumns:
          "env.yaml"
     threads: 1
     resources:
-        mem_mb=2048,cores=1,mem_gb=2
+        mem_mb=2048,
+        cores=1,
+        mem_gb=2,
+        runtime = lambda wildcards, attempt: 60 * attempt
     log: outputFolder+"smooth_{smooth_value}/prepareoptimizeAnnotationColumns.log"
     shell:
        	"""
@@ -823,13 +829,13 @@ rule optimizeAnnotationColumns_1:
 	 outputFolder  = outputFolder + "smooth_{smooth_value}/"
 #    conda:
 #         "../../environment.yml"
-    threads: 8
+    threads: 16
     resources:
-        mem_mb=64 * 1024,
+        mem_mb= 32 * 1024,
         cores=32,
         mem_gb=60,
 	nodes = 1,
-        runtime = lambda wildcards, attempt: 60 * 12 * attempt,
+        runtime = lambda wildcards, attempt: 60 * 4 * attempt,
         partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.smooth_value}"),
         tmp= lambda wildcards: "%soptomize_smooth%s/"%(tmpFolder,f"{wildcards.smooth_value}")
     log: outputFolder+"smooth_{smooth_value}/optimize_stage0.log"
@@ -868,13 +874,13 @@ rule optimizeAnnotationColumns_2:
 	 outputFolder  = outputFolder + "smooth_{smooth_value}/"
     conda:
          "../../environment.yml"
-    threads: 32
+    threads: 16
     resources:
         mem_mb=110000,
         cores=32,
         mem_gb=100,
 	nodes = 1,
-        runtime = lambda wildcards, attempt: 60 * 48 * attempt,
+        runtime = lambda wildcards, attempt: 60 * 4 * attempt,
         partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.smooth_value}"),
         tmp= lambda wildcards: "%soptomize_smooth%s/"%(tmpFolder,f"{wildcards.smooth_value}")
     log: outputFolder+"smooth_{smooth_value}/optimize_stage1.log"
