@@ -793,8 +793,8 @@ rule prepareAnnnotationColumns:
     input:
          flags=batchFlags
     output:
-         columns=temp(expand(outputFolder+"smooth_{smooth_value}/columns/{sample}.fasta.gz.column.annodbg",smooth_value="{smooth_value}",sample=illuminaSamples)),
-         columnsCounts=temp(expand(outputFolder+"smooth_{smooth_value}/columns/{sample}.fasta.gz.column.annodbg.counts",smooth_value="{smooth_value}",sample=illuminaSamples))	 
+         columns=(expand(outputFolder+"smooth_{smooth_value}/columns/{sample}.fasta.gz.column.annodbg",smooth_value="{smooth_value}",sample=illuminaSamples)),
+         columnsCounts=(expand(outputFolder+"smooth_{smooth_value}/columns/{sample}.fasta.gz.column.annodbg.counts",smooth_value="{smooth_value}",sample=illuminaSamples))	 
     params:
          outputPrefix=outputFolder+"smooth_{smooth_value}/columns/"
     conda:
@@ -822,7 +822,7 @@ rule optimizeAnnotationColumns_1:
          columnsCounts=expand(outputFolder+"smooth_{smooth_value}/columns/{sample}.fasta.gz.column.annodbg.counts",smooth_value="{smooth_value}",sample=illuminaSamples),
          graph=outputFolder+"smooth_{smooth_value}/graph.dbg"
     output:
-         temp(outputFolder+"smooth_{smooth_value}/rowDiff/graph.row_count")
+         outputFolder+"smooth_{smooth_value}/rowDiff/graph.row_count"
     params:
          rowDiffPrefix = outputFolder + "smooth_{smooth_value}/rowDiff/",
 	 outputPrefix  = outputFolder + "smooth_{smooth_value}/annotation",
@@ -833,7 +833,7 @@ rule optimizeAnnotationColumns_1:
     resources:
         mem_mb= 32 * 1024,
         cores=32,
-        mem_gb=60,
+        mem_gb=32,
 	nodes = 1,
         runtime = lambda wildcards, attempt: 60 * 4 * attempt,
         partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.smooth_value}"),
@@ -867,7 +867,7 @@ rule optimizeAnnotationColumns_2:
          graph=outputFolder+"smooth_{smooth_value}/graph.dbg",
          row_count=outputFolder+"smooth_{smooth_value}/rowDiff/graph.row_count"
     output:
-         temp(outputFolder+"smooth_{smooth_value}/rowDiff/graph.row_reduction")
+         outputFolder+"smooth_{smooth_value}/rowDiff/graph.row_reduction"
     params:
          rowDiffPrefix = outputFolder + "smooth_{smooth_value}/rowDiff/",
 	 outputPrefix  = outputFolder + "smooth_{smooth_value}/annotation",
@@ -876,11 +876,11 @@ rule optimizeAnnotationColumns_2:
          "../../environment.yml"
     threads: 16
     resources:
-        mem_mb=110000,
+        mem_mb=64 * 1024,
         cores=32,
-        mem_gb=100,
+        mem_gb=64,
 	nodes = 1,
-        runtime = lambda wildcards, attempt: 60 * 4 * attempt,
+        runtime = lambda wildcards, attempt: 60 * 10 * attempt,
         partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.smooth_value}"),
         tmp= lambda wildcards: "%soptomize_smooth%s/"%(tmpFolder,f"{wildcards.smooth_value}")
     log: outputFolder+"smooth_{smooth_value}/optimize_stage1.log"
@@ -888,15 +888,16 @@ rule optimizeAnnotationColumns_2:
        	"""
 	mkdir  -p {tmpFolder}$$/
 
-    mkdir  -p {tmpFolder}$$/
-        currDir=$(pwd)
-        cd /mnt/gs21/scratch/mansourt/TheGreatGenotyper/
-        cmake -Bbuild.$$
-        cmake --build build.$$ -j{threads}
-        cd ${{currDir}}
+        #mkdir  -p {tmpFolder}$$/
+        #currDir=$(pwd)
+        #cd /mnt/gs21/scratch/mansourt/TheGreatGenotyper/
+        #cmake -Bbuild.$$
+        #cmake --build build.$$ -j{threads}
+        #cd ${{currDir}}
 
 
-	/mnt/gs21/scratch/mansourt/TheGreatGenotyper/build.$$/metagraph transform_anno  \
+	#/mnt/gs21/scratch/mansourt/TheGreatGenotyper/build.$$/metagraph transform_anno  \
+        /mnt/gs21/scratch/mansourt/TheGreatGenotyper/build/metagraph transform_anno  \
             --anno-type row_diff --count-kmers \
             --row-diff-stage 1 \
             --mem-cap-gb {resources.mem_gb} \
@@ -915,20 +916,20 @@ rule optimizeAnnotationColumns_3:
          graph=outputFolder+"smooth_{smooth_value}/graph.dbg",
          row_reduction= outputFolder+"smooth_{smooth_value}/rowDiff/graph.row_reduction"
     output:
-         columns=temp(expand(outputFolder+"smooth_{{smooth_value}}/rowDiff/{sample}.fasta.gz.column.{suffix}",sample=illuminaSamples, suffix = ["annodbg", "annodbg.counts"]))
+         columns=expand(outputFolder+"smooth_{{smooth_value}}/rowDiff/{sample}.fasta.gz.column.{suffix}",sample=illuminaSamples, suffix = ["annodbg", "annodbg.counts"])
     params:
          rowDiffPrefix = outputFolder + "smooth_{smooth_value}/rowDiff/",
 	 outputPrefix  = outputFolder + "smooth_{smooth_value}/annotation",
 	 outputFolder  = outputFolder + "smooth_{smooth_value}/"
     conda:
          "../../environment.yml"
-    threads: 32
+    threads: 16
     resources:
-        mem_mb=110000,
+        mem_mb=64 * 1024,
         cores=32,
-        mem_gb=100,
+        mem_gb=64,
 	nodes = 1,
-        runtime = lambda wildcards, attempt: 60 * 48 * attempt,
+        runtime = lambda wildcards, attempt: 60 * 10 * attempt,
         partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.smooth_value}"),
         tmp= lambda wildcards: "%soptomize_smooth%s/"%(tmpFolder,f"{wildcards.smooth_value}")
     log: outputFolder+"smooth_{smooth_value}/optimize_stage2.log"
@@ -936,15 +937,16 @@ rule optimizeAnnotationColumns_3:
        	"""
 	mkdir  -p {tmpFolder}$$/
 
-    mkdir  -p {tmpFolder}$$/
-        currDir=$(pwd)
-        cd /mnt/gs21/scratch/mansourt/TheGreatGenotyper/
-        cmake -Bbuild.$$
-        cmake --build build.$$ -j{threads}
-        cd ${{currDir}}
+        #mkdir  -p {tmpFolder}$$/
+        #currDir=$(pwd)
+        #cd /mnt/gs21/scratch/mansourt/TheGreatGenotyper/
+        #cmake -Bbuild.$$
+        #cmake --build build.$$ -j{threads}
+        #cd ${{currDir}}
 
    
-    /mnt/gs21/scratch/mansourt/TheGreatGenotyper/build.$$/metagraph transform_anno  \
+        #/mnt/gs21/scratch/mansourt/TheGreatGenotyper/build.$$/metagraph transform_anno  \
+       /mnt/gs21/scratch/mansourt/TheGreatGenotyper/build/metagraph transform_anno  \
             --anno-type row_diff --count-kmers \
             --row-diff-stage 2 \
             --mem-cap-gb {resources.mem_gb} \
@@ -962,20 +964,20 @@ rule optimizeAnnotationColumns_4:
          columns=expand(outputFolder+"smooth_{{smooth_value}}/rowDiff/{sample}.fasta.gz.column.annodbg",sample=illuminaSamples),
          counts=expand(outputFolder+"smooth_{{smooth_value}}/rowDiff/{sample}.fasta.gz.column.annodbg.counts",sample=illuminaSamples)
     output:
-         temp(outputFolder+"smooth_{smooth_value}/annotation.row_diff_int_brwt.annodbg")
+         outputFolder+"smooth_{smooth_value}/annotation.row_diff_int_brwt.annodbg"
     params:
          rowDiffPrefix = outputFolder + "smooth_{smooth_value}/rowDiff/",
 	 outputPrefix  = outputFolder + "smooth_{smooth_value}/annotation",
 	 outputFolder  = outputFolder + "smooth_{smooth_value}/"
     conda:
          "../../environment.yml"
-    threads: 32
+    threads: 16
     resources:
-        mem_mb=110000,
+        mem_mb=64 * 1024,
         cores=32,
-        mem_gb=100,
+        mem_gb=32,
 	nodes = 1,
-        runtime = lambda wildcards, attempt: 60 * 48 * attempt,
+        runtime = lambda wildcards, attempt: 60 * 10 * attempt,
         partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.smooth_value}"),
         tmp= lambda wildcards: "%soptomize_smooth%s/"%(tmpFolder,f"{wildcards.smooth_value}")
     log: outputFolder+"smooth_{smooth_value}/optimize_stage3.log"
@@ -983,16 +985,16 @@ rule optimizeAnnotationColumns_4:
        	"""
 	mkdir  -p {tmpFolder}$$/
 
-    mkdir  -p {tmpFolder}$$/
-        currDir=$(pwd)
-        cd /mnt/gs21/scratch/mansourt/TheGreatGenotyper/
-        cmake -Bbuild.$$
-        cmake --build build.$$ -j{threads}
-        cd ${{currDir}}
+        #mkdir  -p {tmpFolder}$$/
+        #currDir=$(pwd)
+        #cd /mnt/gs21/scratch/mansourt/TheGreatGenotyper/
+        #cmake -Bbuild.$$
+        #cmake --build build.$$ -j{threads}
+        #cd ${{currDir}}
 
 
         echo {input.columns} |tr -s ' ' $'\n'  \
-         | /mnt/gs21/scratch/mansourt/TheGreatGenotyper/build.$$/metagraph transform_anno  \
+         | /mnt/gs21/scratch/mansourt/TheGreatGenotyper/build/metagraph transform_anno  \
             --anno-type row_diff_int_brwt \
             --greedy --fast --subsample 1000000 \
             -i {input.graph} \
@@ -1011,28 +1013,28 @@ rule optimizeAnnotationColumns_relax:
         outputPrefix  = outputFolder + "smooth_{smooth_value}/annotation",
     conda:
         "../../environment.yml"
-    threads: 32
+    threads: 16
     resources:
-        mem_mb=110000,
+        mem_mb=64 * 1024,
         cores=32,
-        mem_gb=100,
+        mem_gb=64,
 	    nodes = 1,
-        runtime = lambda wildcards, attempt: 60 * 48 * attempt,
+        runtime = lambda wildcards, attempt: 60 * 10 * attempt,
         partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.smooth_value}"),
         tmp= lambda wildcards: "%soptomize_smooth%s/"%(tmpFolder,f"{wildcards.smooth_value}")
     log: outputFolder+"smooth_{smooth_value}/optimize_relax.log"
     shell:
        	"""
 
-        mkdir  -p {tmpFolder}$$/
-        currDir=$(pwd)
-        cd /mnt/gs21/scratch/mansourt/TheGreatGenotyper/
-        cmake -Bbuild.$$
-        cmake --build build.$$ -j{threads}
-        cd ${{currDir}}
+        #mkdir  -p {tmpFolder}$$/
+        #currDir=$(pwd)
+        #cd /mnt/gs21/scratch/mansourt/TheGreatGenotyper/
+        #cmake -Bbuild.$$
+        #cmake --build build.$$ -j{threads}
+        #cd ${{currDir}}
 
 
-        /mnt/gs21/scratch/mansourt/TheGreatGenotyper/build.$$/metagraph relax_brwt  \
+        /mnt/gs21/scratch/mansourt/TheGreatGenotyper/build/metagraph relax_brwt  \
             -p {threads} \
             --relax-arity 32 \
             -o {params.outputPrefix}.relaxed \
