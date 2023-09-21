@@ -1,7 +1,7 @@
 # theme docs https://squidfunk.github.io/mkdocs-material/getting-started/
 
 site_name: The Great Genotyper
-site_url: tmp
+site_url: https://dib-lab.github.io/TheGreatGenotyper
 repo_name: dib-lab/TheGreatGenotyper/
 repo_url: https://github.com/dib-lab/TheGreatGenotyper
 edit_uri: tree/main/docs/
