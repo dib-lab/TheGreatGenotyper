@@ -189,6 +189,7 @@ class Config {
         QUERY,
         SERVER_QUERY,
         ADDCOUNT,
+        SMOOTHCOUNTS
 
     };
     IdentityType identity = NO_IDENTITY;

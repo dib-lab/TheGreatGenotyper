@@ -76,7 +76,9 @@ Config::Config(int argc, char *argv[]) {
         identity = RELAX_BRWT;
     }else if (!strcmp(argv[1], "addCount")) {
         identity = ADDCOUNT;
-    }else if (!strcmp(argv[1], "--version")) {
+    }else if (!strcmp(argv[1], "smoothCounts")) {
+        identity = SMOOTHCOUNTS;
+    } else if (!strcmp(argv[1], "--version")) {
         std::cout << "Version: " VERSION << std::endl;
         exit(0);
     } else if (!strcmp(argv[1], "--advanced")) {
@@ -907,6 +909,7 @@ if (advanced) {
 
             fprintf(stderr, "\tstats\t\tprint graph statistics for given graph(s) or annotation\n\n");
             fprintf(stderr, "\taddCount\t\tadd count from kmc database to unitig fasta file\n\n");
+            fprintf(stderr, "\tsmoothCounts\t\tsmooth counts of unitigs fasta.gz and kmer_counts.gz\n\n");
 
             fprintf(stderr, "General options:\n");
             fprintf(stderr, "\t--advanced \tshow other advanced and legacy options [off]\n");

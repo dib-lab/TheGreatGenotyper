@@ -16,6 +16,7 @@
 #include "cli/transform_graph.hpp"
 #include "cli/transform_annotation.hpp"
 #include "cli/addCount.hpp"
+#include "cli/smoothCounts.hpp"
 
 using namespace mtg;
 using mtg::common::logger;
@@ -90,6 +91,9 @@ int main(int argc, char *argv[]) {
 
         case Config::ADDCOUNT:
             return cli::addCount(config.get());
+
+        case Config::SMOOTHCOUNTS:
+            return cli::smoothCounts(config.get());
 
         case Config::NO_IDENTITY:
             assert(false);
