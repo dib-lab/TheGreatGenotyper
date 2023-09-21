@@ -878,7 +878,7 @@ rule optimizeAnnotationColumns_2:
     resources:
         mem_mb=64 * 1024,
         cores=32,
-        mem_gb=64,
+        mem_gb=62,
 	nodes = 1,
         runtime = lambda wildcards, attempt: 60 * 10 * attempt,
         partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.smooth_value}"),
@@ -896,7 +896,6 @@ rule optimizeAnnotationColumns_2:
         #cd ${{currDir}}
 
 
-	#/mnt/gs21/scratch/mansourt/TheGreatGenotyper/build.$$/metagraph transform_anno  \
         /mnt/gs21/scratch/mansourt/TheGreatGenotyper/build/metagraph transform_anno  \
             --anno-type row_diff --count-kmers \
             --row-diff-stage 1 \
@@ -927,9 +926,9 @@ rule optimizeAnnotationColumns_3:
     resources:
         mem_mb=64 * 1024,
         cores=32,
-        mem_gb=64,
+        mem_gb=62,
 	nodes = 1,
-        runtime = lambda wildcards, attempt: 60 * 10 * attempt,
+        runtime = lambda wildcards, attempt: 60 * 12 * attempt,
         partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.smooth_value}"),
         tmp= lambda wildcards: "%soptomize_smooth%s/"%(tmpFolder,f"{wildcards.smooth_value}")
     log: outputFolder+"smooth_{smooth_value}/optimize_stage2.log"
@@ -945,7 +944,6 @@ rule optimizeAnnotationColumns_3:
         #cd ${{currDir}}
 
    
-        #/mnt/gs21/scratch/mansourt/TheGreatGenotyper/build.$$/metagraph transform_anno  \
        /mnt/gs21/scratch/mansourt/TheGreatGenotyper/build/metagraph transform_anno  \
             --anno-type row_diff --count-kmers \
             --row-diff-stage 2 \
@@ -969,15 +967,15 @@ rule optimizeAnnotationColumns_4:
          rowDiffPrefix = outputFolder + "smooth_{smooth_value}/rowDiff/",
 	 outputPrefix  = outputFolder + "smooth_{smooth_value}/annotation",
 	 outputFolder  = outputFolder + "smooth_{smooth_value}/"
-    conda:
-         "../../environment.yml"
-    threads: 16
+#    conda:
+#         "../../environment.yml"
+    threads: 1
     resources:
-        mem_mb=64 * 1024,
+        mem_mb=720 * 1024,
         cores=32,
-        mem_gb=32,
+        mem_gb=710,
 	nodes = 1,
-        runtime = lambda wildcards, attempt: 60 * 10 * attempt,
+        runtime = lambda wildcards, attempt: 60 * 48 * attempt,
         partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.smooth_value}"),
         tmp= lambda wildcards: "%soptomize_smooth%s/"%(tmpFolder,f"{wildcards.smooth_value}")
     log: outputFolder+"smooth_{smooth_value}/optimize_stage3.log"
@@ -996,10 +994,11 @@ rule optimizeAnnotationColumns_4:
         echo {input.columns} |tr -s ' ' $'\n'  \
          | /mnt/gs21/scratch/mansourt/TheGreatGenotyper/build/metagraph transform_anno  \
             --anno-type row_diff_int_brwt \
-            --greedy --fast --subsample 1000000 \
+            --greedy --subsample 100000 \
+            --disk-swap {tmpFolder}$$ \
             -i {input.graph} \
             -o {params.outputPrefix} \
-            -p {threads} --parallel-nodes 10  &>> {log}
+            -p {threads} --parallel-nodes 5  &>> {log}
 	echo "transform to brwt  finished" >> {log}
 	"""
 
@@ -1015,11 +1014,11 @@ rule optimizeAnnotationColumns_relax:
         "../../environment.yml"
     threads: 16
     resources:
-        mem_mb=64 * 1024,
+        mem_mb=720 * 1024,
         cores=32,
-        mem_gb=64,
+        mem_gb=710,
 	    nodes = 1,
-        runtime = lambda wildcards, attempt: 60 * 10 * attempt,
+        runtime = lambda wildcards, attempt: 60 * 24 * attempt,
         partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.smooth_value}"),
         tmp= lambda wildcards: "%soptomize_smooth%s/"%(tmpFolder,f"{wildcards.smooth_value}")
     log: outputFolder+"smooth_{smooth_value}/optimize_relax.log"
