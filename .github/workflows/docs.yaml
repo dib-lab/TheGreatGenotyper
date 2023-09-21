@@ -1,0 +1,24 @@
+name: mkdocs
+on:
+  push:
+    branches:
+      - main
+      - gh-pages
+permissions:
+  contents: write
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.x
+      - uses: actions/cache@v2
+        with:
+          key: ${{ github.ref }}
+          path: .cache
+      - run: pip install mkdocs mkdocs-material mkdocs-simple-blog mkdocs-jupyter mkdocs-glightbox 
+      - run: mkdocs gh-deploy --config-file mkdocs.yml --force
