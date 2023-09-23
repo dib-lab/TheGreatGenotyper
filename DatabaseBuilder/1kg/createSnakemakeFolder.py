@@ -93,7 +93,7 @@ def main():
             url= "remote_UCDavis_GoogleDr:projects/SV/results/" + file_path
             destination = os.path.join(output_folder, "results/inputs/", filename)
             command = f"rclone -v --copy-links copy {url} {destination}"
-            command = f"touch {destination}"
+    #        command = f"touch {destination}"
             print(command)
             relative_path = os.path.join("results/inputs/", filename)
             subsample_table[sample].append(relative_path)
