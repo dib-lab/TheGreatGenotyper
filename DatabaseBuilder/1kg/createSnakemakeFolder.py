@@ -33,8 +33,8 @@ def copy_config_files(base_path):
     shutil.copy("coverage.tsv", os.path.join(base_path, "coverage.tsv"))
     shutil.copy("Snakefile.build_3.smk", os.path.join(base_path, "Snakefile"))
     with open(os.path.join(base_path, "config.yaml"), 'w') as f:
-        outPath= os.path.join(base_path, "results/")
-        tmpPath= os.path.join(base_path, "scratch/")
+        outPath= os.path.join( "results/")
+        tmpPath= os.path.join( "scratch/")
         f.write(f"outputFolder: {outPath}\n")
         f.write(f"tempFolder: {tmpPath}\n")
         f.write(f"kSize: 31\n")
