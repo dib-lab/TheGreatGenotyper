@@ -250,14 +250,14 @@ rule smooth_unitigs_fasta:
          counts= outputFolder+"unitigs/smooth_10000000/{sample}.kmer_counts.gz",	 
     params:
          outputPrefix= outputFolder+"unitigs/smooth_10000000/{sample}"
-    conda:
-         "env.yaml"
+#    conda:
+#         "env.yaml"
     threads: 1
     priority: 1
     resources:
-        mem_mb=2 *1024,
+        mem_mb=8 *1024,
         cores=1,
-        mem_gb=2,
+        mem_gb=8,
 	    nodes = 1,
         runtime = lambda wildcards, attempt: 60 * 1 * attempt,
 #        partition = lambda wildcards , attempt: getLowPartition(f"{wildcards.sample}", attempt),
@@ -265,8 +265,8 @@ rule smooth_unitigs_fasta:
 	    tmp= lambda wildcards: "%sgraph_%s/"%(tmpFolder,f"{wildcards.sample}")
     log: outputFolder+"unitigs/smooth_10000000/{sample}.log"
     shell:
-       	"""	    
-	    /mnt/gs21/scratch/mansourt/TheGreatGenotyper/build/metagraph smoothCounts \
+       	"""
+	  /mnt/gs21/scratch/mansourt/TheGreatGenotyper/build_noName/metagraph smoothCounts \
           -k {kSize}  \
           -o {params.outputPrefix} \
           {input.unitigs} &> {log}
@@ -287,17 +287,17 @@ rule metagraph_buildSmoothMainGraph_1:
         cores=16,
         mem_gb= 60,
 	    nodes = 1,
-        runtime = lambda wildcards, attempt: 60 * 12 * attempt,
+        runtime = lambda wildcards, attempt: 60 * 6 * attempt,
         partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.cluster}"),
         tmp= lambda wildcards: "%smaingraph_smooth%s/"%(tmpFolder,f"{wildcards.cluster}")
     log: outputFolder+"{cluster}/buildMainGraphlog"
     shell:
        	"""
-	    mamba create -p ./metagraph.$$ -c bioconda -c conda-forge metagraph
-        source ~/miniconda3/etc/profile.d/conda.sh && conda activate ./metagraph.$$ 
+	#    mamba create -p ./metagraph.$$ -c bioconda -c conda-forge metagraph
+        #source ~/miniconda3/etc/profile.d/conda.sh && conda activate ./metagraph.$$ 
 
         mkdir  -p {tmpFolder}$$/
-        metagraph build  \
+        /mnt/gs21/scratch/mansourt/TheGreatGenotyper/build_noName/metagraph build  \
         -k {kSize} \
         --mode canonical  \
         --mem-cap-gb {resources.mem_gb} \
@@ -329,12 +329,10 @@ rule metagraph_buildSmoothMainGraph_2:
     log: outputFolder+"{cluster}/buildMainGraphlog"
     shell:
        	"""
-        mamba create -p ./metagraph.$$ -c bioconda -c conda-forge metagraph
-        source ~/miniconda3/etc/profile.d/conda.sh && conda activate ./metagraph.$$ 
+        #mamba create -p ./metagraph.$$ -c bioconda -c conda-forge metagraph
+        #source ~/miniconda3/etc/profile.d/conda.sh && conda activate ./metagraph.$$ 
 
-
-
-        metagraph transform  \
+        /mnt/gs21/scratch/mansourt/TheGreatGenotyper/build_noName/metagraph transform  \
             --to-fasta --primary-kmers \
 	        -p {threads} \
             -o  {params.outputPrefix} \
@@ -364,11 +362,11 @@ rule metagraph_buildSmoothMainGraph_3:
     shell:
        	"""
 
-	    mamba create -p ./metagraph.$$ -c bioconda -c conda-forge metagraph
-        source ~/miniconda3/etc/profile.d/conda.sh && conda activate ./metagraph.$$ 
+	#    mamba create -p ./metagraph.$$ -c bioconda -c conda-forge metagraph
+        #source ~/miniconda3/etc/profile.d/conda.sh && conda activate ./metagraph.$$ 
 
         mkdir  -p {tmpFolder}$$/
-        metagraph build  \
+        /mnt/gs21/scratch/mansourt/TheGreatGenotyper/build_noName/metagraph build  \
             -k {kSize} \
             --mode primary \
             --mem-cap-gb {resources.mem_gb} \
@@ -416,7 +414,7 @@ rule createAnnotationColumns:
     #     cmake --build build.$$ -j{threads}
     #     cd ${{currDir}}
 
-	/mnt/gs21/scratch/mansourt/TheGreatGenotyper/build/metagraph annotate  \
+	/mnt/gs21/scratch/mansourt/TheGreatGenotyper/build_noName/metagraph annotate  \
                 -i {input.graph} \
                 --anno-filename \
                 --separately \
@@ -487,7 +485,7 @@ rule optimizeAnnotationColumns_1:
 	mkdir  -p {tmpFolder}$$/
 	# mkdir -p {params.rowDiffPrefix}
 
-	/mnt/gs21/scratch/mansourt/TheGreatGenotyper/build/metagraph transform_anno  \
+	/mnt/gs21/scratch/mansourt/TheGreatGenotyper/build_noName/metagraph transform_anno  \
             --anno-type row_diff --count-kmers \
             --row-diff-stage 0 \
             --mem-cap-gb {resources.mem_gb} \
@@ -522,7 +520,7 @@ rule optimizeAnnotationColumns_2:
         cores= 16,
         mem_gb=62,
 	    nodes = 1,
-        runtime = lambda wildcards, attempt: 60 * 10 * attempt,
+        runtime = lambda wildcards, attempt: 60 * 8 * attempt,
         partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.cluster}"),
         tmp= lambda wildcards: "%soptomize_smooth%s/"%(tmpFolder,f"{wildcards.cluster}")
     log: outputFolder+"{cluster}/optimize_stage1.log"
@@ -538,7 +536,7 @@ rule optimizeAnnotationColumns_2:
     #     cd ${{currDir}}
 
 
-	/mnt/gs21/scratch/mansourt/TheGreatGenotyper/build/metagraph transform_anno  \
+	/mnt/gs21/scratch/mansourt/TheGreatGenotyper/build_noName/metagraph transform_anno  \
             --anno-type row_diff --count-kmers \
             --row-diff-stage 1 \
             --mem-cap-gb {resources.mem_gb} \
@@ -570,7 +568,7 @@ rule optimizeAnnotationColumns_3:
         cores=16,
         mem_gb=62,
 	    nodes = 1,
-        runtime = lambda wildcards, attempt: 60 * 12 * attempt,
+        runtime = lambda wildcards, attempt: 60 * 8 * attempt,
         partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.cluster}"),
         tmp= lambda wildcards: "%soptomize_smooth%s/"%(tmpFolder,f"{wildcards.cluster}")
     log: outputFolder+"{cluster}/optimize_stage2.log"
@@ -586,7 +584,7 @@ rule optimizeAnnotationColumns_3:
     #     cd ${{currDir}}
 
    
-    /mnt/gs21/scratch/mansourt/TheGreatGenotyper/build/metagraph transform_anno  \
+    /mnt/gs21/scratch/mansourt/TheGreatGenotyper/build_noName/metagraph transform_anno  \
             --anno-type row_diff --count-kmers \
             --row-diff-stage 2 \
             --mem-cap-gb {resources.mem_gb} \
@@ -609,8 +607,8 @@ rule prepareRowDiffs:
     output:
          columns=allRowDiff,
          columnsCounts=allRowDiffCounts
-    conda:
-        "env.yaml"
+#    conda:
+#        "env.yaml"
     threads: 1
     resources:
         mem_mb=2048,cores=1,mem_gb=2
@@ -618,6 +616,7 @@ rule prepareRowDiffs:
        	"""
         ls {input.flags} |sed -e 's/rowDiff_tmp\/done/rowDiff_tmp\//' > input.$$
         ls {input.flags} |sed -e 's/rowDiff_tmp\/done/rowDiff\//' > output.$$
+        cat output.$$ | xargs mkdir -p
 	    paste input.$$ output.$$ | parallel --col-sep $"\t" --gnu -j1 "mv {{1}}/* {{2}}"
 	
     	"""
@@ -638,8 +637,8 @@ rule optimizeAnnotationColumns_4:
 	 outputFolder  = outputFolder + "{cluster}/"
     wildcard_constraints:
         cluster= "[^/]*"
-    conda:
-        "env.yaml"
+#    conda:
+#        "env.yaml"
     threads: 16
     resources:
         mem_mb=64 * 1024,
@@ -662,7 +661,7 @@ rule optimizeAnnotationColumns_4:
 
 
         echo {input.columns} |tr -s ' ' $'\n'  \
-         | /mnt/gs21/scratch/mansourt/TheGreatGenotyper/build/metagraph transform_anno  \
+         | /mnt/gs21/scratch/mansourt/TheGreatGenotyper/build_noName/metagraph transform_anno  \
             --anno-type row_diff_int_brwt \
             --greedy --fast --subsample 1000000  \
             -i {input.graph} \
@@ -681,15 +680,15 @@ rule optimizeAnnotationColumns_relax:
         outputPrefix  = outputFolder + "{cluster}/annotation"
     wildcard_constraints:
         cluster= "[^/]*"
-    conda:
-        "env.yaml"
+#    conda:
+#        "env.yaml"
     threads: 16
     resources:
         mem_mb=64 * 1024,
         cores=16,
         mem_gb=62,
 	    nodes = 1,
-        runtime = lambda wildcards, attempt: 60 * 10 * attempt,
+        runtime = lambda wildcards, attempt: 8 * 10 * attempt,
         partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.cluster}"),
         tmp= lambda wildcards: "%soptomize_smooth%s/"%(tmpFolder,f"{wildcards.cluster}")
     log: outputFolder+"{cluster}/optimize_relax.log"
@@ -704,7 +703,7 @@ rule optimizeAnnotationColumns_relax:
         # cd ${{currDir}}
 
 
-        /mnt/gs21/scratch/mansourt/TheGreatGenotyper/build/metagraph relax_brwt  \
+        /mnt/gs21/scratch/mansourt/TheGreatGenotyper/build_noName/metagraph relax_brwt  \
             -p {threads} \
             --relax-arity 32 \
             -o {params.outputPrefix}.relaxed \
