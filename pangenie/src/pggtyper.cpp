@@ -436,6 +436,7 @@ int main (int argc, char* argv[])
     else if(emissionsSaveFilePrefix == "" && emissionsLoadFilePrefix != "")
     {
         cerr << "Loading emissions  " << endl;
+        databases[0]->delete_graph();
         variant_reader.loadVariantStat(emissionsLoadFilePrefix+".variantsStat");
         for(unsigned i=0; i< databases.size(); i++)
         {
