@@ -147,18 +147,15 @@ int main (int argc, char* argv[])
     string descriptionFile= "";
     string reffile = "";
     string vcffile = "";
-    string transitionsLoadFilePrefix = "";
-    string transitionsSaveFilePrefix = "";
+
     string emissionsLoadFilePrefix = "";
     string emissionsSaveFilePrefix = "";
-    string emissionsPrefix = "";
     size_t kmersize = 31;
     bool emissionOnly=false;
     string outname = "result";
     string sample_name = "sample";
     size_t nr_jellyfish_threads = 1;
     size_t nr_core_threads = 1;
-    bool population_transitions = false;
     bool only_genotyping = true;
     bool only_phasing = false;
     long double effective_N = 0.00001L;
@@ -188,10 +185,7 @@ int main (int argc, char* argv[])
 //	argument_parser.add_optional_argument('s', "sample", "name of the sample (will be used in the output VCFs)");
     argument_parser.add_optional_argument('j', "1", "number of threads to use for kmer-counting");
     argument_parser.add_optional_argument('t', "1", "number of threads to use for core algorithm. Largest number of threads possible is the number of chromosomes given in the VCF");
-    argument_parser.add_flag_argument('q', "use population transitions instead of LiStephens");
     argument_parser.add_flag_argument('a', "Genotype using kmers only");
-    argument_parser.add_optional_argument('m', "", "Load the tranistions from this file");
-    argument_parser.add_optional_argument('n', "", "compute the tranistions and save them to this file");
 
     argument_parser.add_optional_argument('x', "", "Load the emissions from this file");
     argument_parser.add_optional_argument('y', "", "compute the emissions and save them to this file");
@@ -258,12 +252,18 @@ int main (int argc, char* argv[])
     istringstream iss(argument_parser.get_argument('e'));
     iss >> hash_size;
 
-    population_transitions = argument_parser.get_flag('q');
-    transitionsLoadFilePrefix= argument_parser.get_argument('m');
-    transitionsSaveFilePrefix= argument_parser.get_argument('n');
 
     emissionsLoadFilePrefix= argument_parser.get_argument('x');
     emissionsSaveFilePrefix= argument_parser.get_argument('y');
+
+    if((emissionsLoadFilePrefix == "" && emissionsSaveFilePrefix == "") ||
+       (emissionsLoadFilePrefix != "" && emissionsSaveFilePrefix != "") )
+    {
+        cerr<< "You need to specify a path for writing emissions to or loading emissions from. One of either -x or -y is required."<<endl;
+        cerr<<"emissionsLoadFilePrefix(-x): "<<emissionsLoadFilePrefix<<endl;
+        cerr<<"emissionsSaveFilePrefix(-y): "<<emissionsSaveFilePrefix<<endl;
+        return -1;
+    }
 
     // print info
     cerr << "Files and parameters used:" << endl;
@@ -402,55 +402,60 @@ int main (int argc, char* argv[])
         allEmissions[chrom]=vector<EmissionProbabilities*>();
     }
     struct rusage r_usage3;
-    cerr << "Calculate emissions  " << endl;
+
     if(emissionsSaveFilePrefix != "" && emissionsLoadFilePrefix== "")
     {
-        emissionsPrefix=emissionsSaveFilePrefix;
-    }
-    else if(emissionsSaveFilePrefix == "" && emissionsLoadFilePrefix != "")
-    {
-        emissionsPrefix=emissionsLoadFilePrefix;
-    }
-    else{
-        cerr<<"Exactly one of emissionsLoadFilePrefix and emissionsSaveFilePrefix has to be defined"<<endl;
-        cerr<<"emissionsLoadFilePrefix(-x): "<<emissionsLoadFilePrefix<<endl;
-        cerr<<"emissionsSaveFilePrefix(-y): "<<emissionsSaveFilePrefix<<endl;
-        return -1;
-    }
-
-
-    for(unsigned i=0; i< databases.size(); i++)
-    {
-        cerr<< "Loading Database "<<i<<endl;
-        if(i!=0)
-            databases[i]->load_graph();
-        for(auto chrom : chromosomes)
+        cerr << "Calculate emissions  " << endl;
+        for(unsigned i=0; i< databases.size(); i++)
         {
-            cerr << "Calculating emissions for chromosome: "<< chrom << endl;
-            EmissionProbabilities* emissions=new EmissionProbabilities(databases[i],variant_reader.size_of(chrom));
-            timer.get_interval_time();
-            if(emissionsSaveFilePrefix != "") {
+            cerr<< "Loading Database "<<i<<endl;
+            if(i!=0)
+                databases[i]->load_graph();
+            for(auto chrom : chromosomes)
+            {
+                cerr << "Calculating emissions for chromosome: "<< chrom << endl;
+                EmissionProbabilities* emissions=new EmissionProbabilities(databases[i],variant_reader.size_of(chrom));
+                timer.get_interval_time();
                 unique_kmers_list.unique_kmers[chrom]->compute_emissions(databases[i], emissions);
                 string filename=emissionsSaveFilePrefix+"."+chrom+ "."+to_string(i);
                 emissions->save(filename);
                 emissions->destroy();
-            }
-            allEmissions[chrom].push_back(emissions);
-            time_unique_kmers += timer.get_interval_time();
-            cerr<< "Finished Calculating emissions for chromosome: "<< chrom << endl;
 
-            getrusage(RUSAGE_SELF, &r_usage3);
-            cerr << "#### Memory usage until now: " << (r_usage3.ru_maxrss / 1E6) << " GB ####" << endl;
+                allEmissions[chrom].push_back(emissions);
+                time_unique_kmers += timer.get_interval_time();
+                cerr<< "Finished Calculating emissions for chromosome: "<< chrom << endl;
+
+                getrusage(RUSAGE_SELF, &r_usage3);
+                cerr << "#### Memory usage until now: " << (r_usage3.ru_maxrss / 1E6) << " GB ####" << endl;
+            }
+            databases[i]->delete_graph();
         }
-        databases[i]->delete_graph();
+        variant_reader.saveVariantStat(emissionsSaveFilePrefix+".variantsStat");
+        emissionsLoadFilePrefix= emissionsSaveFilePrefix;
     }
+    else if(emissionsSaveFilePrefix == "" && emissionsLoadFilePrefix != "")
+    {
+        cerr << "Loading emissions  " << endl;
+        variant_reader.loadVariantStat(emissionsLoadFilePrefix+".variantsStat");
+        for(unsigned i=0; i< databases.size(); i++)
+        {
+            for(auto chrom : chromosomes)
+            {
+                EmissionProbabilities* emissions=new EmissionProbabilities(databases[i],variant_reader.size_of(chrom));
+                allEmissions[chrom].push_back(emissions);
+            }
+        }
+    }
+
+
+
     cerr <<"Finished computing emissions"<<endl;
 
     if(emissionOnly) {
         for (auto chrom: chromosomes) {
             map<string, vector<GenotypingResult>> res;
             for (unsigned i = 0; i < databases.size(); i++) {
-                string filename=emissionsSaveFilePrefix+"."+chrom+ "."+to_string(i);
+                string filename=emissionsLoadFilePrefix+"."+chrom+ "."+to_string(i);
                 allEmissions[chrom][i]->load(filename);
                 allEmissions[chrom][i]->compute_most_likely_genotypes(&unique_kmers_list.unique_kmers[chrom]->uniqKmers);
                 for (unsigned sampleID = 0; sampleID < databases[i]->getNumSamples(); sampleID++) {
@@ -481,39 +486,12 @@ int main (int argc, char* argv[])
     {
         for(unsigned i=0; i< databases.size(); i++)
         {
-            string filename=emissionsSaveFilePrefix+"."+chrom+ "."+to_string(i);
+            string filename=emissionsLoadFilePrefix+"."+chrom+ "."+to_string(i);
             allEmissions[chrom][i]->load(filename);
         }
-        TransitionProbability* transitions;
-        if(transitionsLoadFilePrefix != "")
-        {
-            cerr<<"Loading tranitions from "<<transitionsLoadFilePrefix+"."+chrom<<endl;
-            transitions = new LiStephens(&variant_reader,chrom,1.26,effective_N);
-//            vector<EmissionProbabilities*> tmp_emissions(4);
-//            for(unsigned i=0;i <4 ;i++)
-//            {
-//                tmp_emissions[i]=new EmissionProbabilities();
-//                string path=transitionsLoadFilePrefix +"."+chrom+"."+to_string(i);
-//                tmp_emissions[i]->load(path);
-//                tmp_emissions[i]->compute_most_likely_genotypes(&unique_kmers_list.unique_kmers[chrom]->uniqKmers);
-//            }
-//            transitions= new populationJointProbability(&variant_reader,chrom,tmp_emissions,&unique_kmers_list.unique_kmers[chrom]->uniqKmers);
+        TransitionProbability* transitions =new LiStephens(&variant_reader,chrom,1.26,effective_N);
 
-//            for(unsigned i=0;i <4 ;i++)
-//            {
-//                delete tmp_emissions[i];
-//            }
-        }
-        else {
-            cerr<< "Calculating Transition probabilities for "<<chrom<<endl;
-           // transitions= new populationJointProbability(&variant_reader,chrom,allEmissions[chrom],&(unique_kmers_list.unique_kmers[chrom]->uniqKmers));
-            transitions= new LiStephens(&variant_reader,chrom,1.26,effective_N);
-        }
-        if(transitionsSaveFilePrefix != "")
-        {
-            cerr<< "Saving Transition probabilities to "<<transitionsSaveFilePrefix+"."+chrom<<endl;
-            transitions->save(transitionsSaveFilePrefix+"."+chrom);
-        }
+
         getrusage(RUSAGE_SELF, &r_usage3);
         cerr << "#### Memory usage until now: " << (r_usage3.ru_maxrss / 1E6) << " GB ####" << endl;
 

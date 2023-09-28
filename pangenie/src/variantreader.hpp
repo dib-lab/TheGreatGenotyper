@@ -61,6 +61,8 @@ public:
 	void get_right_overhang(std::string chromosome, size_t index, size_t length, DnaSequence& result) const;
     void setSampleName(std::string sampleName);
     void addVariantStat(unsigned int variantID, std::string sampleName,std::string chromosome,std::vector<unsigned char>& defined_alleles ,std::vector<VariantStats> & stat);
+    void saveVariantStat(std::string outputFile);
+    void loadVariantStat(std::string inputFile);
 private:
 	FastaReader fasta_reader;
 	size_t kmer_size;

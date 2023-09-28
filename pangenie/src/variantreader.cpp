@@ -5,6 +5,10 @@
 #include <regex>
 #include <algorithm>
 #include "variantreader.hpp"
+#include <fstream>
+#include <map>
+#include <vector>
+#include <string>
 
 
 using namespace std;
@@ -586,6 +590,7 @@ void VariantReader::write_genotypes_of(string chromosome,  std::map<std::string,
 			}
             size_t nr_missing = v.nr_missing_alleles();
             info << ";MA=" << nr_missing;
+
             // if IDs were given in input, write them to output as well
             if (!this->variant_ids[v.get_chromosome()][counter].empty()) info << ";ID=" << get_ids(v.get_chromosome(), alt_alleles, counter, false);
             genotyping_outfile << info.str() << "\t"; // INFO
@@ -834,4 +839,74 @@ void VariantReader::setSampleName(std::string sampleName)
 {
   samples.clear();
   samples.push_back(sampleName);
+}
+
+void VariantReader::loadVariantStat(std::string inputFile) {
+    std::ifstream file(inputFile, std::ios::binary);
+    if (!file) {
+        std::cerr << "Unable to open file for reading: " << inputFile << std::endl;
+        return;
+    }
+
+    // Read the size of the map
+    std::size_t mapSize;
+    file.read(reinterpret_cast<char *>(&mapSize), sizeof(mapSize));
+
+    variantsStatsPerSample.clear();
+    for (std::size_t i = 0; i < mapSize; ++i) {
+        // Read the string key
+        std::size_t strSize;
+        file.read(reinterpret_cast<char *>(&strSize), sizeof(strSize));
+
+        std::string key(strSize, '\0');
+        file.read(&key[0], strSize);
+        // Read the size of the outer vector
+        std::size_t outerVecSize;
+        file.read(reinterpret_cast<char *>(&outerVecSize), sizeof(outerVecSize));
+        std::vector<std::vector<unsigned short>> outerVec(outerVecSize);
+        for (auto &innerVec: outerVec) {
+            // Read the size and elements of each inner vector
+            std::size_t innerVecSize;
+            file.read(reinterpret_cast<char *>(&innerVecSize), sizeof(innerVecSize));
+            innerVec.resize(innerVecSize);
+            file.read(reinterpret_cast<char *>(innerVec.data()), innerVecSize * sizeof(unsigned short));
+        }
+
+        variantsStatsPerSample.emplace(key, std::move(outerVec));
+    }
+
+
+
+}
+
+void VariantReader::saveVariantStat(std::string outputFile) {
+    std::ofstream file(outputFile, std::ios::binary);
+    if (!file) {
+        std::cerr << "Unable to open file for writing: " << outputFile << std::endl;
+        return;
+    }
+
+    // Write the size of the map
+    std::size_t mapSize = variantsStatsPerSample.size();
+    file.write(reinterpret_cast<const char *>(&mapSize), sizeof(mapSize));
+
+    for (const auto &entry: variantsStatsPerSample) {
+        // Write the string key
+        std::size_t strSize = entry.first.size();
+        file.write(reinterpret_cast<const char *>(&strSize), sizeof(strSize));
+        file.write(entry.first.c_str(), strSize);
+
+        // Write the size of the outer vector
+        std::size_t outerVecSize = entry.second.size();
+        file.write(reinterpret_cast<const char *>(&outerVecSize), sizeof(outerVecSize));
+
+        for (const auto &innerVec: entry.second) {
+            // Write the size and elements of each inner vector
+            std::size_t innerVecSize = innerVec.size();
+            file.write(reinterpret_cast<const char *>(&innerVecSize), sizeof(innerVecSize));
+            file.write(reinterpret_cast<const char *>(innerVec.data()), innerVecSize * sizeof(unsigned short));
+        }
+    }
+
+
 }
