@@ -91,7 +91,7 @@ def main():
             sample_name = filename.split(".")[0]
             extension = filename[len(sample_name):]
             url= "remote_UCDavis_GoogleDr:projects/SV/results/" + file_path
-            destination = os.path.join(output_folder, "results/inputs/", filename)
+            destination = os.path.join(output_folder, "results/inputs/")
             command = f"rclone -v --copy-links copy {url} {destination}"
     #        command = f"touch {destination}"
             print(command)
