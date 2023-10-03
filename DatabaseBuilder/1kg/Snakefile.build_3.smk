@@ -473,7 +473,7 @@ rule optimizeAnnotationColumns_1:
         cores=32,
         mem_gb= 30,
 	    nodes = 1,
-        runtime = lambda wildcards, attempt: 60 * 4 * attempt,
+        runtime = lambda wildcards, attempt: 60 * 24 * attempt,
         partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.cluster}"),
         tmp= lambda wildcards: "%soptomize_smooth%s/"%(tmpFolder,f"{wildcards.cluster}")
     log: outputFolder+"{cluster}/optimize_stage0.log"
@@ -520,7 +520,7 @@ rule optimizeAnnotationColumns_2:
         cores= 16,
         mem_gb=62,
 	    nodes = 1,
-        runtime = lambda wildcards, attempt: 60 * 8 * attempt,
+        runtime = lambda wildcards, attempt: 60 * 24 * attempt,
         partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.cluster}"),
         tmp= lambda wildcards: "%soptomize_smooth%s/"%(tmpFolder,f"{wildcards.cluster}")
     log: outputFolder+"{cluster}/optimize_stage1.log"
@@ -568,7 +568,7 @@ rule optimizeAnnotationColumns_3:
         cores=16,
         mem_gb=62,
 	    nodes = 1,
-        runtime = lambda wildcards, attempt: 60 * 8 * attempt,
+        runtime = lambda wildcards, attempt: 60 * 24 * attempt,
         partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.cluster}"),
         tmp= lambda wildcards: "%soptomize_smooth%s/"%(tmpFolder,f"{wildcards.cluster}")
     log: outputFolder+"{cluster}/optimize_stage2.log"
@@ -607,8 +607,8 @@ rule prepareRowDiffs:
     output:
          columns=allRowDiff,
          columnsCounts=allRowDiffCounts
-#    conda:
-#        "env.yaml"
+    conda:
+        "env.yaml"
     threads: 1
     resources:
         mem_mb=2048,cores=1,mem_gb=2
@@ -616,7 +616,6 @@ rule prepareRowDiffs:
        	"""
         ls {input.flags} |sed -e 's/rowDiff_tmp\/done/rowDiff_tmp\//' > input.$$
         ls {input.flags} |sed -e 's/rowDiff_tmp\/done/rowDiff\//' > output.$$
-        cat output.$$ | xargs mkdir -p
 	    paste input.$$ output.$$ | parallel --col-sep $"\t" --gnu -j1 "mv {{1}}/* {{2}}"
 	
     	"""
@@ -641,11 +640,11 @@ rule optimizeAnnotationColumns_4:
 #        "env.yaml"
     threads: 16
     resources:
-        mem_mb=64 * 1024,
+        mem_mb=256 * 1024,
         cores=32,
         mem_gb=62,
 	nodes = 1,
-        runtime = lambda wildcards, attempt: 60 * 10 * attempt,
+        runtime = lambda wildcards, attempt: 60 * 8 * attempt,
         partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.cluster}"),
         tmp= lambda wildcards: "%soptomize_smooth%s/"%(tmpFolder,f"{wildcards.cluster}")
     log: outputFolder+"{cluster}/optimize_stage3.log"
@@ -688,7 +687,7 @@ rule optimizeAnnotationColumns_relax:
         cores=16,
         mem_gb=62,
 	    nodes = 1,
-        runtime = lambda wildcards, attempt: 8 * 10 * attempt,
+        runtime = lambda wildcards, attempt: 60 * 4 * attempt,
         partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.cluster}"),
         tmp= lambda wildcards: "%soptomize_smooth%s/"%(tmpFolder,f"{wildcards.cluster}")
     log: outputFolder+"{cluster}/optimize_relax.log"
