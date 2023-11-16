@@ -121,7 +121,7 @@ void UniqueKmerComputer::compute_unique_kmers() {
 
 }
 
-void UniqueKmerComputer::compute_emissions(SamplesDatabase* database, EmissionProbabilities* result){
+void UniqueKmerComputer::compute_emissions(SamplesDatabase* database, EmissionProbabilities* result, bool keepStatistics){
     size_t nr_variants = this->variants->size_of(this->chromosome);
     uint32_t numSamples=database->getNumSamples();
     vector<double> localCoverage(numSamples);
@@ -193,9 +193,11 @@ void UniqueKmerComputer::compute_emissions(SamplesDatabase* database, EmissionPr
             }
             vector<Variant> singleton_variants;
             variant.separate_variants(&singleton_variants);
-            vector<VariantStats> singleton_stats;
-            variant.variant_statistics(sampleU, singleton_stats);
-            variants->addVariantStat(v, sampleName,this->chromosome, defined_alleles,singleton_stats);
+            if(keepStatistics) {
+                vector<VariantStats> singleton_stats;
+                variant.variant_statistics(sampleU, singleton_stats);
+                variants->addVariantStat(v, sampleName, this->chromosome, defined_alleles, singleton_stats);
+            }
             result->compute(sampleU,v,sampleID);
             delete sampleU;
         }

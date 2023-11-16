@@ -430,7 +430,7 @@ int main (int argc, char* argv[])
             EmissionProbabilities* emissions=new EmissionProbabilities(databases[i],variant_reader.size_of(chrom));
             timer.get_interval_time();
             if(emissionsSaveFilePrefix != "") {
-                unique_kmers_list.unique_kmers[chrom]->compute_emissions(databases[i], emissions);
+                unique_kmers_list.unique_kmers[chrom]->compute_emissions(databases[i], emissions,extraInfo);
                 string filename=emissionsSaveFilePrefix+"."+chrom+ "."+to_string(i);
                 emissions->save(filename);
                 emissions->destroy();
@@ -461,12 +461,11 @@ int main (int argc, char* argv[])
             }
 
             delete unique_kmers_list.unique_kmers[chrom];
-            bool ignore_imputed=true;
+        //    bool ignore_imputed=true;
             variant_reader.write_genotypes_of(
                     chrom, res,
                     populationFilter,
-                    extraInfo,
-                    ignore_imputed);
+                    extraInfo);
             cerr<<"Finished writing "<<chrom <<endl;
         }
         time_total = timer.get_total_time();
@@ -558,8 +557,7 @@ int main (int argc, char* argv[])
         variant_reader.write_genotypes_of(
                 chrom, results.result[chrom],
                 populationFilter,
-                extraInfo,
-                ignore_imputed);
+                extraInfo);
 
         results.result[chrom].clear();
         for(auto uniq: unique_kmers_list.unique_kmers[chrom]->uniqKmers) {

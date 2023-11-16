@@ -22,7 +22,7 @@ public:
 	UniqueKmerComputer (KmerCounter* genomic_kmers, VariantReader* variants, std::string chromosome);
 	/** generates UniqueKmers object for each position, ownership of vector is transferred to the caller. **/
 	void compute_unique_kmers();
-    void compute_emissions(SamplesDatabase* database, EmissionProbabilities* emissions);
+    void compute_emissions(SamplesDatabase* database, EmissionProbabilities* emissions, bool keepStatistics);
 	/** generates empty UniwueKmers objects for each position (no kmers, only paths). Ownership of vector is transferred to caller. **/
 	void compute_empty(std::vector<UniqueKmers*>* result) const;
     std::vector<UniqueKmers*> uniqKmers;

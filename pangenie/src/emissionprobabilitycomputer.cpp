@@ -113,7 +113,10 @@ void EmissionProbabilities::compute(UniqueKmers* uniq,unsigned variantID,unsigne
             bool a2_is_undefined = uniq->is_undefined_allele(a2);
             unsigned index=((int)a1*(int)max_allele) - (((int)a1-1)*(int)a1)/2 + ((int)a2-(int)a1);
             index+=(sampleID*size);
-            this->state_to_prob[variantID][index] = compute_emission_probability(uniq,sampleID,a1, a2, a1_is_undefined, a2_is_undefined);
+            if(uniq->size() >0 )
+                this->state_to_prob[variantID][index] = compute_emission_probability(uniq,sampleID,a1, a2, a1_is_undefined, a2_is_undefined);
+            else
+                this->state_to_prob[variantID][index] = 0;
          //   cout<<(int)a1<<"/"<<(int)a2<<" : "<<this->state_to_prob[variantID][index]<<" , ";
             if (this->state_to_prob[variantID][index] > 0) this->all_zeros[variantID][sampleID] = false;
         }
@@ -147,7 +150,7 @@ void EmissionProbabilities::compute_most_likely_genotypes(std::vector<UniqueKmer
             long double prob=0.0L;
             if(this->all_zeros[variantID][sampleID])
             {
-                most_likely_gts[variantID][sampleID]={max_allele,max_allele};
+                most_likely_gts[variantID][sampleID]={-1,-1};
                 gts_qual[variantID][sampleID]=0;
                 continue;
             }
