@@ -43,7 +43,7 @@ UniqueKmerComputer::UniqueKmerComputer (KmerCounter* genomic_kmers,  VariantRead
 void UniqueKmerComputer::compute_unique_kmers() {
 	size_t nr_variants = this->variants->size_of(this->chromosome);
     uniqKmers.resize(nr_variants);
-#pragma omp parallel for shared(uniqKmers)
+#pragma omp parallel for shared(uniqKmers) schedule(dynamic,1)
     for (size_t v = 0; v < nr_variants; ++v) {
         // set parameters of distributions
         size_t kmer_size = this->variants->get_kmer_size();
@@ -127,7 +127,7 @@ void UniqueKmerComputer::compute_emissions(SamplesDatabase* database, EmissionPr
     vector<double> localCoverage(numSamples);
     vector<string> seqs;
     seqs.resize(100);
-#pragma omp parallel for shared(result,uniqKmers) firstprivate(localCoverage,numSamples,seqs)
+#pragma omp parallel for shared(result,uniqKmers) firstprivate(localCoverage,numSamples,seqs) schedule(dynamic,1)
     for (size_t v = 0; v < nr_variants; ++v) {
         // set parameters of distributions
         size_t kmer_size = this->variants->get_kmer_size();
