@@ -630,7 +630,9 @@ void VariantReader::write_genotypes_of(string chromosome,  std::map<std::string,
 
                 // determine computed genotype
                 pair<int, int> genotype = genotype_likelihoods.get_likeliest_genotype();
-                long double qual = genotype_likelihoods.get_genotype_quality(genotype.first, genotype.second);
+                long double qual = 0;
+                if ((genotype.first != -1) && (genotype.second != -1))
+                    qual = genotype_likelihoods.get_genotype_quality(genotype.first, genotype.second);
                 if(qual < minQual)
                     genotype = {-1, -1};
 
