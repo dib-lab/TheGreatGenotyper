@@ -150,8 +150,8 @@ void EmissionProbabilities::compute_most_likely_genotypes(std::vector<UniqueKmer
             long double prob=0.0L;
             if(this->all_zeros[variantID][sampleID])
             {
-                most_likely_gts[variantID][sampleID]={-1,-1};
-                gts_qual[variantID][sampleID]=0;
+              //  most_likely_gts[variantID][sampleID]={-1,-1};
+               // gts_qual[variantID][sampleID]=0;
 //result[sampleID][variantID].normalize();
                 continue;
             }
