@@ -148,12 +148,20 @@ void EmissionProbabilities::compute_most_likely_genotypes(std::vector<UniqueKmer
         for(unsigned sampleID=0; sampleID<nr_samples; sampleID++) {
             pair<unsigned char, unsigned char> most_likely_gt={-1,-1};
             long double prob=0.0L;
+            if(uniq->get_variant_position() == 166153)
+            {
+                cerr<<"Enter variant "<<int(this->all_zeros[variantID][sampleID]) <<endl;
+            }
             if(this->all_zeros[variantID][sampleID])
             {
               //  most_likely_gts[variantID][sampleID]={-1,-1};
                // gts_qual[variantID][sampleID]=0;
 //result[sampleID][variantID].normalize();
                 continue;
+            }
+            if(uniq->get_variant_position() == 166153)
+            {
+                cerr<<"Pass zero filter" <<endl;
             }
             long double prob_sum=0;
             for (unsigned i = 0; i < unique_alleles.size(); i++) {
