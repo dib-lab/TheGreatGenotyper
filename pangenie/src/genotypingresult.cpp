@@ -91,6 +91,7 @@ size_t GenotypingResult::get_genotype_quality (unsigned char allele1, unsigned c
 	}
 
 	if (sum>0 && abs(sum-1) > 0.0000000001 ) {
+        cerr<<"alleles: "<< int(allele1)<<" "<<int(allele2)<<endl;
         cerr<<"qualities ";
         for (const auto& l : this->genotype_to_likelihood) {
              cerr<<l.second<<" ";
