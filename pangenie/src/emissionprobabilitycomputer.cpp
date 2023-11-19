@@ -145,14 +145,11 @@ void EmissionProbabilities::compute_most_likely_genotypes(std::vector<UniqueKmer
 
         most_likely_gts[variantID] = std::vector<std::pair<unsigned char, unsigned char> >(nr_samples);
         gts_qual[variantID] = std::vector<long double>(nr_samples);
+        cerr<< uniq->get_variant_position()<<endl;
         for(unsigned sampleID=0; sampleID<nr_samples; sampleID++) {
             pair<unsigned char, unsigned char> most_likely_gt={-1,-1};
             long double prob=0.0L;
-            cout<< uniq->get_variant_position()<<endl;
-            if(uniq->get_variant_position() == 166153 || uniq->get_variant_position() == 166122)
-            {
-                cerr<<"Enter variant "<<int(this->all_zeros[variantID][sampleID]) <<endl;
-            }
+           
             if(this->all_zeros[variantID][sampleID])
             {
               //  most_likely_gts[variantID][sampleID]={-1,-1};
@@ -160,10 +157,7 @@ void EmissionProbabilities::compute_most_likely_genotypes(std::vector<UniqueKmer
 //result[sampleID][variantID].normalize();
                 continue;
             }
-            if(uniq->get_variant_position() == 166153)
-            {
-                cerr<<"Pass zero filter" <<endl;
-            }
+           
             long double prob_sum=0;
             for (unsigned i = 0; i < unique_alleles.size(); i++) {
                 for (unsigned j = i; j < unique_alleles.size(); j++) {
@@ -182,6 +176,7 @@ void EmissionProbabilities::compute_most_likely_genotypes(std::vector<UniqueKmer
                     }
                 }
             }
+            
             result[sampleID][variantID].normalize();
           //  cout<<result[sampleID][variantID]<<endl;
 

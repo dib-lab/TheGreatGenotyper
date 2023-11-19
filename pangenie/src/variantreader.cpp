@@ -607,14 +607,14 @@ void VariantReader::write_genotypes_of(string chromosome,  std::map<std::string,
                     size_t indexBase = stat_size * sample_index + (defined_alleles.size() + 2) * j;
                     // determine computed genotype
                     pair<int, int> genotype = genotype_likelihoods.get_likeliest_genotype();
-                    cerr<<"Enter"<<endl;
+                    //cerr<<"Enter"<<endl;
                     if ((genotype.first != -1) && (genotype.second != -1)) {
                         quals[sample_index] = genotype_likelihoods.get_genotype_quality(genotype.first,
                                                                                         genotype.second);
                     } else {
                         quals[sample_index] = 0;
                     }
-                    cerr<<"Exit"<<endl;
+                    //cerr<<"Exit"<<endl;
 
                 }
                 sort(quals.begin(), quals.end());
