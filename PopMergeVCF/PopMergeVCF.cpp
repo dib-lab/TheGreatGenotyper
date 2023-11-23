@@ -61,7 +61,7 @@ int main() {
             for(auto q:quals)
             {
                 sort(q.second.begin(),q.second.end());
-                quals_threshold[q.first] = q.second[q.second.size()/2];
+                quals_threshold[q.first] = q.second[q.second.size()/4];
             }
 
             for(unsigned i=0;i< samples_genotypes.size();i++)
