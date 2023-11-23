@@ -1,0 +1,9 @@
+INPUT_DIR: "/home/mshokrof/TheGreatGenotyper/pggb/split/sliced_10/"
+TEMP_FOLDER: "/scratch/mshokrof/"
+INPUT_REFERENCE: "/group/ctbrowngrp/mshokrof/GRCh38_full_analysis_set_plus_decoy_hla.fa"
+INPUT_INDEX: "tmp_index"
+BEAGLE: "/home/mshokrof/genotyping-experiments/SV_genotyping/beagle.22Jul22.46e.jar"
+BEAGLE_MAP: "/home/mshokrof/genotyping-experiments/SV_genotyping/plink.autsomal.map"
+OUTPUT_DIR: "/group/ctbrowngrp/mshokrof/pangenome_GG_GRCh38/"
+
+
