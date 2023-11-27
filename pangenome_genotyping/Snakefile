@@ -9,7 +9,7 @@ input_index = config["INPUT_INDEX"]
 beagle = config["BEAGLE"]
 beagleMap = config["BEAGLE_MAP"]
 OUTPUT_DIR = config["OUTPUT_DIR"]
-
+GG_BUILD_PATH = config["GG_BUILD_PATH"]
 
 
 # Get the list of all VCF files
@@ -18,7 +18,8 @@ vcf_files = glob.glob(os.path.join(INPUT_DIR, "slice_*.vcf"))
 # Get the list of chromosomes based on the input files
 CHROMOSOMES = list(set([os.path.basename(vcf).split("_")[0] for vcf in vcf_files]))
 #CHROMOSOMES = ['chr1', 'chr5', 'chr22']
-slices = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09']
+#slices = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09']
+slices = ['06', '07', '08', '09']
 print(CHROMOSOMES)
 
 rule all:
@@ -29,7 +30,7 @@ rule all:
 
 rule TheGreatGenotyper:
     input:
-        graphFolders      = "/home/mshokrof/genotyping-experiments/SV_genotyping/index_chunks_plus_test/chunk.{chunk}",    
+        graphFolders      = "/mnt/gs21/scratch/mansourt/pangenome/index_chunks/chunk.{chunk}",    
         ref        = input_reference,
         vcf        = INPUT_DIR + "slice_{slice}.vcf"
     output:
@@ -39,18 +40,19 @@ rule TheGreatGenotyper:
     threads: 64
     retries: 0
     resources:
-        mem_mb=400 * 1024,
-        cores=64,
+        mem_mb=280 * 1024,
+        #cores=64,
         nodes = 1,
         meduim=1,
-        runtime = 60 * 48,
+        runtime = 60 * 12,
         tmpdir= lambda wildcards: "%sgenotyper_%s_%s/"%(tempFolder,f"{wildcards.slice}",f"{wildcards.chunk}"),
-        partition =  "bmm",
+        #partition =  "bmm",
     shell:
         r"""
 	mkdir -p  {resources.tmpdir}
-	/home/mshokrof/TheGreatGenotyper/build6/pangenie/src/TheGreatGenotyper   -f -g  -i {input.graphFolders}  -j {threads} -t {threads} -r {input.ref}  -y  {resources.tmpdir}emissions -v {input.vcf} -o -  2> {log}  |  bgzip > {resources.tmpdir}/out.vcf.gz
+	{GG_BUILD_PATH}/pangenie/src/TheGreatGenotyper   -f -g  -i {input.graphFolders}  -j {threads} -t {threads} -r {input.ref}  -y  {resources.tmpdir}emissions -v {input.vcf} -o -  2> {log}  |  bgzip > {resources.tmpdir}/out.vcf.gz
 	cp {resources.tmpdir}/out.vcf.gz {output.merged_vcf} 
+        tabix -p vcf {output.merged_vcf}
 	rm -rf {resources.tmpdir}
 	"""
 
@@ -88,7 +90,7 @@ ruleorder: filltags > run_beagle
 
 rule merge_population_chunks:
     input:
-        population = expand("{out}genotyped/slice_{{slice}}_chunk_{chunk}.vcf.gz", out=OUTPUT_DIR  ,chunk= range(1,10)),
+        population = expand("{out}genotyped/slice_{{slice}}_chunk_{chunk}.vcf.gz", out=OUTPUT_DIR  ,chunk= range(0,29)),
     output:
         OUTPUT_DIR+"genotyped/slice_{slice}.vcf.gz" 
     log:
@@ -106,7 +108,7 @@ rule merge_population_chunks:
     shell:
         r"""
             mkdir -p {resources.tmp}
-            bcftools merge {input} | parallel -j {threads} --pipe --block 10m -k /home/mshokrof/TheGreatGenotyper/build6/PopMergeVCF/PopMergeVCF 2> {log} | bgzip > {resources.tmp}tmp.vcf.gz 
+            bcftools merge {input} | parallel -j {threads} --pipe --block 10m -k {GG_BUILD_PATH}/PopMergeVCF/PopMergeVCF 2> {log} | bgzip > {resources.tmp}tmp.vcf.gz 
             mv {resources.tmp}tmp.vcf.gz {output}
             rm -rf {resources.tmp}
 	    #
