@@ -265,6 +265,21 @@ int main (int argc, char* argv[])
     emissionsLoadFilePrefix= argument_parser.get_argument('x');
     emissionsSaveFilePrefix= argument_parser.get_argument('y');
 
+    if(emissionsSaveFilePrefix != "" && emissionsLoadFilePrefix== "")
+    {
+        emissionsPrefix=emissionsSaveFilePrefix;
+    }
+    else if(emissionsSaveFilePrefix == "" && emissionsLoadFilePrefix != "")
+    {
+        emissionsPrefix=emissionsLoadFilePrefix;
+    }
+    else{
+        cerr<<"Exactly one of emissionsLoadFilePrefix and emissionsSaveFilePrefix has to be defined"<<endl;
+        cerr<<"emissionsLoadFilePrefix(-x): "<<emissionsLoadFilePrefix<<endl;
+        cerr<<"emissionsSaveFilePrefix(-y): "<<emissionsSaveFilePrefix<<endl;
+        return -1;
+    }
+
     // print info
     cerr << "Files and parameters used:" << endl;
     argument_parser.info();
@@ -313,7 +328,7 @@ int main (int argc, char* argv[])
     getrusage(RUSAGE_SELF, &r_usage00);
     cerr << "#### Memory usage until now: " << (r_usage00.ru_maxrss / 1E6) << " GB ####" << endl;
 
-    string segment_file = outname + "_path_segments.fasta";
+    string segment_file = emissionsPrefix + "_path_segments.fasta";
     cerr << "Write path segments to file: " << segment_file << " ..." << endl;
     variant_reader.write_path_segments(segment_file);
 
@@ -403,20 +418,7 @@ int main (int argc, char* argv[])
     }
     struct rusage r_usage3;
     cerr << "Calculate emissions  " << endl;
-    if(emissionsSaveFilePrefix != "" && emissionsLoadFilePrefix== "")
-    {
-        emissionsPrefix=emissionsSaveFilePrefix;
-    }
-    else if(emissionsSaveFilePrefix == "" && emissionsLoadFilePrefix != "")
-    {
-        emissionsPrefix=emissionsLoadFilePrefix;
-    }
-    else{
-        cerr<<"Exactly one of emissionsLoadFilePrefix and emissionsSaveFilePrefix has to be defined"<<endl;
-        cerr<<"emissionsLoadFilePrefix(-x): "<<emissionsLoadFilePrefix<<endl;
-        cerr<<"emissionsSaveFilePrefix(-y): "<<emissionsSaveFilePrefix<<endl;
-        return -1;
-    }
+    
 
 
     for(unsigned i=0; i< databases.size(); i++)
