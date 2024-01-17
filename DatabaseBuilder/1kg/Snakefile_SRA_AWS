@@ -43,7 +43,7 @@ def getLowPartition(sample,attempt):
 
 
 
-tmp=list(filter(lambda x:x.library=="short",pep.samples))
+tmp=list(pep.samples)
 illuminaSamples=[s.sample_name for s in tmp]
 
 
@@ -84,7 +84,8 @@ for acc, data in downloadData.items():
            urlsByFileName[file]=f["globus"]
     elif data["downloadMethod"] == "sra":
     	kmcfileType[sample] = "-fq"
-    	fileName= outputFolder+"fasta/"+acc+".fastq.gz"
+	SRA_acc= data["bam"][0]["SRA"]
+    	fileName= outputFolder+"fasta/"+SRA_acc+".fastq.gz"
 	urls[sample].append(fileName)
     elif data["downloadMethod"] == "aws":
     	f=data["bam"][0] 
@@ -266,9 +267,9 @@ localrules: all, createGraphDescriptor, prepareAnnnotationColumns,giveGreenLight
 
 rule all:
     input:
-        outputFolder+"smooth_1/annotation.relaxed.row_diff_int_brwt.annodbg",
-	outputFolder+"smooth_1/graph.desc.tsv",
-	outputFolder+"smooth_1/graph.dbg",
+        outputFolder+"smooth_10000000/annotation.relaxed.row_diff_int_brwt.annodbg",
+	outputFolder+"smooth_10000000/graph.desc.tsv",
+	outputFolder+"smooth_10000000/graph.dbg",
 #        contigs2,
 # 	metagraphUnitigsNoSmooth
 
@@ -289,7 +290,7 @@ rule kmc:
         cores=8,
 	parallel_kmc=1,
 	nodes = 1,
-        time = lambda wildcards,attempt: attempt * 60 * 4,
+        runtime = lambda wildcards,attempt: attempt * 60 * 4,
         partition =  lambda wildcards: getMeduimPartition(f"{wildcards.experiment}"),
         tmp= lambda wildcards: "%skmc_%s/"%(tmpFolder,f"{wildcards.experiment}")		
     log: outputFolder +"kmc/{experiment}.log"
@@ -306,13 +307,13 @@ rule kmc:
 #	samtools view -@ {threads} -b -T /mnt/gs21/scratch/mansourt/SV/GRCh38_full_analysis_set_plus_decoy_hla.fa {input} |samtools fastq |seqtk seq -a > {resources.tmp}fastq.fq
 
 
-	fasterq-dump   --stdout --skip-technical --fasta-unsorted --threads {threads} -t  {resources.tmp} {input} > {resources.tmp}fastq.fq
+	#fasterq-dump   --stdout --skip-technical --fasta-unsorted --threads {threads} -t  {resources.tmp} {input} > {resources.tmp}fastq.fq
 #	rm  {resources.tmp}GRCh38_full_analysis_set_plus_decoy_hla.fa*
 	
 
-	kmc -hp -ci{kmcMinCount} -t{threads} -k{kSize} -m15 -sm  -fm {resources.tmp}fastq.fq {params.outPrefix} {resources.tmp} 
+	kmc -hp -ci{kmcMinCount} -t{threads} -k{kSize} -m15 -sm  -fq {input} {params.outPrefix} {resources.tmp} 
 
-        /mnt/gs21/scratch/mansourt/TheGreatGenotyper/build/DatabaseBuilder/computeHistogram -i {params.outPrefix} -m 1000 -o {output.histogram} 
+        /home/mshokrof/TheGreatGenotyper/build/DatabaseBuilder/computeHistogram -i {params.outPrefix} -m 1000 -o {output.histogram} 
        
 	rm -rf {resources.tmp}
         """
@@ -361,7 +362,7 @@ rule markSampleFinished:
 # 	cores=1,
 # 	parallel_download=1,
 #         nodes = 1,
-#         time = 60 * 8,
+#         runtime = 60 * 8,
 #         partition = lambda wildcards: getHighPartition(f"{wildcards.file}"),
 #         tmp= lambda wildcards: "%sgetfasta_%s/"%(tmpFolder,f"{wildcards.file}"),
 #         urls_s3=lambda wildcards: urlsByFileName[f"{wildcards.file}"] ,
@@ -399,7 +400,7 @@ rule DownloadAWS:
 	cores=1,
 	parallel_download=1,
         nodes = 1,
-        time = 60 * 8,
+        runtime = 60 * 8,
         partition = lambda wildcards: getHighPartition(f"{wildcards.file}"),
         tmp= lambda wildcards: "%sgetfasta_%s/"%(tmpFolder,f"{wildcards.file}"),
         urls_s3=lambda wildcards: urlsByFileName[f"{wildcards.file}"] ,
@@ -462,7 +463,7 @@ rule get_fasta:
 	cores=6,
 	parallel_sra=1,
         nodes = 1,
-        time = 60 * 8,
+        runtime = 60 * 8,
         partition = lambda wildcards: getHighPartition(f"{wildcards.accession}"),
         tmp= lambda wildcards: "%sgetfasta_%s/"%(tmpFolder,f"{wildcards.accession}")	
     conda:
@@ -581,7 +582,7 @@ rule kmc_to_graph:
         cores=8,
         mem_gb=24,
 	nodes = 1,
-        time = lambda wildcards, attempt: 60 * 4 * attempt,
+        runtime = lambda wildcards, attempt: 60 * 4 * attempt,
         partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.sample}"),
 	tmp= lambda wildcards: "%sgraph_%s/"%(tmpFolder,f"{wildcards.sample}")
     log: outputFolder+"graphs/{sample}.log"
@@ -594,7 +595,7 @@ rule kmc_to_graph:
 
 #	    cp {input.prefix} {input.suffix} {resources.tmp}
 
-	    /mnt/gs21/scratch/mansourt/TheGreatGenotyper/build2/metagraph build  \
+	    /home/mshokrof/TheGreatGenotyper/build/metagraph build  \
             -k {kSize} \
             --mode canonical \
             --count-kmers --count-width 16 \
@@ -631,7 +632,7 @@ rule clean:
         cores=8,
         mem_gb=18,
 	nodes = 1,
-        time = lambda wildcards, attempt: 60 * 1 * attempt,
+        runtime = lambda wildcards, attempt: 60 * 1 * attempt,
         partition = lambda wildcards , attempt: getLowPartition(f"{wildcards.sample}", attempt),
         tmp= lambda wildcards: "%sclean_smooth%s_%s/"%(tmpFolder,f"{wildcards.smooth_value}",f"{wildcards.sample}")
     log: outputFolder+"unitigs/smooth_{smooth_value}/{sample}.log"
@@ -644,7 +645,7 @@ rule clean:
 
 #	    cp {input.graph} {input.weights} {resources.tmp}
 
-            /mnt/gs21/scratch/mansourt/TheGreatGenotyper/build2/metagraph clean  \
+            /home/mshokrof/TheGreatGenotyper/build/metagraph clean  \
             --to-fasta --primary-kmers \
             --smoothing-window 1 \
 	    --prune-tips 0 \
@@ -724,7 +725,7 @@ rule metagraph_buildSmoothMainGraph:
         cores=32,
         mem_gb=200,
 	nodes = 1,
-        time = lambda wildcards, attempt: 60 * 100 * attempt,
+        runtime = lambda wildcards, attempt: 60 * 100 * attempt,
         partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.smooth_value}"),
         tmp= lambda wildcards: "%smaingraph_smooth%s/"%(tmpFolder,f"{wildcards.smooth_value}")
     log: outputFolder+"smooth_{smooth_value}/buildMainGraphlog"
@@ -732,7 +733,7 @@ rule metagraph_buildSmoothMainGraph:
        	"""
 	    mkdir  -p {tmpFolder}$$/
 
-            /mnt/gs21/scratch/mansourt/TheGreatGenotyper/build/metagraph build  \
+            /home/mshokrof/TheGreatGenotyper/build/metagraph build  \
             -k {kSize} \
             --mode canonical  \
             --mem-cap-gb {resources.mem_gb} \
@@ -750,7 +751,7 @@ rule metagraph_buildSmoothMainGraph:
             rm {tmpFolder}$$/graph_canonical.dbg
 
 
-            metagraph build  \
+            /home/mshokrof/TheGreatGenotyper/build/metagraph build  \
             -k {kSize} \
             --mode primary \
             --mem-cap-gb {resources.mem_gb} \
@@ -779,7 +780,7 @@ rule compressGraph:
     log: "{prefix}graph.small.log"
     shell:
        	"""
-	metagraph transform  \
+	/home/mshokrof/TheGreatGenotyper/build/metagraph transform  \
             --state small \
             -o {params.outputPrefix} \
             -p {threads} \
@@ -804,13 +805,13 @@ rule createAnnotationColumns:
         cores=32,
         mem_gb=10,
 	nodes = 1,
-        time = lambda wildcards, attempt: 60 * 72 * attempt,
+        runtime = lambda wildcards, attempt: 60 * 72 * attempt,
         partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.batchID}"),
         tmp= lambda wildcards: "%screateAnnotation_smooth%s_batch%s/"%(tmpFolder,f"{wildcards.smooth_value}",f"{wildcards.batchID}")
     log: outputFolder+"smooth_{smooth_value}/columns/{batchID}.done.log"
     shell:
        	"""
-	metagraph annotate  \
+	/home/mshokrof/TheGreatGenotyper/build/metagraph annotate  \
                 -i {input.graph} \
                 --anno-filename \
                 --separately \
@@ -868,7 +869,7 @@ rule optimizeAnnotationColumns:
         cores=32,
         mem_gb=100,
 	nodes = 1,
-        time = lambda wildcards, attempt: 60 * 48 * attempt,
+        runtime = lambda wildcards, attempt: 60 * 48 * attempt,
         partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.smooth_value}"),
         tmp= lambda wildcards: "%soptomize_smooth%s/"%(tmpFolder,f"{wildcards.smooth_value}")
     log: outputFolder+"smooth_{smooth_value}/optimizeAnnotationColumns.log"
@@ -877,7 +878,7 @@ rule optimizeAnnotationColumns:
 	mkdir  -p {tmpFolder}$$/
 	mkdir -p {params.rowDiffPrefix}
 
-	metagraph transform_anno  \
+	/home/mshokrof/TheGreatGenotyper/build/metagraph transform_anno  \
             --anno-type row_diff --count-kmers \
             --row-diff-stage 0 \
             --mem-cap-gb {resources.mem_gb} \
@@ -888,7 +889,7 @@ rule optimizeAnnotationColumns:
 	    {input.columns} &> {log}
  	echo "stage 0 finished" >> {log}
    
-	metagraph transform_anno  \
+	/home/mshokrof/TheGreatGenotyper/build/metagraph transform_anno  \
             --anno-type row_diff --count-kmers \
             --row-diff-stage 1 \
             --mem-cap-gb {resources.mem_gb} \
@@ -899,7 +900,7 @@ rule optimizeAnnotationColumns:
 	    {input.columns} &>> {log}
  	echo "stage 1 finished" >> {log}
 
-        metagraph transform_anno  \
+        /home/mshokrof/TheGreatGenotyper/build/metagraph transform_anno  \
             --anno-type row_diff --count-kmers \
             --row-diff-stage 2 \
             --mem-cap-gb {resources.mem_gb} \
@@ -911,7 +912,7 @@ rule optimizeAnnotationColumns:
 	echo "stage 2 finished" >> {log}
 
         find {params.rowDiffPrefix} -name \"*.column.annodbg\" \
-         | metagraph transform_anno  \
+         | /home/mshokrof/TheGreatGenotyper/build/metagraph transform_anno  \
             --anno-type row_diff_int_brwt \
             --greedy --fast --subsample {wildcards.smooth_value} \
             -i {input.graph} \
@@ -919,7 +920,7 @@ rule optimizeAnnotationColumns:
             -p {threads} --parallel-nodes 10  &>> {log}
 	echo "transform to brwt  finished" >> {log}
 
-        metagraph relax_brwt  \
+        /home/mshokrof/TheGreatGenotyper/build/metagraph relax_brwt  \
             -p {threads} \
             --relax-arity 32 \
             -o {params.outputPrefix}.relaxed \

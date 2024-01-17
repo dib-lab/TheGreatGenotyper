@@ -114,6 +114,32 @@ rule merge_population_chunks:
 	    #
       	"""
 
+rule merge_population_chunks:
+    input:
+        population = expand("{out}genotyped/slice_{{slice}}_chunk_{chunk}.vcf.gz", out=OUTPUT_DIR  ,chunk= range(0,29)),
+    output:
+        OUTPUT_DIR+"genotyped/slice_{slice}.vcf.gz" 
+    log:
+        OUTPUT_DIR+"genotyped/slice_{slice}.log" 
+    threads: 16
+    retries: 0
+    resources:
+        mem_mb=20*1024,
+        cores=16,
+        nodes = 1,
+        meduim=1,
+        runtime = 60 * 4,
+        partition =  "bmm",
+        tmp= lambda wildcards: "%smerge%s/"%(tempFolder,f"{wildcards.slice}")
+    shell:
+        r"""
+            mkdir -p {resources.tmp}
+            bcftools merge {input} | parallel -j {threads} --pipe --block 10m -k {GG_BUILD_PATH}/PopMergeVCF/PopMergeVCF 2> {log} | bgzip > {resources.tmp}tmp.vcf.gz 
+            mv {resources.tmp}tmp.vcf.gz {output}
+            rm -rf {resources.tmp}
+	    #
+      	"""
+
 
 
 
