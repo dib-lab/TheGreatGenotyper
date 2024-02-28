@@ -5,7 +5,7 @@ import random
 
 
 
-input_folders=["/group/ctbrowngrp/mshokrof/1kg_clinvar/byChromosome/" , "/group/ctbrowngrp/mshokrof/1kg_GWAS/byChromosome/","/group/ctbrowngrp/mshokrof/pangenome_GG_GRCh38/merged/","/group/ctbrowngrp/mshokrof/1kg_GG_GRCh38/merged_fixed_ids/"]
+input_folders=["/group/ctbrowngrp/mshokrof/1kg_clinvar/byChromosome/" , "/group/ctbrowngrp/mshokrof/1kg_GWAS/byChromosome/","/group/ctbrowngrp/mshokrof/pangenome_GG_GRCh38/merged/","/group/ctbrowngrp/mshokrof/1kg_GG_GRCh38/merged_plink_filtered/"]
 tempFolder = "/scratch/mshokrof/"
 input_reference = "/group/ctbrowngrp/mshokrof/GRCh38_full_analysis_set_plus_decoy_hla.fa"
 beagle = "/home/mshokrof/genotyping-experiments/SV_genotyping/beagle.22Jul22.46e.jar"
@@ -211,7 +211,7 @@ rule run_beagle:
         mkdir -p {resources.tmpdir}
         bcftools norm -m -any -Oz -o  {resources.tmpdir}ref.vcf.gz {input} 
         tabix -p vcf {resources.tmpdir}ref.vcf.gz
-        java -Xmx100G -jar {beagle} gt={resources.tmpdir}ref.vcf.gz out={params.prefix} nthreads={threads}  map={beagleMap} &> {log}
+        java -Xmx100G -jar {beagle} gp=true ap=true gt={resources.tmpdir}ref.vcf.gz out={params.prefix} nthreads={threads}  map={beagleMap} &> {log}
         rm -rf {resources.tmpdir}
         """
 
@@ -329,7 +329,7 @@ rule calulateLD:
         nodes = 1,
         meduim=1,
         runtime = 60 * 10,
-        partition =  "bmm",
+        partition =  "med2",
         tmpdir= lambda wildcards: "%scalculateLD%s/"%(tempFolder,f"{wildcards.chrom}")
     shell:
         """
