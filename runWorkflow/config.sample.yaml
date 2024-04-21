@@ -1,0 +1,9 @@
+INPUT_VCFS: ["a.vcf", "b.vcf"]
+TEMP_FOLDER: "/scratch/"
+INPUT_REFERENCE: "t2t.fa"
+INPUT_INDEX: "index.txt"
+BEAGLE: "beagle.22Jul22.46e.jar"
+BEAGLE_MAP: "plink.map"
+OUTPUT_DIR: "output/"
+
+
