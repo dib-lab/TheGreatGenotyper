@@ -24,7 +24,9 @@ for record in vcfFile2.header.records:
     if record.type != 'SAMPLE':
         new_header.add_record(record)
         
-
+if "GT" not in  vcfFile2.header.formats:
+    new_header.formats.add("GT", number=1, type="String", description="Genotype")
+        
 
 
 for s in range(0,numSamples):

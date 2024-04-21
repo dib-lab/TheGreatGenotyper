@@ -111,6 +111,35 @@ rule run_jasmine:
 #             bcftools sort -T {resources.tmpdir}  --max-mem 20G | \
 #             bcftools norm -m +any | \
 #             bgzip -c  > {output}  
+rule sort_samples:
+    input:
+        lambda wildcards: input_folders[int(f"{wildcards.id}")]+ "{chrom}.vcf.gz"
+    output:
+        small= temp(OUTPUT_DIR+ "sorted/{chrom}_{id}.small.bcf"),
+    log:
+        OUTPUT_DIR+ "split/{chrom}_{id}.log"
+    threads: 16
+    retries: 0
+    resources:
+        mem_mb=10 *1024,
+        cores=32,
+        nodes = 1,
+        meduim=1,
+        runtime = 60 * 16,
+        partition =  "med2",
+        tmpdir= lambda wildcards: "%ssplit%s/"%(tempFolder,f"{wildcards.chrom}")
+    conda:
+        "jasmine_env.yaml"
+    shell:
+        """
+        mkdir -p {resources.tmpdir}
+        rm -rf {resources.tmpdir}*
+
+        bcftools query -l  {input} | sort > {resources.tmpdir}samples.txt
+
+        bcftools view -S {resources.tmpdir}samples.txt  -O b -o {output.small} {input}   
+        rm -rf {resources.tmpdir}
+        """
 
 rule split_to_sv_small:
     input:
@@ -155,8 +184,7 @@ rule split_to_sv_small:
 
 rule merge_all:
     input:
-        small = expand(OUTPUT_DIR+ "split/{{chrom}}_{id}.small.bcf", id = range(0,len(input_folders)) ),
-        sv = OUTPUT_DIR+ "jasmine/{chrom}.bcf"
+        small = expand(OUTPUT_DIR+ "sorted/{{chrom}}_{id}.small.bcf", id = range(0,len(input_folders)) )
     output:
         OUTPUT_DIR+ "merged/{chrom}.vcf.gz"
     log:
@@ -176,7 +204,7 @@ rule merge_all:
     shell:
         """
         mkdir -p {resources.tmpdir}
-        bcftools concat -Ou {input.small} {input.sv} | \
+        bcftools concat -Ou {input.small}  | \
             bcftools sort -T  {resources.tmpdir} -m 30G  -Ou | \
             bcftools norm -m +any -Oz -o  {output}
             tabix -p vcf {output}
@@ -213,6 +241,7 @@ rule run_beagle:
         tabix -p vcf {resources.tmpdir}ref.vcf.gz
         java -Xmx100G -jar {beagle} gp=true ap=true gt={resources.tmpdir}ref.vcf.gz out={params.prefix} nthreads={threads}  map={beagleMap} &> {log}
         rm -rf {resources.tmpdir}
+#
         """
 
 rule fix_beagle_header:

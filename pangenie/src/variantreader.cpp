@@ -634,9 +634,23 @@ void VariantReader::write_genotypes_of(string chromosome,  std::map<std::string,
 
 
                 // determine computed genotype
-                pair<int, int> genotype = genotype_likelihoods.get_likeliest_genotype();
-                long double qual = genotype_likelihoods.get_genotype_quality(genotype.first, genotype.second);
-                if (ignore_imputed && (nr_uniq_kmers == 0)) {
+                pair<int, int> genotype;
+				long double qual =0;
+				bool failed= false;
+				try
+  				{
+    				genotype =  genotype_likelihoods.get_likeliest_genotype();
+					qual = genotype_likelihoods.get_genotype_quality(genotype.first, genotype.second);
+  				}
+  				catch (const runtime_error& error)
+  				{
+    				failed=true;
+					cerr<<"Variant Failed "<<  v.get_chromosome() << "\t" 
+					<< (v.get_start_position() + 1) << "\t"
+					<< v.get_id() << "\t"; // ID
+  				}
+                 
+                if ((ignore_imputed && (nr_uniq_kmers == 0) )|| failed) {
                     genotype = {-1, -1};
                     qual=0;
                 }
