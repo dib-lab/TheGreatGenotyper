@@ -130,7 +130,7 @@ void EmissionProbabilities::compute_most_likely_genotypes(std::vector<UniqueKmer
     most_likely_gts=std::vector<std::vector<std::pair<unsigned char, unsigned char> > >(nr_variants);
     gts_qual=std::vector<std::vector<long double> >(nr_variants);
     result = vector<vector<GenotypingResult> >(nr_samples,vector<GenotypingResult>(nr_variants));
-#pragma omp parallel for
+#pragma omp parallel for schedule(dynamic,1)
     for(unsigned variantID=0; variantID<nr_variants; variantID++) {
         auto uniq=(*uniqKmers)[variantID];
         vector<unsigned char> unique_alleles;

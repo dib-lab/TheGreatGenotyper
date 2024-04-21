@@ -1,0 +1,7 @@
+channels:
+ - bioconda
+ - conda-forge 
+dependencies:
+ - jasminesv
+ - parallel=20231122
+ - bcftools=1.18-0

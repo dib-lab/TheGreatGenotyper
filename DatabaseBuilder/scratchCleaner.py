@@ -14,7 +14,7 @@ logFile=outputFolder+"watch.log"
 logging.basicConfig(filename=logFile,filemode='a', level=logging.DEBUG ,format = '%(asctime)s - %(levelname)s: %(message)s',datefmt = '%m/%d/%Y %I:%M:%S %p')
 
 
-folders=["COMPLETED","PREEMPTED","FAILED","TIMEOUT","CANCELLED"]
+folders=["COMPLETED","PREEMPTED","FAILED","TIMEOUT","CANCELLED", "KILLED"]
 for outF in folders:
     newFolder=outputFolder+outF
     if not os.path.exists(newFolder):
@@ -50,6 +50,8 @@ while True:
             status="TIMEOUT"
         elif "CANCELLED" in line:
             status="CANCELLED"
+        elif "oom-kill" in line:
+            status="KILLED"            
         else:
             status="UNKNOWN"
 
@@ -89,7 +91,7 @@ while True:
         
                 # Check if the process completed successfully
                 if process.returncode == 0:
-                    if status in ["COMPLETED","PREEMPTED","FAILED","TIMEOUT","CANCELLED"]:
+                    if status in ["COMPLETED","PREEMPTED","FAILED","TIMEOUT","CANCELLED", "KILLED"]:
                         outFile=".".join(f.split(".")[:-1])+".out"
                         mvCommand= "mv %s %s%s"%(f,outputFolder,status)
 #                        mvCommand= "mv %s %s %s%s"%(f,outFile,outputFolder,status)

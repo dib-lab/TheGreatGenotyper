@@ -609,3 +609,4 @@ endif()
 #-------------------
 add_subdirectory(DatabaseBuilder/)
 add_subdirectory(pangenie/)
+add_subdirectory(PopMergeVCF/)

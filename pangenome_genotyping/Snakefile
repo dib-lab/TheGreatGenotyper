@@ -1,0 +1,190 @@
+import os
+import glob
+print(config)
+
+INPUT_DIR = config["INPUT_DIR"]
+tempFolder = config["TEMP_FOLDER"]
+input_reference = config["INPUT_REFERENCE"]
+input_index = config["INPUT_INDEX"]
+beagle = config["BEAGLE"]
+beagleMap = config["BEAGLE_MAP"]
+OUTPUT_DIR = config["OUTPUT_DIR"]
+GG_BUILD_PATH = config["GG_BUILD_PATH"]
+
+
+# Get the list of all VCF files
+vcf_files = glob.glob(os.path.join(INPUT_DIR, "slice_*.vcf"))
+
+# Get the list of chromosomes based on the input files
+CHROMOSOMES = list(set([os.path.basename(vcf).split("_")[0] for vcf in vcf_files]))
+#CHROMOSOMES = ['chr1', 'chr5', 'chr22']
+#slices = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09']
+slices = ['06', '07', '08', '09']
+print(CHROMOSOMES)
+
+rule all:
+    input:
+        expand(os.path.join(OUTPUT_DIR, "beagle_out/slice_{slice}.vcf.gz"), slice=slices)
+
+
+
+rule TheGreatGenotyper:
+    input:
+        graphFolders      = "/mnt/gs21/scratch/mansourt/pangenome/index_chunks/chunk.{chunk}",    
+        ref        = input_reference,
+        vcf        = INPUT_DIR + "slice_{slice}.vcf"
+    output:
+        merged_vcf= os.path.join(OUTPUT_DIR, "genotyped/slice_{slice}_chunk_{chunk}.vcf.gz"),    
+    log:
+        os.path.join(OUTPUT_DIR, "genotyped/slice_{slice}_chunk_{chunk}.log")
+    threads: 64
+    retries: 0
+    resources:
+        mem_mb=280 * 1024,
+        #cores=64,
+        nodes = 1,
+        meduim=1,
+        runtime = 60 * 12,
+        tmpdir= lambda wildcards: "%sgenotyper_%s_%s/"%(tempFolder,f"{wildcards.slice}",f"{wildcards.chunk}"),
+        #partition =  "bmm",
+    shell:
+        r"""
+	mkdir -p  {resources.tmpdir}
+	{GG_BUILD_PATH}/pangenie/src/TheGreatGenotyper   -f -g  -i {input.graphFolders}  -j {threads} -t {threads} -r {input.ref}  -y  {resources.tmpdir}emissions -v {input.vcf} -o -  2> {log}  |  bgzip > {resources.tmpdir}/out.vcf.gz
+	cp {resources.tmpdir}/out.vcf.gz {output.merged_vcf} 
+        tabix -p vcf {output.merged_vcf}
+	rm -rf {resources.tmpdir}
+	"""
+
+rule compress_and_index_vcf:
+    input:
+        "{prefix}.vcf"
+    output:
+        compressed = "{prefix}.vcf.gz",
+        index = "{prefix}.vcf.gz.tbi"
+    shell:
+        """
+        bgzip -c {input} > {output.compressed}
+        tabix -p vcf {output.compressed}
+        """
+
+
+def concat(wildcards):
+    chrom= wildcards.chrom
+    parts=glob.glob(os.path.join(INPUT_DIR, chrom+"_split_split_*.vcf"))
+    print(os.path.join(INPUT_DIR, chrom+"_split_split_*.vcf"))
+    print(parts)
+    return expand(os.path.join(OUTPUT_DIR, "genotyped/{chrom}_split_{part}.vcf.gz"),chrom=chrom,part=range(0,len(parts)))
+
+rule concat_vcfs:
+    input:
+        lambda wildcards: concat(wildcards)
+    output:
+        os.path.join(OUTPUT_DIR, "concat_vcfs/{chrom}.vcf.gz")
+    shell:
+        """
+        bcftools concat {input} |bcftools sort |bgzip > {output}
+	tabix -p vcf {output}
+        """
+ruleorder: filltags > run_beagle 
+
+rule merge_population_chunks:
+    input:
+        population = expand("{out}genotyped/slice_{{slice}}_chunk_{chunk}.vcf.gz", out=OUTPUT_DIR  ,chunk= range(0,29)),
+    output:
+        OUTPUT_DIR+"genotyped/slice_{slice}.vcf.gz" 
+    log:
+        OUTPUT_DIR+"genotyped/slice_{slice}.log" 
+    threads: 16
+    retries: 0
+    resources:
+        mem_mb=20*1024,
+        cores=16,
+        nodes = 1,
+        meduim=1,
+        runtime = 60 * 4,
+        partition =  "bmm",
+        tmp= lambda wildcards: "%smerge%s/"%(tempFolder,f"{wildcards.slice}")
+    shell:
+        r"""
+            mkdir -p {resources.tmp}
+            bcftools merge {input} | parallel -j {threads} --pipe --block 10m -k {GG_BUILD_PATH}/PopMergeVCF/PopMergeVCF 2> {log} | bgzip > {resources.tmp}tmp.vcf.gz 
+            mv {resources.tmp}tmp.vcf.gz {output}
+            rm -rf {resources.tmp}
+	    #
+      	"""
+
+rule merge_population_chunks:
+    input:
+        population = expand("{out}genotyped/slice_{{slice}}_chunk_{chunk}.vcf.gz", out=OUTPUT_DIR  ,chunk= range(0,29)),
+    output:
+        OUTPUT_DIR+"genotyped/slice_{slice}.vcf.gz" 
+    log:
+        OUTPUT_DIR+"genotyped/slice_{slice}.log" 
+    threads: 16
+    retries: 0
+    resources:
+        mem_mb=20*1024,
+        cores=16,
+        nodes = 1,
+        meduim=1,
+        runtime = 60 * 4,
+        partition =  "bmm",
+        tmp= lambda wildcards: "%smerge%s/"%(tempFolder,f"{wildcards.slice}")
+    shell:
+        r"""
+            mkdir -p {resources.tmp}
+            bcftools merge {input} | parallel -j {threads} --pipe --block 10m -k {GG_BUILD_PATH}/PopMergeVCF/PopMergeVCF 2> {log} | bgzip > {resources.tmp}tmp.vcf.gz 
+            mv {resources.tmp}tmp.vcf.gz {output}
+            rm -rf {resources.tmp}
+	    #
+      	"""
+
+
+
+
+rule run_beagle:
+    input:
+        os.path.join(OUTPUT_DIR, "genotyped/slice_{slice}.vcf.gz")
+    output:
+        OUTPUT_DIR+ "beagle_out/slice_{slice}.vcf.gz"
+    params:
+        prefix=OUTPUT_DIR+ "beagle_out/slice_{slice}"
+    log:
+        OUTPUT_DIR+ "beagle_out/slice_{slice}.log"
+    threads: 32
+    retries: 0
+    resources:
+        mem_mb=50000,
+        cores=32,
+        nodes = 1,
+        meduim=1,
+        time = 60 * 16,
+        partition =  "med2",
+    shell:
+        """
+        java -Xmx40G -jar {beagle} gt={input} out={params.prefix} nthreads={threads}  map={beagleMap} &> {log}
+        """
+
+
+
+rule filltags:
+    input:
+        vcf="{OUTPUT_DIR}/beagle_out/{chrom}.vcf.gz",
+	index="{OUTPUT_DIR}/beagle_out/{chrom}.vcf.gz.tbi"
+    output:
+        "{OUTPUT_DIR}/beagle_out/{chrom}.tagged.vcf.gz"
+    shell:
+        """
+        bcftools +fill-tags {input.vcf} -Ov -- -t all | bgzip > {output}
+	tabix -p vcf {output}
+        """
+
+
+rule index_vcf:
+    input:
+        "{path}/{file}.vcf.gz"
+    output:
+        "{path}/{file}.vcf.gz.tbi"
+    shell:
+        "tabix -p vcf {input}"

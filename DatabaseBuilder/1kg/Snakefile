@@ -83,7 +83,8 @@ for acc, data in downloadData.items():
            urlsByFileName[file]=f["globus"]
     elif data["downloadMethod"] == "sra":
     	kmcfileType[sample] = "-fq"
-    	fileName= outputFolder+"fasta/"+acc+".fastq.gz"
+	SRA_acc = data["bam"][0]["SRA"]
+    	fileName= outputFolder+"fasta/"+SRA_acc+".fastq.gz"
 	urls[sample].append(fileName)
     elif data["downloadMethod"] == "aws":
     	f=data["bam"][0] 
@@ -284,7 +285,7 @@ rule kmc:
         cores=8,
 	parallel_kmc=1,
 	nodes = 1,
-        time = lambda wildcards,attempt: attempt * 60 * 4,
+        runtime = lambda wildcards,attempt: attempt * 60 * 4,
         partition =  lambda wildcards: getMeduimPartition(f"{wildcards.experiment}"),
         tmp= lambda wildcards: "%skmc_%s/"%(tmpFolder,f"{wildcards.experiment}")		
     log: outputFolder +"kmc/{experiment}.log"
@@ -379,7 +380,7 @@ rule DownloadAWS:
 	cores=1,
 	parallel_download=1,
         nodes = 1,
-        time = 60 * 8,
+        runtime = 60 * 8,
         partition = lambda wildcards: getHighPartition(f"{wildcards.file}"),
         tmp= lambda wildcards: "%sgetfasta_%s/"%(tmpFolder,f"{wildcards.file}"),
         urls_s3=lambda wildcards: urlsByFileName[f"{wildcards.file}"] ,
@@ -441,7 +442,7 @@ rule get_fasta:
 	cores=6,
 	parallel_sra=1,
         nodes = 1,
-        time = 60 * 8,
+        runtime = 60 * 8,
         partition = lambda wildcards: getHighPartition(f"{wildcards.accession}"),
         tmp= lambda wildcards: "%sgetfasta_%s/"%(tmpFolder,f"{wildcards.accession}")	
     conda:
@@ -560,7 +561,7 @@ rule kmc_to_graph:
         cores=8,
         mem_gb=24,
 	nodes = 1,
-        time = lambda wildcards, attempt: 60 * 4 * attempt,
+        runtime = lambda wildcards, attempt: 60 * 4 * attempt,
         partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.sample}"),
 	tmp= lambda wildcards: "%sgraph_%s/"%(tmpFolder,f"{wildcards.sample}")
     log: outputFolder+"graphs/{sample}.log"
@@ -610,7 +611,7 @@ rule clean:
         cores=8,
         mem_gb=18,
 	nodes = 1,
-        time = lambda wildcards, attempt: 60 * 1 * attempt,
+        runtime = lambda wildcards, attempt: 60 * 1 * attempt,
         partition = lambda wildcards , attempt: getLowPartition(f"{wildcards.sample}", attempt),
         tmp= lambda wildcards: "%sclean_smooth%s_%s/"%(tmpFolder,f"{wildcards.smooth_value}",f"{wildcards.sample}")
     log: outputFolder+"unitigs/smooth_{smooth_value}/{sample}.log"
@@ -703,7 +704,7 @@ rule metagraph_buildSmoothMainGraph:
         cores=32,
         mem_gb=200,
 	nodes = 1,
-        time = lambda wildcards, attempt: 60 * 100 * attempt,
+        runtime = lambda wildcards, attempt: 60 * 100 * attempt,
         partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.smooth_value}"),
         tmp= lambda wildcards: "%smaingraph_smooth%s/"%(tmpFolder,f"{wildcards.smooth_value}")
     log: outputFolder+"smooth_{smooth_value}/buildMainGraphlog"
@@ -783,7 +784,7 @@ rule createAnnotationColumns:
         cores=32,
         mem_gb=10,
 	nodes = 1,
-        time = lambda wildcards, attempt: 60 * 72 * attempt,
+        runtime = lambda wildcards, attempt: 60 * 72 * attempt,
         partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.batchID}"),
         tmp= lambda wildcards: "%screateAnnotation_smooth%s_batch%s/"%(tmpFolder,f"{wildcards.smooth_value}",f"{wildcards.batchID}")
     log: outputFolder+"smooth_{smooth_value}/columns/{batchID}.done.log"
@@ -847,7 +848,7 @@ rule optimizeAnnotationColumns:
         cores=32,
         mem_gb=100,
 	nodes = 1,
-        time = lambda wildcards, attempt: 60 * 48 * attempt,
+        runtime = lambda wildcards, attempt: 60 * 48 * attempt,
         partition = lambda wildcards , attempt: getMeduimPartition(f"{wildcards.smooth_value}"),
         tmp= lambda wildcards: "%soptomize_smooth%s/"%(tmpFolder,f"{wildcards.smooth_value}")
     log: outputFolder+"smooth_{smooth_value}/optimizeAnnotationColumns.log"

@@ -1,0 +1,7 @@
+channels:
+ - bioconda
+dependencies:
+ - svim-asm
+ - minimap2
+ - samtools=1.9
+ - bcftools
