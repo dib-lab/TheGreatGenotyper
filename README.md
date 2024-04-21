@@ -157,12 +157,12 @@ tabix -p vcf test_output/secondpass.phased.tagged.vcf.bgz
 
 
 ## ➤ Running on the Full 4.2K samples index
-The previous examples utilize a small index of 276 samples. The full index, which contains 4.2K samples encompassing the 1000 Genome Samples, Human Diversity Project, and Simons Diversity Project, is available at [Full Index](https://farm.cse.ucdavis.edu/~tahmed/GG_index/). This index comprises 29 sub-indexes, each stored in a separate folder. A script is provided to assist with downloading all the indexes. Metadata for the samples in the index can be found at index_metadata.csv.
+The previous examples utilize a small index of 276 samples. The full index, which contains 4.2K samples encompassing the 1000 Genome Samples, Human Diversity Project, and Simons Diversity Project, is available at [Full Index](https://farm.cse.ucdavis.edu/~tahmed/GG_index/). This index comprises 29 sub-indexes, each stored in a separate folder. A [script](https://github.com/dib-lab/TheGreatGenotyper/tree/development/downloadIndex) is provided to assist with downloading all the indexes. Metadata for the samples in the index can be found at index_metadata.csv.
 
 
-The full index may require a significant amount of memory when dealing with a large number of variants. We have developed a Snakemake script that operates on each sub-index independently, thereby avoiding any population-wide filtering. Following this, it integrates the results from each sub-index, performs population-level filtering, and carries out Beagle imputation. The Snakemake script is available at this link. 
+The full index may require a significant amount of memory when dealing with a large number of variants. We have developed a [Snakemake workflow](https://github.com/dib-lab/TheGreatGenotyper/tree/development/runWorkflow) that operates on each sub-index independently, thereby avoiding any population-wide filtering. Following this, it integrates the results from each sub-index, performs population-level filtering, and carries out Beagle imputation. The Snakemake script is available at this link. 
 
-You will need to specify the input in the configuration file, an example of which can be found here. You can run the workflow using the following command:
+You will need to specify the input in the configuration file, an example of which can be found [here](https://github.com/dib-lab/TheGreatGenotyper/blob/development/runWorkflow/config.sample.yaml). You can run the workflow using the following command:
 ```
 snakemake  -j 5 --configfile config.yaml --use-conda
 ```
