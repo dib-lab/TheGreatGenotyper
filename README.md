@@ -210,4 +210,4 @@ Tamer Mansour
 
 ## ➤ License
 
-Licensed under [BSD-3-Clause](https://opensource.org/licenses/BSD-3-Clause).
+Licensed under [GPLv3-Clause]([https://opensource.org/licenses/BSD-3-Clause](https://www.gnu.org/licenses/gpl-3.0.en.html#license-text)).
