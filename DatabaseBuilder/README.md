@@ -63,4 +63,10 @@ Running the workflow is very simple after finishing the configurations
 snakemake -j 64  --use-conda
 ```
 
+## Alignment-free QC and partitioing 
+
+It is always advised to check for the sequencing data quality, extent of genome coverage and sequencing depth. We uses [Snipe](https://github.com/snipe-bio/snipe) to sketch sequencing datasets and perform an alignment-free quality control before indexing. Moreover, for large population cohorts, we partition the data into groups, each has up to 350 samples. Then, each parition of samples is indexed independently. Later, users can genotype one or more indexes at a time. The Great Genotyper can eventually merge the genotype output files from multiple indexes then apply population-level QC and imputation. The larger the size of each index, the more memory is needed for both construction and genotyping with a trade in the time needed to genotype the whole population. We can further reduce the memeory needed for indexing by partitioning the samples based on their sequence similarity. Snipe has a [plugin](https://github.com/snipe-bio/snipe-popclust) that calculates pairwise similarities between all samples based on their sketches and creates a dendrogram that can be used to partition the data into homogenous groups. 
+
+
+   
 
